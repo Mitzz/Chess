@@ -78,19 +78,9 @@ public class Program {
 		render(game);
 		move(game, 'f', 1, 'd', 3);
 		render(game);
-
-//		move(game, 'f', 8, 'e', 7);//Movement Failed from (f,8) to (e,7) due to destination piece has same color piece as that of source piece
-//		render(game);
-
-//		move(game, 'd', 3, 'a', 7);//Move Invalid due wrong player played
-//		render(game);
-
 		move(game, 'e', 7, 'e', 5);
 		render(game);
 		
-//		move(game, 'd', 3, 'a', 7);//Movement Failed from (d,3) to (a,7) due to source piece movement invalid
-//		render(game);
-
 		move(game, 'd', 3, 'a', 6);
 		render(game);
 
@@ -122,6 +112,26 @@ public class Program {
 		move(game, 'f', 7, 'f', 6);
 		render(game);		
 
+//		move(game, 'f', 3, 'h', 3);//Movement Failed from (f,3) to (h,3) due to destination piece has same color piece as that of source piece
+//		render(game);		
+
+//		move(game, 'f', 3, 'g', 2);//Movement Failed from (f,3) to (g,2) due to destination piece has same color piece as that of source piece
+//		render(game);		
+
+//		move(game, 'f', 3, 'g', 4);//Movement Failed from (f,3) to (g,4) due to source piece movement invalid
+//		render(game);		
+
+		move(game, 'f', 4, 'e', 5);//Movement Failed from (f,3) to (g,4) due to source piece movement invalid
+		render(game);		
+
+		move(game, 'f', 6, 'h', 6);
+		render(game);
+		
+		move(game, 'f', 3, 'f', 5);
+		render(game);
+		
+		move(game, 'h', 6, 'h', 3);
+		render(game);
 	}
 	
 	private static void bishopMovementTest() {
