@@ -10,4 +10,12 @@ public class Board {
 			for(int file = 0; file < 8; file++)
 				tiles[rank][file] = new Tile(rank, file);
 	}
+
+	public void move(int fromRank, int fromFile, int toRank, int toFile) {
+		Tile from = tiles[fromRank][fromFile];
+		Tile to = tiles[toRank][toFile];
+		
+		from.moveTo(to);
+		
+	}
 }

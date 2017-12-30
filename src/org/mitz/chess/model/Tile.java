@@ -12,11 +12,11 @@ public class Tile {
 	public Tile(int rank, int file) {
 		this.rank = rank;
 		this.file = file;
-		this.piece = getPiece();
+		this.piece = initializePiece();
 		this.color = (this.rank + this.file) % 2 == 0? Color.BLACK : Color.WHITE;
 	}
 
-	private Piece getPiece() {
+	private Piece initializePiece() {
 		
 		int rank = this.rank + 1;
 		int file = this.file + 1;
@@ -41,5 +41,41 @@ public class Tile {
 		if(rank == 7 && (1 <= file || file <= 8)) return new Pawn(color, this);
 		
 		return null;
+	}
+	
+	public Piece getPiece() {
+		return piece;
+	}
+
+	public boolean isEmpty() {
+		return piece == null;
+	}
+
+	public void moveTo(Tile to) {
+		if(validateMove(to)) {
+			
+		}
+	}
+
+	private boolean validateMove(Tile to) {
+		
+		String error = "Movement Successful from (" + this.getFile() + "," + this.getRank() + ") to (" + to.getFile() + "," + to.getRank() + ")";
+		
+		boolean valid = true;
+		if(!to.isEmpty() && this.getPiece().getColor() == to.getPiece().getColor()) {
+			error = "Movement Failed from (" + this.getFile() + "," + this.getRank() + ") to (" + to.getFile() + "," + to.getRank() + ") due to destination piece has same color piece as that of source piece";
+			valid = false;
+		}
+		
+		System.out.println(error);
+		return valid;
+	}
+	
+	private char getFile() {
+		return (char)(97 + this.file);
+	}
+	
+	private int getRank() {
+		return 1 + this.rank;
 	}
 }

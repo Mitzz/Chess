@@ -23,6 +23,10 @@ public class Piece {
 	public void remove() {
 	}
 
+	public Color getColor() {
+		return this.color;
+	}
+
 	
 }
 
