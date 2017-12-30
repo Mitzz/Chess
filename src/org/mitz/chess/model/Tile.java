@@ -69,8 +69,14 @@ public class Tile {
 			valid = false;
 		}
 		//Case II - Piece Movement Valid
-		this.getPiece().validateMove(to);
-		System.out.println(error);
+		if(valid && !this.getPiece().validateMove(to)) {
+			error = "Movement Failed from " + this.getPosition() + " to " + to.getPosition() + " due to source piece movement invalid";
+			valid = false;
+		}
+		if(valid)
+			System.out.println(error);
+		else 
+			System.err.println(error);
 		return valid;
 	}
 	

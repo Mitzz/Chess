@@ -27,16 +27,19 @@ public class Pawn extends Piece {
 				message = "2 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
 				valid = true;
 			}
-			if(to.getRank() == selfTile.getRank() + 1 && to.getFile() == selfTile.getFile() + 1 && to.getPiece().getColor() != this.getColor()) {
+			if(to.getRank() == selfTile.getRank() + 1 && to.getFile() == selfTile.getFile() + 1 && !to.isEmpty() && to.getPiece().getColor() != this.getColor()) {
 				message = "3 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
 				valid = true;
 			}
-			if(to.getRank() == selfTile.getRank() + 1 && to.getFile() == selfTile.getFile() - 1 && to.getPiece().getColor() != this.getColor()) {
+			if(to.getRank() == selfTile.getRank() + 1 && to.getFile() == selfTile.getFile() - 1 && !to.isEmpty() && to.getPiece().getColor() != this.getColor()) {
 				message = "4 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
 				valid = true;
 			}
 		}
-		System.out.println("Pawn.validateMove(message): " + message);
+		if(valid)
+			System.out.println("Pawn.validateMove(message): " + message);
+		else
+			System.err.println("Pawn.validateMove(message): " + message);
 		return valid;
 	}
 }

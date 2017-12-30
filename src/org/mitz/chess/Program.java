@@ -11,8 +11,8 @@ public class Program {
 		int fromRank = 2;
 		char fromFile = 'd';
 		
-		int toRank = 4;
-		char toFile = 'd';
+		int toRank = 3;
+		char toFile = 'e';
 		
 		game.move(fromRank, fromFile, toRank, toFile);
 	}
