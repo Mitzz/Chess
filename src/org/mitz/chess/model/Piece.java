@@ -18,7 +18,7 @@ public class Piece {
 
 	public boolean validateMove(Tile to) {
 
-		return false;
+		return true;
 	}
 
 	public void remove() {

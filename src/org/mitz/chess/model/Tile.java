@@ -104,6 +104,10 @@ public class Tile {
 		return (char)(97 + this.file);
 	}
 	
+	public int getFileIndex() {
+		return this.file;
+	}
+	
 	public int getRank() {
 		return 1 + this.rank;
 	}
@@ -115,4 +119,31 @@ public class Tile {
 	public String getContent() {
 		return (isEmpty() ? "* " : getPiece().getUnicodeCharacter());
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + file;
+		result = prime * result + rank;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Tile other = (Tile) obj;
+		if (file != other.file)
+			return false;
+		if (rank != other.rank)
+			return false;
+		return true;
+	}
+	
+	
 }
