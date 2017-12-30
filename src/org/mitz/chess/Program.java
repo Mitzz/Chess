@@ -8,12 +8,23 @@ public class Program {
 		System.out.println("Welcome to chess");
 		Game game = new Game();
 		
-		int fromRank = 3;
+		int fromRank = 2;
 		char fromFile = 'd';
 		
 		int toRank = 3;
 		char toFile = 'e';
 		
 		game.move(fromRank, fromFile, toRank, toFile);
+		sleep(1000);
+		game.render();
+		
+	}
+
+	private static void sleep(int i) {
+		try {
+			Thread.sleep(i);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }

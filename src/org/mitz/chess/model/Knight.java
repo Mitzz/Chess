@@ -8,4 +8,8 @@ public class Knight extends Piece {
 		super(color, tile);
 	}
 
+	@Override
+	public String getUnicodeCharacter() {
+		return (Color.white == this.getColor() ? "\u2658" : "\u265e");
+	}
 }

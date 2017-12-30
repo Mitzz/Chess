@@ -8,4 +8,8 @@ public class Rook extends Piece{
 		super(white, tile);
 	}
 
+	@Override
+	public String getUnicodeCharacter() {
+		return (Color.white == this.getColor() ? "\u2656" : "\u265c");
+	}
 }

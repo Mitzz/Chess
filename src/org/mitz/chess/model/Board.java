@@ -18,4 +18,16 @@ public class Board {
 		from.moveTo(to);
 		
 	}
+
+	public void render() {
+		String content = " ";
+		for(int rank = 7; rank >= 0; rank--) {
+			for(int file = 0; file < 8; file++) {
+				Tile tile = tiles[rank][file];
+				System.out.print(tile.getPosition() + " " + tile.getContent());
+//				System.out.print(tile.getContent());
+			}
+			System.out.println();
+		}
+	}
 }

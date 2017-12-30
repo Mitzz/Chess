@@ -8,4 +8,8 @@ public class Bishop extends Piece{
 		super(color, tile);
 	}
 
+	@Override
+	public String getUnicodeCharacter() {
+		return (Color.white == this.getColor() ? "\u2657" : "\u265d");
+	}
 }

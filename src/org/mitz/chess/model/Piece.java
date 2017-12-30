@@ -35,5 +35,9 @@ public class Piece {
 	public String getPieceDescription(String pieceName) {
 		return ((color == Color.WHITE) ? "White" : "Black") + " " + pieceName;
 	}
+
+	public String getUnicodeCharacter() {
+		return "  ";
+	}
 }
 

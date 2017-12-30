@@ -36,10 +36,34 @@ public class Pawn extends Piece {
 				valid = true;
 			}
 		}
+		if(this.getColor() == Color.BLACK) {
+			if((to.getRank() == selfTile.getRank() - 1) && to.getFile() == selfTile.getFile()) {
+				message = "1 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
+				valid = true;
+			}
+			if(selfTile.getRank() == 2 && (to.getRank() == selfTile.getRank() - 2) && to.getFile() == selfTile.getFile()) {
+				message = "2 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
+				valid = true;
+			}
+			if(to.getRank() == selfTile.getRank() - 1 && to.getFile() == selfTile.getFile() + 1 && !to.isEmpty() && to.getPiece().getColor() != this.getColor()) {
+				message = "3 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
+				valid = true;
+			}
+			if(to.getRank() == selfTile.getRank() - 1 && to.getFile() == selfTile.getFile() - 1 && !to.isEmpty() && to.getPiece().getColor() != this.getColor()) {
+				message = "4 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
+				valid = true;
+			}
+		}
 		if(valid)
 			System.out.println("Pawn.validateMove(message): " + message);
 		else
 			System.err.println("Pawn.validateMove(message): " + message);
 		return valid;
+	}
+	
+	@Override
+	public String getUnicodeCharacter() {
+		
+		return (Color.white == this.getColor() ? "\u2659" : "\u265F");
 	}
 }

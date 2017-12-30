@@ -26,16 +26,16 @@ public class Tile {
 		if(rank == 8 || rank == 7)
 			color = Color.BLACK;
 		
-		if(rank == 1 && (file == 1 && file == 8)) return new Rook(color, this);
-		if(rank == 1 && (file == 2 && file == 7)) return new Knight(color, this);
-		if(rank == 1 && (file == 3 && file == 6)) return new Bishop(color, this);
+		if(rank == 1 && (file == 1 || file == 8)) return new Rook(color, this);
+		if(rank == 1 && (file == 2 || file == 7)) return new Knight(color, this);
+		if(rank == 1 && (file == 3 || file == 6)) return new Bishop(color, this);
 		if(rank == 1 && file == 4) return new Queen(color, this);
 		if(rank == 1 && file == 5) return new King(color, this);
 		if(rank == 2 && (1 <= file || file <= 8)) return new Pawn(color, this);
 		
-		if(rank == 8 && (file == 1 && file == 8)) return new Rook(color, this);
-		if(rank == 8 && (file == 2 && file == 7)) return new Knight(color, this);
-		if(rank == 8 && (file == 3 && file == 6)) return new Bishop(color, this);
+		if(rank == 8 && (file == 1 || file == 8)) return new Rook(color, this);
+		if(rank == 8 && (file == 2 || file == 7)) return new Knight(color, this);
+		if(rank == 8 && (file == 3 || file == 6)) return new Bishop(color, this);
 		if(rank == 8 && file == 4) return new Queen(color, this);
 		if(rank == 8 && file == 5) return new King(color, this);
 		if(rank == 7 && (1 <= file || file <= 8)) return new Pawn(color, this);
@@ -95,5 +95,9 @@ public class Tile {
 	
 	public String getPosition() {
 		return "(" + getFile() + "," + getRank() + ")";
+	}
+
+	public String getContent() {
+		return (isEmpty() ? "  " : getPiece().getUnicodeCharacter());
 	}
 }
