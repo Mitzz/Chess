@@ -5,6 +5,7 @@ public class Game {
 	private Board board;
 	private boolean isWhiteTurn;
 	
+	
 	public Game() {
 		board = new Board();
 		isWhiteTurn = true;
