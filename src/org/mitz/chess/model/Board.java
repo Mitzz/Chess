@@ -21,6 +21,10 @@ public class Board {
 		if(!validateSourceTargetTile(to, from)) {
 			return false;
 		}
+		if(to.equals(from)) {
+			System.err.println("Both Source and Target Tile are same");
+			return false;
+		}
 		if(isMovementDiagonal(from, to)) {
 			System.out.println("Movement Diagonal");
 			if(!isPathDiagonallyEmpty(from, to)) {
@@ -58,23 +62,21 @@ public class Board {
 	}
 	
 	public boolean isPathEmpty(Tile to, Tile from, int rankOffset, int fileOffset) {
-		
 		System.out.println("Rank Offset: " + rankOffset + ", File Offset: " + fileOffset);
 //		int toRank = to.getRank() - 1;
 //		int toFile = to.getFileIndex();
-		int fromRank = from.getRank();
+		int fromRank = from.getRankIndex();
 		int fromFile = from.getFileIndex();
+		System.out.println("Position: " + from.getPosition() +  "Rank: " + fromRank + ", File: " + fromFile);
 		if(!validateSourceTargetTile(to, from)) {
 			return false;
 		}
-		if(to.equals(from)) {
-			System.err.println("Both Source and Target Tile are same");
-			return false;
-		}
+		
 		fromRank += rankOffset;
 		fromFile += fileOffset;
-		while(!(to.getRank() == fromRank && to.getFileIndex() == fromFile)) {
-			
+		System.out.println("Position: " + tiles[fromRank][fromFile].getPosition() +  "Rank: " + fromRank + ", File: " + fromFile);
+		while(!(to.getRankIndex() == fromRank && to.getFileIndex() == fromFile)) {
+			System.out.println("Rank: " + fromRank + ", File: " + fromFile);
 			if(!tiles[fromRank][fromFile].isEmpty()) {
 				System.err.println(tiles[fromRank][fromFile].getPosition() + " is not empty");
 				return false;

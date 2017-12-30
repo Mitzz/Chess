@@ -83,9 +83,26 @@ public class Program {
 //		move(game, 'f', 8, 'e', 7);//Movement Failed from (f,8) to (e,7) due to destination piece has same color piece as that of source piece
 //		render(game);
 
+//		move(game, 'd', 3, 'a', 7);//Move Invalid due wrong player played
+//		render(game);
+
 		move(game, 'e', 7, 'e', 5);
 		render(game);
+		
+//		move(game, 'd', 3, 'a', 7);//Movement Failed from (d,3) to (a,7) due to source piece movement invalid
+//		render(game);
 
+		move(game, 'd', 3, 'a', 6);
+		render(game);
+
+		move(game, 'f', 8, 'c', 5);
+		render(game);		
+
+		move(game, 'a', 6, 'b', 7);
+		render(game);		
+		
+		move(game, 'c', 8, 'b', 7);
+		render(game);		
 	}
 
 	private static void knightMovementTest() {

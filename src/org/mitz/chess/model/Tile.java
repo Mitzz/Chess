@@ -112,6 +112,10 @@ public class Tile {
 		return 1 + this.rank;
 	}
 	
+	public int getRankIndex() {
+		return this.rank;
+	}
+	
 	public String getPosition() {
 		return "(" + getFile() + "," + getRank() + ")";
 	}
