@@ -8,7 +8,7 @@ public class Program {
 		System.out.println("Welcome to chess");
 		Game game = new Game();
 		
-		int fromRank = 2;
+		int fromRank = 3;
 		char fromFile = 'd';
 		
 		int toRank = 3;

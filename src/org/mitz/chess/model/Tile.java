@@ -63,8 +63,13 @@ public class Tile {
 		
 		boolean valid = true;
 		
+		//Case 0 - Piece does not exist
+		if(isEmpty()) {
+			error = "Movement Failed from " + this.getPosition() + " to " + to.getPosition() + " due to source piece does not exist";
+			valid = false;
+		}
 		//Case I - Piece of Same Color
-		if(!to.isEmpty() && this.getPiece().getColor() == to.getPiece().getColor()) {
+		if(valid && !to.isEmpty() && this.getPiece().getColor() == to.getPiece().getColor()) {
 			error = "Movement Failed from " + this.getPosition() + " to " + to.getPosition() + " due to destination piece has same color piece as that of source piece";
 			valid = false;
 		}
