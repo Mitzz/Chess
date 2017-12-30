@@ -14,9 +14,9 @@ public class Board {
 	}
 
 	public boolean move(boolean isWhiteTurn, int fromRank, int fromFile, int toRank, int toFile) {
-		System.out.println("------------Movement Initiated----------");
 		Tile from = tiles[fromRank][fromFile];
 		Tile to = tiles[toRank][toFile];
+		System.out.println("------------Movement Initiated from " + from.getPosition() + " to " + to.getPosition() + "----------");
 		if(!from.isEmpty() && !isMoveByTurn(isWhiteTurn, from)) {
 			System.err.println("Move Invalid due wrong player played");
 			return false;

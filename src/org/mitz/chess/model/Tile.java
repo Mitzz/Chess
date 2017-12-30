@@ -54,14 +54,13 @@ public class Tile {
 	public boolean moveTo(Tile to) {
 		if(validateMove(to)) {
 			to.setPiece(this.getPiece());
-			this.removePiece();
+			removePiece();
 			return true;
 		}
 		return false;
 	}
 	
 	private void removePiece() {
-		getPiece().remove();
 		this.piece = null;
 	}
 
@@ -112,6 +111,6 @@ public class Tile {
 	}
 
 	public String getContent() {
-		return (isEmpty() ? "*" : getPiece().getUnicodeCharacter());
+		return (isEmpty() ? "* " : getPiece().getUnicodeCharacter());
 	}
 }

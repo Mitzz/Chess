@@ -14,7 +14,6 @@ public class Pawn extends Piece {
 
 	@Override
 	public boolean validateMove(Tile to) {
-		super.validateMove(to);
 		String message = "Piece '" + PIECE_DESC + "' movement invalid from " + this.getTile().getPosition() + " to " + to.getPosition();
 		boolean valid = false;
 		Tile selfTile = this.getTile();

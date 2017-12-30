@@ -10,6 +10,13 @@ public class Program {
 		render(game);
 		move(game, 7, 'd', 6, 'd');
 		render(game);
+		move(game, 2, 'e', 4, 'e');
+		render(game);
+		move(game, 'd', 6, 'd', 5);
+		render(game);
+		move(game, 'e', 4, 'e', 6);
+		render(game);
+		
 	}
 
 	private static void render(Game game) {
@@ -17,6 +24,11 @@ public class Program {
 	}
 
 	private static void move(Game game, int fromRank, char fromFile, int toRank, char toFile) {
+		game.move(fromRank, fromFile, toRank, toFile);
+		sleep(100);
+	}
+	
+	private static void move(Game game, char fromFile, int fromRank, char toFile, int toRank) {
 		game.move(fromRank, fromFile, toRank, toFile);
 		sleep(100);
 	}
