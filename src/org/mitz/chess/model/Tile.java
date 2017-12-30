@@ -51,10 +51,24 @@ public class Tile {
 		return piece == null;
 	}
 
-	public void moveTo(Tile to) {
+	public boolean moveTo(Tile to) {
 		if(validateMove(to)) {
-			
+			to.setPiece(this.getPiece());
+			this.removePiece();
+			return true;
 		}
+		return false;
+	}
+	
+	private void removePiece() {
+		getPiece().remove();
+		this.piece = null;
+	}
+
+	public Tile setPiece(Piece piece) {
+		this.piece = piece;
+		this.piece.setTile(this);
+		return this;
 	}
 
 	private boolean validateMove(Tile to) {
@@ -98,6 +112,6 @@ public class Tile {
 	}
 
 	public String getContent() {
-		return (isEmpty() ? "  " : getPiece().getUnicodeCharacter());
+		return (isEmpty() ? "*" : getPiece().getUnicodeCharacter());
 	}
 }

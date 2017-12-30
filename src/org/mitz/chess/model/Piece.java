@@ -22,6 +22,7 @@ public class Piece {
 	}
 
 	public void remove() {
+		this.tile = null;
 	}
 	
 	public Tile getTile() {
@@ -37,7 +38,11 @@ public class Piece {
 	}
 
 	public String getUnicodeCharacter() {
-		return "  ";
+		return "";
+	}
+
+	public void setTile(Tile tile) {
+		this.tile = tile;
 	}
 }
 

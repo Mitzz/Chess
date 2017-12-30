@@ -5,19 +5,20 @@ import org.mitz.chess.model.Game;
 public class Program {
 
 	public static void main(String[] args) {
-		System.out.println("Welcome to chess");
 		Game game = new Game();
-		
-		int fromRank = 2;
-		char fromFile = 'd';
-		
-		int toRank = 3;
-		char toFile = 'e';
-		
-		game.move(fromRank, fromFile, toRank, toFile);
-		sleep(1000);
+		move(game, 2, 'd', 3, 'd');
+		render(game);
+		move(game, 7, 'd', 6, 'd');
+		render(game);
+	}
+
+	private static void render(Game game) {
 		game.render();
-		
+	}
+
+	private static void move(Game game, int fromRank, char fromFile, int toRank, char toFile) {
+		game.move(fromRank, fromFile, toRank, toFile);
+		sleep(100);
 	}
 
 	private static void sleep(int i) {
