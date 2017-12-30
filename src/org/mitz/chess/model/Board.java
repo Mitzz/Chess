@@ -28,7 +28,14 @@ public class Board {
 		if(isMovementDiagonal(from, to)) {
 			System.out.println("Movement Diagonal");
 			if(!isPathDiagonallyEmpty(from, to)) {
-				System.err.println("Path not empty");
+				System.err.println("Diagonal Path not empty");
+				return false;
+			}
+		}
+		if(isMovementSideways(from, to)) {
+			System.out.println("Movement Sideways");
+			if(!isPathSidewayEmpty(from, to)) {
+				System.err.println("Sideway Path not empty");
 				return false;
 			}
 		}
@@ -41,6 +48,16 @@ public class Board {
 		return valid;
 	}
 	
+	private boolean isPathSidewayEmpty(Tile from, Tile to) {
+		int xOffset = new Integer(to.getRank()).compareTo(new Integer(from.getRank()));
+		int yOffset = new Integer(to.getFileIndex()).compareTo(new Integer(from.getFileIndex()));
+		return isPathEmpty(to, from, xOffset, yOffset);
+	}
+
+	private boolean isMovementSideways(Tile from, Tile to) {
+		return (from.getRank() - to.getRank() == 0 || from.getFileIndex() - to.getFileIndex() == 0);
+	}
+
 	private boolean isPathDiagonallyEmpty(Tile from, Tile to) {
 		int xOffset = new Integer(to.getRank()).compareTo(new Integer(from.getRank()));
 		int yOffset = new Integer(to.getFileIndex()).compareTo(new Integer(from.getFileIndex()));
@@ -62,19 +79,17 @@ public class Board {
 	}
 	
 	public boolean isPathEmpty(Tile to, Tile from, int rankOffset, int fileOffset) {
-		System.out.println("Rank Offset: " + rankOffset + ", File Offset: " + fileOffset);
+//		System.out.println("Rank Offset: " + rankOffset + ", File Offset: " + fileOffset);
 //		int toRank = to.getRank() - 1;
 //		int toFile = to.getFileIndex();
 		int fromRank = from.getRankIndex();
 		int fromFile = from.getFileIndex();
-		System.out.println("Position: " + from.getPosition() +  "Rank: " + fromRank + ", File: " + fromFile);
 		if(!validateSourceTargetTile(to, from)) {
 			return false;
 		}
 		
 		fromRank += rankOffset;
 		fromFile += fileOffset;
-		System.out.println("Position: " + tiles[fromRank][fromFile].getPosition() +  "Rank: " + fromRank + ", File: " + fromFile);
 		while(!(to.getRankIndex() == fromRank && to.getFileIndex() == fromFile)) {
 			System.out.println("Rank: " + fromRank + ", File: " + fromFile);
 			if(!tiles[fromRank][fromFile].isEmpty()) {
