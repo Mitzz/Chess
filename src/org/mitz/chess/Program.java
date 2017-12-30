@@ -16,7 +16,16 @@ public class Program {
 		render(game);
 		move(game, 'e', 4, 'e', 6);
 		render(game);
-		
+		move(game, 'd', 3, 'd', 4);
+		render(game);
+		move(game, 'd', 5, 'd', 4);
+		render(game);
+		move(game, 'c', 7, 'c', 5);
+		render(game);
+		move(game, 'd', 4, 'c', 5);
+		render(game);
+		move(game, 'd', 5, 'e', 4);
+		render(game);
 	}
 
 	private static void render(Game game) {

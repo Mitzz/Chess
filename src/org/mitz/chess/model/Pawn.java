@@ -18,11 +18,11 @@ public class Pawn extends Piece {
 		boolean valid = false;
 		Tile selfTile = this.getTile();
 		if(this.getColor() == Color.WHITE) {
-			if((to.getRank() == selfTile.getRank() + 1) && to.getFile() == selfTile.getFile()) {
+			if((to.getRank() == selfTile.getRank() + 1) && to.getFile() == selfTile.getFile() && to.isEmpty()) {
 				message = "1 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
 				valid = true;
 			}
-			if(selfTile.getRank() == 2 && (to.getRank() == selfTile.getRank() + 2) && to.getFile() == selfTile.getFile()) {
+			if(selfTile.getRank() == 2 && (to.getRank() == selfTile.getRank() + 2) && to.getFile() == selfTile.getFile() && to.isEmpty()) {
 				message = "2 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
 				valid = true;
 			}
@@ -36,11 +36,11 @@ public class Pawn extends Piece {
 			}
 		}
 		if(this.getColor() == Color.BLACK) {
-			if((to.getRank() == selfTile.getRank() - 1) && to.getFile() == selfTile.getFile()) {
+			if((to.getRank() == selfTile.getRank() - 1) && to.getFile() == selfTile.getFile() && to.isEmpty()) {
 				message = "1 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
 				valid = true;
 			}
-			if(selfTile.getRank() == 2 && (to.getRank() == selfTile.getRank() - 2) && to.getFile() == selfTile.getFile()) {
+			if(selfTile.getRank() == 7 && (to.getRank() == selfTile.getRank() - 2) && to.getFile() == selfTile.getFile() && to.isEmpty()) {
 				message = "2 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
 				valid = true;
 			}

@@ -53,8 +53,10 @@ public class Tile {
 
 	public boolean moveTo(Tile to) {
 		if(validateMove(to)) {
+			if(!to.isEmpty()) System.out.println("Piece Killed");
 			to.setPiece(this.getPiece());
 			removePiece();
+			
 			return true;
 		}
 		return false;
