@@ -59,23 +59,30 @@ public class Tile {
 
 	private boolean validateMove(Tile to) {
 		
-		String error = "Movement Successful from (" + this.getFile() + "," + this.getRank() + ") to (" + to.getFile() + "," + to.getRank() + ")";
+		String error = "Movement Successful from " + this.getPosition() + " to " + to.getPosition();
 		
 		boolean valid = true;
+		
+		//Case I - Piece of Same Color
 		if(!to.isEmpty() && this.getPiece().getColor() == to.getPiece().getColor()) {
-			error = "Movement Failed from (" + this.getFile() + "," + this.getRank() + ") to (" + to.getFile() + "," + to.getRank() + ") due to destination piece has same color piece as that of source piece";
+			error = "Movement Failed from " + this.getPosition() + " to " + to.getPosition() + " due to destination piece has same color piece as that of source piece";
 			valid = false;
 		}
-		
+		//Case II - Piece Movement Valid
+		this.getPiece().validateMove(to);
 		System.out.println(error);
 		return valid;
 	}
 	
-	private char getFile() {
+	public char getFile() {
 		return (char)(97 + this.file);
 	}
 	
-	private int getRank() {
+	public int getRank() {
 		return 1 + this.rank;
+	}
+	
+	public String getPosition() {
+		return "(" + getFile() + "," + getRank() + ")";
 	}
 }

@@ -16,17 +16,24 @@ public class Piece {
 
 	}
 
-	public void validateMove(Tile to) {
+	public boolean validateMove(Tile to) {
 
+		return false;
 	}
 
 	public void remove() {
+	}
+	
+	public Tile getTile() {
+		return tile;
 	}
 
 	public Color getColor() {
 		return this.color;
 	}
 
-	
+	public String getPieceDescription(String pieceName) {
+		return ((color == Color.WHITE) ? "White" : "Black") + " " + pieceName;
+	}
 }
 
