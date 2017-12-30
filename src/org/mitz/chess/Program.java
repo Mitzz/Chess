@@ -134,9 +134,11 @@ public class Program {
 		move(game, 'a', 2, 'b', 1);
 		render(game);
 
-//		move(game, 'h', 3, 'f', 5);/Movement Failed from (h,3) to (f,5) due to destination piece has same color piece as that of source piece
+//		move(game, 'h', 3, 'f', 5);//Movement Failed from (h,3) to (f,5) due to destination piece has same color piece as that of source piece
 //		render(game);
 
+		move(game, 'h', 3, 'g', 5);//Movement Failed from (h,3) to (f,5) due to destination piece has same color piece as that of source piece
+		render(game);
 		
 	}
 	
