@@ -29,9 +29,9 @@ public class Rook extends Piece{
 			valid = true;
 		}
 		if(valid)
-			System.out.println("Pawn.validateMove(message): " + message);
+			System.out.println("Rook.validateMove(message): " + message);
 		else
-			System.err.println("Pawn.validateMove(message): " + message);
+			System.err.println("Rook.validateMove(message): " + message);
 		return valid;
 	}
 
