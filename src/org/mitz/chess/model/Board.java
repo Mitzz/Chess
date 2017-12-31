@@ -2,6 +2,9 @@ package org.mitz.chess.model;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,11 +70,32 @@ public class Board {
 		
 		if(isPawnPromotion(isWhiteTurn, to)) {
 			System.out.println("Finally a promotion");
+			setPawnForPromotion(to);
 		}
 		
 		return valid;
 	}
 	
+	private void setPawnForPromotion(Tile to) {
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		try {
+			String menu = "1 -> Queen, 2 -> Rook, 3 -> Knight, 4 -> Bishop";
+			System.out.println(menu);
+			String s = br.readLine();
+			int i = Integer.parseInt(s);
+			Piece piece = null;
+			if(to.isFirstRank())
+				piece = Piece.getInstance(i, Color.BLACK, to);
+			else
+				piece = Piece.getInstance(i, Color.WHITE, to);
+			to.setPiece(piece);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
 	private boolean isPawnPromotion(boolean isWhiteTurn, Tile tile) {
 		if(isWhiteTurn) 
 			return (tile.isLastRank() && tile.isPawn());

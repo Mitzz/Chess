@@ -43,18 +43,10 @@ public class Program {
 		render(game);
 		move(game, 'h', 4, 'f', 3);
 		render(game);
-//		move(game, 'f', 4, 'h', 3);//Piece Movement Blocked due to check
-//		render(game);
-//		move(game, 'g', 2, 'f', 3);//Movement Successful - Piece Killing leading to non-check
-//		render(game);
 		move(game, 'e', 1, 'e', 2);
 		render(game);
 		move(game, 'e', 4, 'e', 3);
 		render(game);
-//		move(game, 'e', 2, 'd', 2);//Piece Movement Blocked due to check
-//		render(game);
-//		move(game, 'e', 2, 'd', 3);//Piece Movement Blocked due to check
-//		render(game);
 		move(game, 'd', 1, 'd', 6);
 		render(game);
 		move(game, 'c', 8, 'e', 6);
@@ -63,25 +55,32 @@ public class Program {
 		render(game);
 		move(game, 'e', 3, 'e', 2);
 		render(game);
-//		move(game, 'd', 6, 'e', 6);//Piece Movement Blocked due to check
-//		render(game);
 		move(game, 'c', 5, 'c', 6);
 		render(game);
 		move(game, 'e', 6, 'f', 5);
 		render(game);
-//		move(game, 'c', 2, 'c', 3);//Piece Movement Blocked due to check
-//		render(game);
 		move(game, 'd', 3, 'c', 3);
 		render(game);
 		move(game, 'd', 8, 'a', 5);
 		render(game);
-//		move(game, 'b', 1, 'a', 3);//Piece Movement Blocked due to check
-//		render(game);
 		move(game, 'b', 2, 'b', 4);
 		render(game);
+		
+		//================
 		move(game, 'e', 2, 'e', 1);
 		render(game);
-
+//		move(game, 'a', 2, 'a', 4);//Piece Movement Blocked due to check. Depends on Pawn Promotion
+//		render(game);
+		move(game, 'c', 6, 'b', 7);//Allowed Piece - Rook or Knight
+		render(game);
+		move(game, 'b', 8, 'a', 6);
+		render(game);
+		move(game, 'b', 7, 'a', 8);
+		render(game);
+//		move(game, 'e', 7, 'e', 6);//Piece Movement Blocked due to check. Depends on Pawn Promotion
+//		render(game);
+		move(game, 'a', 5, 'd', 8);
+		render(game);
 	}
 
 	private static void casesOfCheckTest() {

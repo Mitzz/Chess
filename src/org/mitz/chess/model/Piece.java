@@ -52,5 +52,27 @@ public class Piece {
 	public boolean isPawn() {
 		return false;
 	}
+
+	public static Piece getInstance(int i, Color color, Tile tile) {
+		//1 -> Queen, 2 -> Rook, 3 -> Knight, 4 -> Bishop
+		Piece piece = null;
+		switch (i) {
+		case 1:
+			piece = new Queen(color, tile);
+			break;
+		case 2:
+			piece = new Rook(color, tile);
+			break;
+		case 3:
+			piece = new Knight(color, tile);
+			break;
+		case 4:
+			piece = new Bishop(color, tile);
+			break;
+		default:
+			break;
+		}
+		return piece;
+	}
 }
 
