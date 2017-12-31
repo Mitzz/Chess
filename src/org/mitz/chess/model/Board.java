@@ -45,9 +45,40 @@ public class Board {
 		}
 		boolean valid = from.moveTo(to);
 		if(valid) successfulStep++;
+		Tile kingTile = null;
+		if(isWhiteTurn) {
+			kingTile = getBlackKingTile();
+		} else {
+			kingTile = getWhiteKingTile();
+		}
+		System.out.println("King Tile Present at: " + kingTile.getPosition());
 		return valid;
 	}
 	
+	private Tile getBlackKingTile() {
+		for(int rank = 0; rank < 8; rank++) {
+			for(int file = 0; file < 8; file++) {
+				Tile tile = tiles[rank][file];
+				if(tile.isEmpty()) continue;
+				if(tile.getPiece().getColor() == Color.WHITE) continue;
+				if(tile.isKingPiece()) return tile;
+			}
+		}
+		return null;
+	}
+	
+	private Tile getWhiteKingTile() {
+		for(int rank = 0; rank < 8; rank++) {
+			for(int file = 0; file < 8; file++) {
+				Tile tile = tiles[rank][file];
+				if(tile.isEmpty()) continue;
+				if(tile.getPiece().getColor() == Color.BLACK) continue;
+				if(tile.isKingPiece()) return tile;
+			}
+		}
+		return null;
+	}
+
 	private boolean isPathSidewayEmpty(Tile from, Tile to) {
 		int xOffset = new Integer(to.getRank()).compareTo(new Integer(from.getRank()));
 		int yOffset = new Integer(to.getFileIndex()).compareTo(new Integer(from.getFileIndex()));

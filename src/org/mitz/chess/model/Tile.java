@@ -148,6 +148,10 @@ public class Tile {
 			return false;
 		return true;
 	}
+
+	public boolean isKingPiece() {
+		return getPiece().isKingPiece();
+	}
 	
 	
 }

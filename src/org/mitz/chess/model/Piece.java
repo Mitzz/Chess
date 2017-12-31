@@ -44,5 +44,9 @@ public class Piece {
 	public void setTile(Tile tile) {
 		this.tile = tile;
 	}
+
+	public boolean isKingPiece() {
+		return false;
+	}
 }
 
