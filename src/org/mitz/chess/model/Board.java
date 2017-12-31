@@ -45,16 +45,87 @@ public class Board {
 		}
 		boolean valid = from.moveTo(to);
 		if(valid) successfulStep++;
+		boolean isCheck = isCheck(isWhiteTurn);
+		return valid;
+	}
+	
+	private boolean isCheck(boolean isWhiteTurn) {
 		Tile kingTile = null;
+		boolean check = false;
 		if(isWhiteTurn) {
 			kingTile = getBlackKingTile();
 		} else {
 			kingTile = getWhiteKingTile();
 		}
 		System.out.println("King Tile Present at: " + kingTile.getPosition());
-		return valid;
+		Tile nextTile = null;
+		nextTile = getNextNonEmptyTile(kingTile, 1, 0);
+		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
+			System.out.println("Check Yes due to tile at " + nextTile.getPosition());
+			return true;
+		}
+		nextTile = getNextNonEmptyTile(kingTile, 1, 1);
+		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
+			System.out.println("Check Yes due to tile at " + nextTile.getPosition());
+			return true;
+		}
+		nextTile = getNextNonEmptyTile(kingTile, 0, 1);
+		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
+			System.out.println("Check Yes due to tile at " + nextTile.getPosition());
+			return true;
+		}
+		nextTile = getNextNonEmptyTile(kingTile, -1, 1);
+		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
+			System.out.println("Check Yes due to tile at " + nextTile.getPosition());
+			return true;
+		}
+		nextTile = getNextNonEmptyTile(kingTile, -1, 0);
+		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
+			System.out.println("Check Yes due to tile at " + nextTile.getPosition());
+			return true;
+		}
+		nextTile = getNextNonEmptyTile(kingTile, -1, -1);
+		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
+			System.out.println("Check Yes due to tile at " + nextTile.getPosition());
+			return true;
+		}
+		nextTile = getNextNonEmptyTile(kingTile, 0, -1);
+		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
+			System.out.println("Check Yes due to tile at " + nextTile.getPosition());
+			return true;
+		}
+		nextTile = getNextNonEmptyTile(kingTile, 1, -1);
+		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
+			System.out.println("Check Yes due to tile at " + nextTile.getPosition());
+			return true;
+		}
+		System.out.println("No Check");
+		return false;
+	}
+
+	private boolean isSameOpponentPiece(Tile v, Tile w) {
+		return (!v.isEmpty() && !w.isEmpty() && v.getPiece().getColor() == w.getPiece().getColor());
+	}
+
+	private Tile getNextNonEmptyTile(Tile from, int rankOffset, int fileOffset) {
+
+		int fromRank = from.getRankIndex();
+		int fromFile = from.getFileIndex();
+		fromRank += rankOffset;
+		fromFile += fileOffset;
+		while(isValidTileAt(fromRank, fromFile)) {
+			if(!tiles[fromRank][fromFile].isEmpty()) 
+				return tiles[fromRank][fromFile];
+			fromRank += rankOffset;
+			fromFile += fileOffset;
+		}
+		return null;
 	}
 	
+	private boolean isValidTileAt(int fromRank, int fromFile) {
+		return (fromRank <= 7 && fromRank >= 0) && (fromFile <= 7 && fromFile >= 0);
+	}
+
 	private Tile getBlackKingTile() {
 		for(int rank = 0; rank < 8; rank++) {
 			for(int file = 0; file < 8; file++) {
@@ -78,6 +149,8 @@ public class Board {
 		}
 		return null;
 	}
+	
+	
 
 	private boolean isPathSidewayEmpty(Tile from, Tile to) {
 		int xOffset = new Integer(to.getRank()).compareTo(new Integer(from.getRank()));
