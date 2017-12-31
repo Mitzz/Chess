@@ -31,7 +31,7 @@ public class King extends Piece{
 		if(valid)
 			System.out.println("King.validateMove(message): " + message);
 		else
-			System.err.println("King.validateMove(message): " + message);
+			System.out.println("King.validateMove(message): " + message);
 		return valid;
 	}
 

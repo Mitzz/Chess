@@ -69,7 +69,7 @@ public class Knight extends Piece {
 		if(valid)
 			System.out.println("Knight.validateMove(message): " + message);
 		else
-			System.err.println("Knight.validateMove(message): " + message);
+			System.out.println("Knight.validateMove(message): " + message);
 		return valid;
 	}
 }

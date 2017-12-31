@@ -108,7 +108,7 @@ public class Tile {
 		if(valid)
 			System.out.println(error);
 		else 
-			System.err.println(error);
+			System.out.println(error);
 		return valid;
 	}
 	

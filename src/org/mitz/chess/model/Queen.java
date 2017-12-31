@@ -34,7 +34,7 @@ public class Queen extends Piece {
 		if(valid)
 			System.out.println("Queen.validateMove(message): " + message);
 		else
-			System.err.println("Queen.validateMove(message): " + message);
+			System.out.println("Queen.validateMove(message): " + message);
 		return valid;
 	}
 

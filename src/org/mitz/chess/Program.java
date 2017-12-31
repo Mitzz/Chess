@@ -5,10 +5,85 @@ import org.mitz.chess.model.Game;
 public class Program {
 
 	public static void main(String[] args) {
-//		kingMovementDueToCheckTest();
-		pawnPromotionTest();
+		checkmateTest();
 	}
 	
+	private static void checkmateTest() {
+		Game game = new Game();
+		move(game, 2, 'd', 3, 'd');
+		render(game);
+		move(game, 7, 'd', 6, 'd');
+		render(game);
+		move(game, 2, 'e', 4, 'e');
+		render(game);
+		move(game, 'd', 6, 'd', 5);
+		render(game);
+		move(game, 'd', 3, 'd', 4);
+		render(game);
+		move(game, 'c', 7, 'c', 5);
+		render(game);
+		move(game, 'd', 4, 'c', 5);
+		render(game);
+		move(game, 'd', 5, 'e', 4);
+		render(game);
+		move(game, 'g', 1, 'f', 3);
+		render(game);
+		move(game, 'g', 8, 'h', 6);
+		render(game);
+		move(game, 'f', 3, 'd', 4);
+		render(game);
+		move(game, 'h', 6, 'f', 5);
+		render(game);
+		move(game, 'd', 4, 'e', 6);
+		render(game);
+		move(game, 'f', 5, 'h', 4);
+		render(game);
+		move(game, 'e', 6, 'f', 4);
+		render(game);
+		move(game, 'h', 4, 'f', 3);
+		render(game);
+		move(game, 'e', 1, 'e', 2);
+		render(game);
+		move(game, 'e', 4, 'e', 3);
+		render(game);
+		move(game, 'd', 1, 'd', 6);
+		render(game);
+		move(game, 'c', 8, 'e', 6);
+		render(game);
+		move(game, 'e', 2, 'd', 3);
+		render(game);
+		move(game, 'e', 3, 'e', 2);
+		render(game);
+		move(game, 'c', 5, 'c', 6);
+		render(game);
+		move(game, 'e', 6, 'f', 5);
+		render(game);
+		move(game, 'd', 3, 'c', 3);
+		render(game);
+		move(game, 'd', 8, 'a', 5);
+		render(game);
+		move(game, 'b', 2, 'b', 4);
+		render(game);
+		
+		//================
+		move(game, 'e', 2, 'e', 1);
+		render(game);
+//		move(game, 'a', 2, 'a', 4);//Piece Movement Blocked due to check. Depends on Pawn Promotion
+//		render(game);
+		move(game, 'c', 6, 'b', 7);//Allowed Piece - Rook or Knight
+		render(game);
+		move(game, 'b', 8, 'a', 6);
+		render(game);
+		move(game, 'b', 7, 'a', 8);
+		render(game);
+//		move(game, 'e', 7, 'e', 6);//Piece Movement Blocked due to check. Depends on Pawn Promotion
+//		render(game);
+		move(game, 'a', 5, 'a', 4);
+		render(game);
+		move(game, 'a', 8, 'c', 7);
+		render(game);
+	}
+
 	private static void pawnPromotionTest() {
 		Game game = new Game();
 		move(game, 2, 'd', 3, 'd');

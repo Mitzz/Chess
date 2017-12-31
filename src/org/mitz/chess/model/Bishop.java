@@ -30,7 +30,7 @@ public class Bishop extends Piece{
 		if(valid)
 			System.out.println("Pawn.validateMove(message): " + message);
 		else
-			System.err.println("Pawn.validateMove(message): " + message);
+			System.out.println("Pawn.validateMove(message): " + message);
 		return valid;
 	}
 	

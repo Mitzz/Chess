@@ -31,7 +31,7 @@ public class Rook extends Piece{
 		if(valid)
 			System.out.println("Rook.validateMove(message): " + message);
 		else
-			System.err.println("Rook.validateMove(message): " + message);
+			System.out.println("Rook.validateMove(message): " + message);
 		return valid;
 	}
 
