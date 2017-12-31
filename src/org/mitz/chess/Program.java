@@ -113,31 +113,31 @@ public class Program {
 		render(game);
 		
 		//=================
-		move(game, 'e', 1, 'e', 2);
+		move(game, 'd', 1, 'h', 5);
 		render(game);
-		move(game, 'e', 8, 'e', 7);
-		render(game);
-		
-		move(game, 'e', 2, 'h', 5);
-		render(game);
-		move(game, 'e', 7, 'a', 2);
+		move(game, 'd', 8, 'h', 4);
 		render(game);
 		
-//		move(game, 'h', 5, 'e', 5);//Sideway Path not empty
+		move(game, 'h', 5, 'g', 5);
+		render(game);
+		move(game, 'h', 4, 'h', 5);
+		render(game);
+		
+//		move(game, 'g', 5, 'g', 2);//Movement Failed from (g,5) to (g,2) due to destination piece has same color piece as that of source piece
 //		render(game);
 
-//		move(game, 'h', 5, 'f', 5);//Movement Failed from (h,5) to (f,5) due to destination piece has same color piece as that of source piece
+//		move(game, 'g', 5, 'g', 1);//Sideway Path not empty
 //		render(game);
 		
-		move(game, 'h', 5, 'h', 3);
+		move(game, 'g', 5, 'd', 2);
 		render(game);
-		move(game, 'a', 2, 'b', 1);
-		render(game);
-
-//		move(game, 'h', 3, 'f', 5);//Movement Failed from (h,3) to (f,5) due to destination piece has same color piece as that of source piece
+//		move(game, 'h', 5, 'h', 3);//Movement Failed from (h,5) to (h,3) due to destination piece has same color piece as that of source piece
 //		render(game);
 
-		move(game, 'h', 3, 'g', 5);//Movement Failed from (h,3) to (f,5) due to destination piece has same color piece as that of source piece
+		move(game, 'h', 5, 'f', 5);
+		render(game);
+
+		move(game, 'd', 2, 'a', 5);
 		render(game);
 		
 	}
