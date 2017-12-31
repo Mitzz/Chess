@@ -125,7 +125,6 @@ public class Program {
 		
 //		move(game, 'g', 5, 'g', 2);//Movement Failed from (g,5) to (g,2) due to destination piece has same color piece as that of source piece
 //		render(game);
-
 //		move(game, 'g', 5, 'g', 1);//Sideway Path not empty
 //		render(game);
 		
@@ -136,9 +135,20 @@ public class Program {
 
 		move(game, 'h', 5, 'f', 5);
 		render(game);
-
 		move(game, 'd', 2, 'a', 5);
 		render(game);
+		
+//		move(game, 'f', 5, 'e', 7);//Movement Failed from (f,5) to (e,7) due to source piece movement invalid
+//		render(game);
+
+		move(game, 'f', 5, 'f', 7);
+		render(game);
+
+//		move(game, 'a', 5, 'h', 5);//Sideway Path not empty
+//		render(game);
+
+//		move(game, 'a', 5, 'd', 6);//Movement Failed from (a,5) to (d,6) due to source piece movement invalid
+//		render(game);
 		
 	}
 	
