@@ -1,6 +1,9 @@
 package org.mitz.chess.model;
 
 import java.awt.Color;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Board {
 
@@ -99,6 +102,29 @@ public class Board {
 			System.out.println("Check Yes due to tile at " + nextTile.getPosition());
 			return true;
 		}
+		
+		List<Point> p = new ArrayList<>();
+		p.add(new Point(kingTile.getRankIndex() + 2, kingTile.getFileIndex() + 1));
+		p.add(new Point(kingTile.getRankIndex() + 1, kingTile.getFileIndex() + 2));
+		p.add(new Point(kingTile.getRankIndex() - 1, kingTile.getFileIndex() + 2));
+		p.add(new Point(kingTile.getRankIndex() - 2, kingTile.getFileIndex() + 1));
+		
+		p.add(new Point(kingTile.getRankIndex() + 2, kingTile.getFileIndex() - 1));
+		p.add(new Point(kingTile.getRankIndex() + 1, kingTile.getFileIndex() - 2));
+		p.add(new Point(kingTile.getRankIndex() - 1, kingTile.getFileIndex() - 2));
+		p.add(new Point(kingTile.getRankIndex() - 2, kingTile.getFileIndex() - 1));
+		
+		for(Point pt: p) {
+			
+			if(isValidTileAt(pt.x, pt.y)) {
+				nextTile = tiles[pt.x][pt.y];
+				if(!isSameOpponentPiece(kingTile, nextTile) && !nextTile.isEmpty() && nextTile.getPiece().validateMove(kingTile)) {
+					System.out.println("Check Yes due to tile at " + nextTile.getPosition());
+					return true;
+				}
+			}
+		}
+		
 		System.out.println("No Check");
 		return false;
 	}

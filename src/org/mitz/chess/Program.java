@@ -98,7 +98,6 @@ public class Program {
 		render(game);
 		move(game, 'f', 5, 'f', 7);
 		render(game);
-		//==================================
 		move(game, 'e', 1, 'f', 2);
 		render(game);
 		move(game, 'e', 8, 'd', 7);
@@ -113,14 +112,54 @@ public class Program {
 		render(game);
 		move(game, 'd', 2, 'd', 1);
 		render(game);
-//		move(game, 'e', 7, 'f', 7);//Movement Failed from (e,7) to (f,7) due to destination piece has same color piece as that of source piece
-//		render(game);
-//		move(game, 'e', 7, 'c', 7);//Movement Failed from (e,7) to (c,7) due to source piece movement invalid
-//		render(game);
-//		move(game, 'e', 7, 'g', 5);//Movement Failed from (e,7) to (g,5) due to source piece movement invalid
-//		render(game);
+
+		//====================
+		move(game, 'f', 7, 'f', 3);
+		render(game);
+		move(game, 'd', 1, 'd', 2);
+		render(game);
+		move(game, 'e', 4, 'e', 3);
+		render(game);
 		
+		move(game, 'b', 1, 'c', 3);
+		render(game);
+		move(game, 'e', 7, 'd', 6);
+		render(game);
+		move(game, 'c', 3, 'e', 4);
+		render(game);
+		move(game, 'c', 5, 'b', 6);
+		render(game);
+		move(game, 'd', 2, 'd', 3);
+		render(game);
+		move(game, 'f', 3, 'd', 1);
+		render(game);
+		move(game, 'e', 5, 'e', 6);
+		render(game);
+		move(game, 'b', 8, 'c', 6);
+		render(game);
+		move(game, 'c', 1, 'd', 2);
+		render(game);
+		move(game, 'c', 6, 'e', 5);
+		render(game);
+		move(game, 'e', 4, 'c', 5);
+		render(game);
+		move(game, 'd', 6, 'd', 5);
+		render(game);
+		move(game, 'c', 5, 'd', 7);
+		render(game);
+		move(game, 'b', 6, 'c', 5);
+		render(game);
+		move(game, 'd', 7, 'f', 6);
+		render(game);
+		
+		move(game, 'e', 5, 'g', 4);
+		render(game);
+		move(game, 'e', 6, 'e', 7);
+		render(game);
+		move(game, 'g', 4, 'f', 2);
+		render(game);
 	}
+	
 
 	private static void randomMovementTest() {
 		Game game = new Game();
