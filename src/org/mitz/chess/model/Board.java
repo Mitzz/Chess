@@ -28,6 +28,19 @@ public class Board {
 			System.err.println("Both Source and Target Tile are same");
 			return false;
 		}
+		boolean isCheck = isCheck(!isWhiteTurn);
+		if(isCheck) {
+			Tile kingTile = null;
+			if(isWhiteTurn) {
+				kingTile = getWhiteKingTile();
+			} else {
+				kingTile = getBlackKingTile();
+			}
+			if(!from.equals(kingTile)) {
+				System.err.println("King Movement necessary due to check");
+				return false;
+			}
+		}
 		if(isMovementDiagonal(from, to)) {
 			System.out.println("Movement Diagonal");
 			if(!isPathDiagonallyEmpty(from, to)) {
@@ -48,7 +61,7 @@ public class Board {
 		}
 		boolean valid = from.moveTo(to);
 		if(valid) successfulStep++;
-		boolean isCheck = isCheck(isWhiteTurn);
+		
 		return valid;
 	}
 	
@@ -153,6 +166,7 @@ public class Board {
 	}
 
 	private Tile getBlackKingTile() {
+		
 		for(int rank = 0; rank < 8; rank++) {
 			for(int file = 0; file < 8; file++) {
 				Tile tile = tiles[rank][file];
