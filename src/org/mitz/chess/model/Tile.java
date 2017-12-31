@@ -51,7 +51,7 @@ public class Tile {
 		return piece == null;
 	}
 
-	public Piece moveTo(Tile to) {
+	public Piece movePieceTo(Tile to) {
 //		if(validateMove(to)) {
 		Piece piece = null;
 		if(!to.isEmpty()) {
@@ -64,21 +64,17 @@ public class Tile {
 		return piece;
 	}
 	
-	public Piece moveTo(Tile to, Piece piece) {
-//		if(validateMove(to)) {
-//		Piece piece = null;
+	public Tile movePieceTo(Tile to, Piece piece) {
 		if(!to.isEmpty()) {
-//			piece = to.getPiece();
-			throw new IllegalArgumentException("to sud be empty");
-//			System.out.println("Piece Killed");
+			throw new IllegalArgumentException("Must be empty");
 		}
 		to.setPiece(this.getPiece());
 		setPiece(piece);
-		
-		return piece;
+		return this;
 	}
 	
 	private void removePiece() {
+		//Removal of Tile
 		this.piece = null;
 	}
 
@@ -167,6 +163,18 @@ public class Tile {
 
 	public boolean isKingPiece() {
 		return getPiece().isKingPiece();
+	}
+
+	public boolean isPawn() {
+		return !isEmpty() && piece.isPawn(); 
+	}
+
+	public boolean isLastRank() {
+		return getRank() == 8;
+	}
+
+	public boolean isFirstRank() {
+		return getRank() == 1;
 	}
 	
 	

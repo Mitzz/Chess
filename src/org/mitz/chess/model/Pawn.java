@@ -65,4 +65,9 @@ public class Pawn extends Piece {
 		
 		return (Color.white == this.getColor() ? "\u2659" : "\u265F");
 	}
+	
+	public boolean isPawn() {
+		return true;
+	}
+
 }

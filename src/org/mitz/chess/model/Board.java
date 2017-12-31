@@ -48,44 +48,37 @@ public class Board {
 			}
 		}
 		Piece killedPiece = null;
-		boolean beforeMoveAlreadyCheck = isCheck(!isWhiteTurn);
+//		boolean beforeMoveAlreadyCheck = isCheck(!isWhiteTurn);
 		boolean valid = from.validateMove(to);
 		if(!valid) return false;
 		if(valid) {
-			killedPiece = from.moveTo(to);
+			killedPiece = from.movePieceTo(to);
 			successfulStep++;
 		}
 		
 		//Check of same color
-//		System.out.println("isWhiteTurn: " + isWhiteTurn); 
 		boolean afterMoveStillCheck = isCheck(!isWhiteTurn);
-		System.out.println("isCheck: " + afterMoveStillCheck);
 		if(afterMoveStillCheck) {
-			to.moveTo(from, killedPiece);
+			to.movePieceTo(from, killedPiece);
 			System.err.println("Piece Movement Blocked due to check");
 			successfulStep--;
 			return false;
 		}
 		
-//		//Check of opponent
-//		afterMoveStillCheck = isCheck(!isWhiteTurn);
-//		if(afterMoveStillCheck) {
-//			Tile kingTile = null;
-//			if(isWhiteTurn) {
-//				kingTile = getWhiteKingTile();
-//			} else {
-//				kingTile = getBlackKingTile();
-//			}
-//			if(!from.equals(kingTile)) {
-//				System.err.println("King Movement necessary due to check");
-//				successfulStep--;
-//				return false;
-//			}
-//		}
+		if(isPawnPromotion(isWhiteTurn, to)) {
+			System.out.println("Finally a promotion");
+		}
 		
 		return valid;
 	}
 	
+	private boolean isPawnPromotion(boolean isWhiteTurn, Tile tile) {
+		if(isWhiteTurn) 
+			return (tile.isLastRank() && tile.isPawn());
+		else 
+			return (tile.isFirstRank() && tile.isPawn());
+	}
+
 	private boolean isCheck(boolean isWhiteTurn) {
 		Tile kingTile = null;
 		boolean check = false;

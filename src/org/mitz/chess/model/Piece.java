@@ -48,5 +48,9 @@ public class Piece {
 	public boolean isKingPiece() {
 		return false;
 	}
+
+	public boolean isPawn() {
+		return false;
+	}
 }
 
