@@ -51,15 +51,31 @@ public class Tile {
 		return piece == null;
 	}
 
-	public boolean moveTo(Tile to) {
-		if(validateMove(to)) {
-			if(!to.isEmpty()) System.out.println("Piece Killed");
-			to.setPiece(this.getPiece());
-			removePiece();
-			
-			return true;
+	public Piece moveTo(Tile to) {
+//		if(validateMove(to)) {
+		Piece piece = null;
+		if(!to.isEmpty()) {
+			piece = to.getPiece();
+			System.out.println("Piece Killed");
 		}
-		return false;
+		to.setPiece(this.getPiece());
+		removePiece();
+		
+		return piece;
+	}
+	
+	public Piece moveTo(Tile to, Piece piece) {
+//		if(validateMove(to)) {
+//		Piece piece = null;
+		if(!to.isEmpty()) {
+//			piece = to.getPiece();
+			throw new IllegalArgumentException("to sud be empty");
+//			System.out.println("Piece Killed");
+		}
+		to.setPiece(this.getPiece());
+		setPiece(piece);
+		
+		return piece;
 	}
 	
 	private void removePiece() {
@@ -68,11 +84,11 @@ public class Tile {
 
 	public Tile setPiece(Piece piece) {
 		this.piece = piece;
-		this.piece.setTile(this);
+		if(piece != null) this.piece.setTile(this);
 		return this;
 	}
 
-	private boolean validateMove(Tile to) {
+	public boolean validateMove(Tile to) {
 		
 		String error = "Movement Successful from " + this.getPosition() + " to " + to.getPosition();
 		

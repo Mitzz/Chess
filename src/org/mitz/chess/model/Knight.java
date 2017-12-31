@@ -67,9 +67,9 @@ public class Knight extends Piece {
 //			}
 //		}
 		if(valid)
-			System.out.println("Pawn.validateMove(message): " + message);
+			System.out.println("Knight.validateMove(message): " + message);
 		else
-			System.err.println("Pawn.validateMove(message): " + message);
+			System.err.println("Knight.validateMove(message): " + message);
 		return valid;
 	}
 }

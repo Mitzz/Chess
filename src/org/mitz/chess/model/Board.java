@@ -22,24 +22,16 @@ public class Board {
 		Tile to = tiles[toRank][toFile];
 		System.out.println("------------Movement Step " + successfulStep + " Initiated from " + from.getPosition() + " to " + to.getPosition() + "for " + (isWhiteTurn ? "white" : "black") + "----------");
 		if(!validateSourceTargetTile(to, from)) {
+			System.err.println("Either Source and Target Tile not valid");
 			return false;
 		}
 		if(to.equals(from)) {
 			System.err.println("Both Source and Target Tile are same");
 			return false;
 		}
-		boolean isCheck = isCheck(!isWhiteTurn);
-		if(isCheck) {
-			Tile kingTile = null;
-			if(isWhiteTurn) {
-				kingTile = getWhiteKingTile();
-			} else {
-				kingTile = getBlackKingTile();
-			}
-			if(!from.equals(kingTile)) {
-				System.err.println("King Movement necessary due to check");
-				return false;
-			}
+		if(!from.isEmpty() && !isMoveByTurn(isWhiteTurn, from)) {
+			System.err.println("Move Invalid due wrong player played");
+			return false;
 		}
 		if(isMovementDiagonal(from, to)) {
 			System.out.println("Movement Diagonal");
@@ -55,12 +47,41 @@ public class Board {
 				return false;
 			}
 		}
-		if(!from.isEmpty() && !isMoveByTurn(isWhiteTurn, from)) {
-			System.err.println("Move Invalid due wrong player played");
+		Piece killedPiece = null;
+		boolean beforeMoveAlreadyCheck = isCheck(!isWhiteTurn);
+		boolean valid = from.validateMove(to);
+		if(!valid) return false;
+		if(valid) {
+			killedPiece = from.moveTo(to);
+			successfulStep++;
+		}
+		
+		//Check of same color
+//		System.out.println("isWhiteTurn: " + isWhiteTurn); 
+		boolean afterMoveStillCheck = isCheck(!isWhiteTurn);
+		System.out.println("isCheck: " + afterMoveStillCheck);
+		if(afterMoveStillCheck) {
+			to.moveTo(from, killedPiece);
+			System.err.println("Piece Movement Blocked due to check");
+			successfulStep--;
 			return false;
 		}
-		boolean valid = from.moveTo(to);
-		if(valid) successfulStep++;
+		
+//		//Check of opponent
+//		afterMoveStillCheck = isCheck(!isWhiteTurn);
+//		if(afterMoveStillCheck) {
+//			Tile kingTile = null;
+//			if(isWhiteTurn) {
+//				kingTile = getWhiteKingTile();
+//			} else {
+//				kingTile = getBlackKingTile();
+//			}
+//			if(!from.equals(kingTile)) {
+//				System.err.println("King Movement necessary due to check");
+//				successfulStep--;
+//				return false;
+//			}
+//		}
 		
 		return valid;
 	}
