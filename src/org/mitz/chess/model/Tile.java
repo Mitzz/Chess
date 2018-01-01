@@ -177,5 +177,11 @@ public class Tile {
 		return getRank() == 1;
 	}
 	
+	public boolean isMovementDiagonal(Tile to) {
+		return (Math.abs(this.getRank() - to.getRank()) == Math.abs(this.getFileIndex() - to.getFileIndex()));
+	}
 	
+	public boolean isMovementSideways(Tile to) {
+		return (this.getRank() - to.getRank() == 0 || this.getFileIndex() - to.getFileIndex() == 0);
+	}
 }

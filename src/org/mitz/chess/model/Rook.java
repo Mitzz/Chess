@@ -22,6 +22,13 @@ public class Rook extends Piece{
 		String message = "Piece '" + PIECE_DESC + "' movement invalid from " + this.getTile().getPosition() + " to " + to.getPosition();
 		boolean valid = false;
 		Tile selfTile = this.getTile();
+		
+		if(getTile().isMovementDiagonal(to)) {
+			
+		} else {
+			
+		}
+		
 		if(((Math.abs(selfTile.getRank() - to.getRank()) > 0 && selfTile.getFileIndex() == to.getFileIndex()) ||
 				(0 < Math.abs(selfTile.getFileIndex() - to.getFileIndex()) && selfTile.getRank() == to.getRank())) && 
 				(to.isEmpty() || (!to.isEmpty() && getColor() != to.getPiece().getColor()))) {
