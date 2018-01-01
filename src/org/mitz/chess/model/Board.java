@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Board {
@@ -117,9 +118,9 @@ public class Board {
 	
 	private boolean isMovePossible(int r, int f, Tile tile) {
 		
-		if(!isValidTileAt(r, f)) {
+		if(!isValidTileAt(r, f)) 
 			return false;
-		}
+		
 		
 		Color color = tile.getPiece().getColor();
 		Tile tileAt = getTileAt(r, f);
@@ -127,7 +128,7 @@ public class Board {
 		boolean isMovePossible = true;
 		if(tileAt.isEmpty() || (!tileAt.isEmpty() && tileAt.getPiece().getColor() != color)) {
 			System.out.println("Inside");
-			Piece kp = tile.movePieceTo(tileAt);
+			Piece removedPiece = tile.movePieceTo(tileAt);
 			
 			//Valid Move
 			List<Piece> allPieces = (color == Color.BLACK ? getAllWhitePieces() : getAllBlackPieces());
@@ -137,10 +138,13 @@ public class Board {
 					break;
 				}
 			}
-			if(isCheck(color == Color.WHITE)) {
+//			if(isCheck(color == Color.WHITE)) {
+//				isMovePossible = false;
+//			}
+			if(color == Color.WHITE ? isBlackKingCheck() : isWhiteKingCheck()) {
 				isMovePossible = false;
 			}
-			tileAt.movePieceTo(tile, kp);
+			tileAt.movePieceTo(tile, removedPiece);
 		} else {
 			System.out.println("Outside");
 			return false;
@@ -222,24 +226,18 @@ public class Board {
 	}
 
 	private boolean isCheckByKnight(Tile kingTile) {
-		Tile pieceTile = null;
-		List<Point> p = new ArrayList<>();
-		p.add(new Point(kingTile.getRankIndex() + 2, kingTile.getFileIndex() + 1));
-		p.add(new Point(kingTile.getRankIndex() + 1, kingTile.getFileIndex() + 2));
-		p.add(new Point(kingTile.getRankIndex() - 1, kingTile.getFileIndex() + 2));
-		p.add(new Point(kingTile.getRankIndex() - 2, kingTile.getFileIndex() + 1));
+		List<Integer> i = Arrays.asList(1, -1, 2, -2);
 		
-		p.add(new Point(kingTile.getRankIndex() + 2, kingTile.getFileIndex() - 1));
-		p.add(new Point(kingTile.getRankIndex() + 1, kingTile.getFileIndex() - 2));
-		p.add(new Point(kingTile.getRankIndex() - 1, kingTile.getFileIndex() - 2));
-		p.add(new Point(kingTile.getRankIndex() - 2, kingTile.getFileIndex() - 1));
-		
-		for(Point pt: p) 
-			if(isValidTileAt(pt.x, pt.y)) {
-				pieceTile = tiles[pt.x][pt.y];
-				if(isCheckBy(kingTile, pieceTile))
+		int file = kingTile.getFileIndex();
+		int rank = kingTile.getRankIndex();
+		for(Integer v: i) {
+			for(Integer w: i) {
+				if(Math.abs(v) != Math.abs(w) && isValidTileAt(v + rank, w + file) && isCheckBy(kingTile, tiles[v + rank][w + file])) {
 					return true;
+				}
 			}
+		}
+			
 		return false;
 	}
 
