@@ -91,12 +91,18 @@ public class Board {
 			//true White Played :true Check for Black Piece King
 			tile = getBlackKingTile();
 			opponentTilesForKingCheckAt = getTilesForKingCheckAt(tile);
-			System.out.println("Opponent Tiles: " + opponentTilesForKingCheckAt);
+			System.out.println("Board.isGameOver(opponentTilesForKingCheckAt)");
 			opponentTilesForKingCheckAt.stream().forEach(e -> System.out.println(e.getPosition()));
-			List<Tile> userTiles = getValidMovementTilesAt(tile);
-			System.out.println("User Tiles: " + userTiles);
-			userTiles.stream().forEach(e -> System.out.println(e.getPosition()));
-			if(userTiles.size() >= opponentTilesForKingCheckAt.size()) return false;
+			
+			if(opponentTilesForKingCheckAt.size() < 2) {
+				List<Tile> userTiles =  getValidMovementTilesAt(opponentTilesForKingCheckAt.get(0));
+				System.out.println("Board.isGameOver(userTiles)");
+				userTiles.stream().forEach(e -> System.out.println(e.getPosition()));
+				if(userTiles.size() >= opponentTilesForKingCheckAt.size()) {
+					System.out.println("King Saved by Piece");
+					return false;
+				}
+			}
 			System.out.println("Game over testing - Black King");
 			if(isKingMovePossible(tile.getRankIndex() + 1, tile.getFileIndex() + 0, tile)) return false;
 			if(isKingMovePossible(tile.getRankIndex() + 1, tile.getFileIndex() + 1, tile)) return false;
@@ -132,7 +138,7 @@ public class Board {
 		List<Tile> tiles = new ArrayList<>();
 		for(Piece p: opponentPieces) {
 			Tile tile = p.getTile();
-			if(isPieceMoveValid(tile, targetTile)) tiles.add(tile); 
+			if(!p.isKingPiece() && isPieceMoveValid(tile, targetTile)) tiles.add(tile); 
 		}
 		
 		return tiles;
@@ -175,7 +181,9 @@ public class Board {
 	}
 
 	private boolean isPieceMoveValid(Tile from, Tile to) {
-		if(from.equals(to)) return false;
+		if(from.equals(to)) 				return false;
+		if(isSameOpponentPiece(from, to)) 	return false;
+		
 		boolean isPathEmpty = true;
 		boolean isPathValid = from.getPiece().validateMove(to);
 		

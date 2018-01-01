@@ -104,18 +104,21 @@ public class Program {
 		render(game);
 		move(game, 'f', 4, 'e', 6);
 		render(game);
-		move(game, 'f', 5, 'e', 4);
+
+//		Case - I
+//		move(game, 'f', 5, 'e', 4);
+//		render(game);
+//		move(game, 'd', 6, 'd', 7);
+//		render(game);
+//		Case - I		
+		
+//		Case - 2
+		move(game, 'a', 5, 'b', 5);
 		render(game);
 		move(game, 'd', 6, 'd', 7);
 		render(game);
-//		move(game, 'a', 5, 'b', 5);
-//		render(game);
-//		move(game, 'd', 5, 'd', 7);
-//		render(game);
-//		
-//		move(game, 'd', 6, 'd', 7);
-//		render(game);
-
+//		Case - 2
+		
 	}
 
 	private static void checkmateTest() {
