@@ -36,22 +36,8 @@ public class Board {
 			System.out.println("Move Invalid due wrong player played");
 			return false;
 		}
-		if(from.isMovementDiagonal(to)) {
-			System.out.println("Movement Diagonal");
-			if(!isPathDiagonallyEmpty(from, to)) {
-				System.out.println("Diagonal Path not empty");
-				return false;
-			}
-		}
-		if(from.isMovementSideways(to)) {
-			System.out.println("Movement Sideways");
-			if(!isPathSidewayEmpty(from, to)) {
-				System.out.println("Sideway Path not empty");
-				return false;
-			}
-		}
 		Piece killedPiece = null;
-		boolean valid = from.validateMove(to);
+		boolean valid = isPieceMoveValid(from, to);
 		if(!valid) return false;
 		if(valid) {
 			killedPiece = from.movePieceTo(to);
@@ -82,53 +68,39 @@ public class Board {
 	}
 	
 	private boolean isGameOver(boolean isWhiteTurn) {
-		Tile tile = null;
+		Tile kingTile = null;
 		List<Tile> opponentTilesForKingCheckAt = null;
+		if(isWhiteTurn)
+			kingTile = getBlackKingTile();
+		else 
+			kingTile = getWhiteKingTile();
 		
-		if(isWhiteTurn && isBlackKingCheck()) {
-			
-			
-			//true White Played :true Check for Black Piece King
-			tile = getBlackKingTile();
-			opponentTilesForKingCheckAt = getTilesForKingCheckAt(tile);
-			System.out.println("Board.isGameOver(opponentTilesForKingCheckAt)");
-			opponentTilesForKingCheckAt.stream().forEach(e -> System.out.println(e.getPosition()));
-			
-			if(opponentTilesForKingCheckAt.size() < 2) {
-				List<Tile> userTiles =  getValidMovementTilesAt(opponentTilesForKingCheckAt.get(0));
-				System.out.println("Board.isGameOver(userTiles)");
-				userTiles.stream().forEach(e -> System.out.println(e.getPosition()));
-				if(userTiles.size() >= opponentTilesForKingCheckAt.size()) {
-					System.out.println("King Saved by Piece");
-					return false;
-				}
+		opponentTilesForKingCheckAt = getTilesForKingCheckAt(kingTile);
+		if(opponentTilesForKingCheckAt.size() == 0) return false; 
+		
+		System.out.println("Board.isGameOver : Possibility ");
+		System.out.println("Board.isGameOver(opponentTilesForKingCheckAt)");
+		opponentTilesForKingCheckAt.stream().forEach(e -> System.out.println(e.getPosition()));
+		
+		if(opponentTilesForKingCheckAt.size() < 2) {
+			List<Tile> userTiles =  getValidMovementTilesAt(opponentTilesForKingCheckAt.get(0));
+			System.out.println("Board.isGameOver(userTiles)");
+			userTiles.stream().forEach(e -> System.out.println(e.getPosition()));
+			if(userTiles.size() >= opponentTilesForKingCheckAt.size()) {
+				System.out.println("King Saved by Piece");
+				return false;
 			}
-			System.out.println("Game over testing - Black King");
-			if(isKingMovePossible(tile.getRankIndex() + 1, tile.getFileIndex() + 0, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() + 1, tile.getFileIndex() + 1, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() + 0, tile.getFileIndex() + 1, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() - 1, tile.getFileIndex() + 1, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() - 1, tile.getFileIndex() + 0, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() - 1, tile.getFileIndex() - 1, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() + 0, tile.getFileIndex() - 1, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() + 1, tile.getFileIndex() - 1, tile)) return false;
-
-		} else if (isWhiteTurn && isWhiteKingCheck()) {
-			tile = getWhiteKingTile();
-			opponentTilesForKingCheckAt = getTilesForKingCheckAt(tile);
-			
-			System.out.println("Game over testing - White King");
-			if(isKingMovePossible(tile.getRankIndex() + 1, tile.getFileIndex() + 0, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() + 1, tile.getFileIndex() + 1, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() + 0, tile.getFileIndex() + 1, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() - 1, tile.getFileIndex() + 1, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() - 1, tile.getFileIndex() + 0, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() - 1, tile.getFileIndex() - 1, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() + 0, tile.getFileIndex() - 1, tile)) return false;
-			if(isKingMovePossible(tile.getRankIndex() + 1, tile.getFileIndex() - 1, tile)) return false;
-		} else {
-			return false;
 		}
+		
+		System.out.println("Game over testing - Black King");
+		if(isKingMovePossible(kingTile.getRankIndex() + 1, kingTile.getFileIndex() + 0, kingTile)) return false;
+		if(isKingMovePossible(kingTile.getRankIndex() + 1, kingTile.getFileIndex() + 1, kingTile)) return false;
+		if(isKingMovePossible(kingTile.getRankIndex() + 0, kingTile.getFileIndex() + 1, kingTile)) return false;
+		if(isKingMovePossible(kingTile.getRankIndex() - 1, kingTile.getFileIndex() + 1, kingTile)) return false;
+		if(isKingMovePossible(kingTile.getRankIndex() - 1, kingTile.getFileIndex() + 0, kingTile)) return false;
+		if(isKingMovePossible(kingTile.getRankIndex() - 1, kingTile.getFileIndex() - 1, kingTile)) return false;
+		if(isKingMovePossible(kingTile.getRankIndex() + 0, kingTile.getFileIndex() - 1, kingTile)) return false;
+		if(isKingMovePossible(kingTile.getRankIndex() + 1, kingTile.getFileIndex() - 1, kingTile)) return false;
 		return true;
 	}
 	
@@ -185,9 +157,9 @@ public class Board {
 		if(isSameOpponentPiece(from, to)) 	return false;
 		
 		boolean isPathEmpty = true;
-		boolean isPathValid = from.getPiece().validateMove(to);
+		boolean isMoveValid = from.getPiece().validateMove(to);
 		
-		if(!isPathValid) return false;
+		if(!isMoveValid) return false;
 		
 		if(from.isMovementDiagonal(to) && !isPathDiagonallyEmpty(from, to)) 
 			isPathEmpty = false;

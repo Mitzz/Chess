@@ -4,8 +4,8 @@ import java.awt.Color;
 
 public class Tile {
 
-	private int rank;
-	private int file;
+	private final int rank;
+	private final int file;
 	private Color color;
 	private Piece piece;
 	
