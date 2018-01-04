@@ -1,5 +1,6 @@
 package org.mitz.chess;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
@@ -28,10 +29,12 @@ public class InitialPiecePlacement {
 		piece = tile.getPiece();
 		condition = (piece.getColor() == Color.WHITE && piece instanceof Rook);
 		assertTrue("Must be Equal To White Rook", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 		
 		tile = new Tile(0, 7);
 		piece = tile.getPiece();
 		assertTrue("Must be Equal To White Rook", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 	}
 	
 	@Test
@@ -44,10 +47,12 @@ public class InitialPiecePlacement {
 		piece = tile.getPiece();
 		condition = (piece.getColor() == Color.WHITE && piece instanceof Knight);
 		assertTrue("Must be Equal To White Knight", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 		
 		tile = new Tile(0, 6);
 		piece = tile.getPiece();
 		assertTrue("Must be Equal To White Knight", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 	}
 	
 	@Test
@@ -60,10 +65,12 @@ public class InitialPiecePlacement {
 		piece = tile.getPiece();
 		condition = (piece.getColor() == Color.WHITE && piece instanceof Bishop);
 		assertTrue("Must be Equal To White Bishop", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 		
 		tile = new Tile(0, 5);
 		piece = tile.getPiece();
 		assertTrue("Must be Equal To White Bishop", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 	}
 	
 	@Test
@@ -76,6 +83,7 @@ public class InitialPiecePlacement {
 		piece = tile.getPiece();
 		condition = (piece.getColor() == Color.WHITE && piece instanceof Queen);
 		assertTrue("Must be Equal To White Queen", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 	}
 	
 	@Test
@@ -88,6 +96,7 @@ public class InitialPiecePlacement {
 		piece = tile.getPiece();
 		condition = (piece.getColor() == Color.WHITE && piece instanceof King);
 		assertTrue("Must be Equal To White King", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 	}
 	
 	@Test
@@ -102,6 +111,7 @@ public class InitialPiecePlacement {
 			piece = tile.getPiece();
 			condition = (piece.getColor() == Color.WHITE && piece instanceof Pawn);
 			assertTrue("Must be Equal To White Pawn", condition);
+			assertTrue("Tile must not be empty", !tile.isEmpty());
 		}
 	}
 	
@@ -115,10 +125,12 @@ public class InitialPiecePlacement {
 		piece = tile.getPiece();
 		condition = (piece.getColor() == Color.BLACK && piece instanceof Rook);
 		assertTrue("Must be Equal To Black Rook", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 		
 		tile = new Tile(7, 7);
 		piece = tile.getPiece();
 		assertTrue("Must be Equal To Black Rook", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 	}
 	
 	@Test
@@ -131,10 +143,12 @@ public class InitialPiecePlacement {
 		piece = tile.getPiece();
 		condition = (piece.getColor() == Color.BLACK && piece instanceof Knight);
 		assertTrue("Must be Equal To Black Knight", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 		
 		tile = new Tile(7, 6);
 		piece = tile.getPiece();
 		assertTrue("Must be Equal To Black Knight", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 	}
 	
 	@Test
@@ -147,10 +161,12 @@ public class InitialPiecePlacement {
 		piece = tile.getPiece();
 		condition = (piece.getColor() == Color.BLACK && piece instanceof Bishop);
 		assertTrue("Must be Equal To Black Bishop", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 		
 		tile = new Tile(7, 5);
 		piece = tile.getPiece();
 		assertTrue("Must be Equal To Black Bishop", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 	}
 	
 	@Test
@@ -163,6 +179,7 @@ public class InitialPiecePlacement {
 		piece = tile.getPiece();
 		condition = (piece.getColor() == Color.BLACK && piece instanceof Queen);
 		assertTrue("Must be Equal To Black Queen", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 	}
 	
 	@Test
@@ -175,6 +192,7 @@ public class InitialPiecePlacement {
 		piece = tile.getPiece();
 		condition = (piece.getColor() == Color.BLACK && piece instanceof King);
 		assertTrue("Must be Equal To Black King", condition);
+		assertTrue("Tile must not be empty", !tile.isEmpty());
 	}
 	
 	@Test
@@ -183,12 +201,30 @@ public class InitialPiecePlacement {
 		Piece piece = null;
 		boolean condition = false;
 		
-		List<Integer> i = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7);
-		for(int file : i) {
+		List<Integer> files = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7);
+		for(int file : files) {
 			tile = new Tile(6, file);
 			piece = tile.getPiece();
 			condition = (piece.getColor() == Color.BLACK && piece instanceof Pawn);
 			assertTrue("Must be Equal To Black Pawn", condition);
+			assertTrue("Tile must not be empty", !tile.isEmpty());
+		}
+	}
+	
+	@Test
+	public void blankTiles() {
+		Tile tile = null;
+		Piece piece = null;
+		
+		List<Integer> rows = Arrays.asList(2, 3, 4, 5);
+		List<Integer> files = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7);
+		for(int row: rows) {
+			for(int file : files) {
+				tile = new Tile(row, file);
+				piece = tile.getPiece();
+				assertNull(String.format("Must be Blank Tile at (%s, %s)", row, file), piece);
+				assertTrue("Tile must be empty", tile.isEmpty());
+			}
 		}
 	}
 }

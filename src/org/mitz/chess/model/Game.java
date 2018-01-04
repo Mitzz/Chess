@@ -11,11 +11,12 @@ public class Game {
 		isWhiteTurn = true;
 	}
 
-	public void move(int fromRank, char fromFile, int toRank, char toFile) {
+	public boolean move(int fromRank, char fromFile, int toRank, char toFile) {
 		if(board.move(isWhiteTurn, fromRank - 1, (int)fromFile - 97, toRank - 1, (int)toFile - 97)) {
 			isWhiteTurn = !isWhiteTurn;
+			return true;
 		}
-		
+		return false;
 	}
 
 	public void render() {
