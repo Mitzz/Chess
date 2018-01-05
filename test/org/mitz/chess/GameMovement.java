@@ -28,6 +28,7 @@ public class GameMovement {
 		Piece sourcePiece = null;
 		Piece targetPiece = null;
 		
+		
 		sourceTile = board.getTileAt(sourceRank, sourceFile);
 		sourcePiece = sourceTile.getPiece();
 		targetTile = board.getTileAt(targetRank, targetFile);
@@ -40,6 +41,7 @@ public class GameMovement {
 		
 		targetPiece = targetTile.getPiece();
 		assertSame("Source and Target Piece not same after valid movement", sourcePiece, targetPiece);
+		
 	}
 	
 	public void invalidPieceMovement(char sourceFile, int sourceRank, char targetFile, int targetRank) {
@@ -47,6 +49,7 @@ public class GameMovement {
 		Tile targetTile = null;
 		Piece sourcePiece = null;
 		Piece targetPiece = null;
+		
 		
 		sourceTile = board.getTileAt(sourceRank, sourceFile);
 		sourcePiece = sourceTile.getPiece();
@@ -62,6 +65,28 @@ public class GameMovement {
 		assertNotSame("Source and Target Piece must not be same after invalid valid movement", sourcePiece, targetPiece);	
 	}
 	
+	public void invalidPieceMovementDueToOpponentPiece(char sourceFile, int sourceRank, char targetFile, int targetRank) {
+		Tile sourceTile = null;
+		Tile targetTile = null;
+		Piece sourcePiece = null;
+		Piece targetPiece = null;
+		
+		
+		sourceTile = board.getTileAt(sourceRank, sourceFile);
+		sourcePiece = sourceTile.getPiece();
+		targetTile = board.getTileAt(targetRank, targetFile);
+
+		boolean isMoveValid = game.move(sourceRank, sourceFile, targetRank, targetFile);
+		assertTrue("Movement Invalid", !isMoveValid);	
+		
+		assertTrue("Source Tile must not be Empty", !sourceTile.isEmpty());
+		assertTrue("Target Tile must not be Empty", !targetTile.isEmpty());
+		
+		targetPiece = targetTile.getPiece();
+		assertNotSame("Source and Target Piece must not be same after invalid valid movement", sourcePiece, targetPiece);	
+	}
+
+	
 	@Test
 	public void game1() {
 		simpleValidMovement('d', 2, 'd', 3);
@@ -69,5 +94,25 @@ public class GameMovement {
 		simpleValidMovement('e', 2, 'e', 4);
 		simpleValidMovement('d', 6, 'd', 5);
 		invalidPieceMovement('e', 4, 'e', 6);
+	}
+	
+	@Test
+	public void game2() {
+		simpleValidMovement('d', 2, 'd', 3);
+		simpleValidMovement('d', 7, 'd', 6);
+		simpleValidMovement('e', 2, 'e', 4);
+		simpleValidMovement('d', 6, 'd', 5);
+		invalidPieceMovement('e', 4, 'e', 6);
+		simpleValidMovement('d', 3, 'd', 4);
+		invalidPieceMovementDueToOpponentPiece('d', 5, 'd', 4);
+		simpleValidMovement('c', 7, 'c', 5);
+		killValidMovement('d', 4, 'c', 5);
+		killValidMovement('d', 5, 'e', 4);
+	}
+
+	private void killValidMovement(char sourceFile, int sourceRank, char targetFile, int targetRank) {
+		Tile targetTile = board.getTileAt(targetRank, targetFile);
+		assertTrue("Target Tile must not be Empty", !targetTile.isEmpty());
+		simpleValidMovement(sourceFile, sourceRank, targetFile, targetRank);
 	}
 }
