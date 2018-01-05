@@ -186,6 +186,12 @@ public class Board {
 		return tiles[r][f];
 	}
 	
+	public Tile getTileAt(int rank, char file) {
+		return tiles[rank - 1][file - 97];
+	}
+	
+	
+	
 	private void setPawnForPromotion(Tile to) {
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

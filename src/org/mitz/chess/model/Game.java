@@ -22,4 +22,8 @@ public class Game {
 	public void render() {
 		board.render();
 	}
+	
+	public Board getBoard() {
+		return board;
+	}
 }

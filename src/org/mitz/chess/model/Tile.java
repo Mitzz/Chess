@@ -10,6 +10,7 @@ public class Tile {
 	private Piece piece;
 	
 	public Tile(int rank, int file) {
+		
 		this.rank = rank;
 		this.file = file;
 		this.piece = initializePiece();
