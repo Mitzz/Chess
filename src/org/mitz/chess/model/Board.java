@@ -59,7 +59,7 @@ public class Board {
 			System.out.println("Finally a promotion");
 			setPawnForPromotion(to);
 		}
-		
+		System.out.println("Checking for GAME OVER!!!!");
 		if(isGameOver(isWhiteTurn)) {
 			System.out.println("GAME OVER!!!!");
 		}
@@ -69,14 +69,21 @@ public class Board {
 	
 	private boolean isGameOver(boolean isWhiteTurn) {
 		Tile kingTile = null;
-		List<Tile> opponentTilesForKingCheckAt = null;
 		if(isWhiteTurn)
 			kingTile = getBlackKingTile();
 		else 
 			kingTile = getWhiteKingTile();
 		
+		return canKingMove(kingTile);
+	}
+
+	private boolean canKingMove(Tile kingTile) {
+		List<Tile> opponentTilesForKingCheckAt;
 		opponentTilesForKingCheckAt = getTilesForKingCheckAt(kingTile);
-		if(opponentTilesForKingCheckAt.size() == 0) return false; 
+		if(opponentTilesForKingCheckAt.size() == 0) {
+			System.out.println("Board.isGameOver : No Possibility ");
+			return false; 
+		}
 		
 		System.out.println("Board.isGameOver : Possibility ");
 		System.out.println("Board.isGameOver(opponentTilesForKingCheckAt)");
@@ -92,7 +99,7 @@ public class Board {
 			}
 		}
 		
-		System.out.println("Game over testing - Black King");
+//		System.out.println("Game over testing - Black King");
 		if(isKingMovePossible(kingTile.getRankIndex() + 1, kingTile.getFileIndex() + 0, kingTile)) return false;
 		if(isKingMovePossible(kingTile.getRankIndex() + 1, kingTile.getFileIndex() + 1, kingTile)) return false;
 		if(isKingMovePossible(kingTile.getRankIndex() + 0, kingTile.getFileIndex() + 1, kingTile)) return false;
@@ -153,6 +160,7 @@ public class Board {
 	}
 
 	private boolean isPieceMoveValid(Tile from, Tile to) {
+		if(from.isEmpty()) 					return false;
 		if(from.equals(to)) 				return false;
 		if(isSameOpponentPiece(from, to)) 	return false;
 		
@@ -257,6 +265,9 @@ public class Board {
 		if(isCheckBy(kingTile, tile)) tiles.add(tile);
 		
 		tile = getNextNonEmptyTile(kingTile, 1, -1);
+		if(isCheckBy(kingTile, tile)) tiles.add(tile);
+		
+		tile = getNextNonEmptyTile(kingTile, 0, 1);
 		if(isCheckBy(kingTile, tile)) tiles.add(tile);
 		
 		tiles.addAll(getTilesForKingCheckByKnightAt(kingTile));
