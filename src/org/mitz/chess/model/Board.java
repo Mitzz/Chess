@@ -37,7 +37,7 @@ public class Board {
 			return false;
 		}
 		Piece killedPiece = null;
-		boolean valid = isPieceMoveValid(from, to);
+		boolean valid = isPieceMoveValid(from, to) || (from.hasKingPiece() && isCastlingMove(to, from, isWhiteTurn));
 		boolean isKingCheckBeforeMove = false;
 		if(!valid) return false;
 		if(valid) {
@@ -86,8 +86,10 @@ public class Board {
 			}
 			else if(from.isFirstRank() && from.getFile() == 'a') {
 				isWhiteCastlingPossibleOnQueenSide = false;
+			} else if(from.isFirstRank() && from.getFile() == 'h') {
+				isWhiteCastlingPossibleOnKingSide = false;
 			} else {
-				isWhiteCastlingPossibleOnQueenSide = false;
+				System.out.println("White Castling Possible");
 			}
 		} else {
 			if(to.hasKingPiece()) {
@@ -96,8 +98,8 @@ public class Board {
 			}
 			else if(from.isLastRank() && from.getFile() == 'a') {
 				isBlackCastlingPossibleOnQueenSide = false;
-			} else {
-				isBlackCastlingPossibleOnQueenSide = false;
+			} else if(from.isLastRank() && from.getFile() == 'h') {
+				isBlackCastlingPossibleOnKingSide = false;
 			}
 		}
 		
@@ -105,24 +107,23 @@ public class Board {
 	}
 
 	private boolean isCastlingMovePossible(Tile from, Tile to, boolean isWhiteTurn) {
+		boolean isCastlingKingSide = (to.getFile() - from.getFile()) == 2;
 		boolean isCastlingMovePossible = isWhiteTurn ? (isWhiteCastlingPossibleOnKingSide || isWhiteCastlingPossibleOnQueenSide) : (isBlackCastlingPossibleOnKingSide || isBlackCastlingPossibleOnQueenSide);
 		if(!isCastlingMovePossible) return isCastlingMovePossible;
 		
-		boolean isCastlingKingSide = (to.getFile() - from.getFile()) == 2;
+		if(isCastlingKingSide && isWhiteTurn && !isWhiteCastlingPossibleOnKingSide) 	return false;  
+		if(!isCastlingKingSide && isWhiteTurn && !isWhiteCastlingPossibleOnQueenSide) 	return false;
+		if(isCastlingKingSide && !isWhiteTurn && !isBlackCastlingPossibleOnKingSide) 	return false;
+		if(!isCastlingKingSide && !isWhiteTurn && !isBlackCastlingPossibleOnQueenSide) 	return false;
 		Tile rook = null;
 		if(isCastlingKingSide) {
 			if(isWhiteTurn) rook = getTileAt(1, 'h');
 			else 			rook = getTileAt(8, 'h');
-			
 			if(!isPathSidewayEmpty(rook, to)) return false;
-			
-			
 		} else {
 			if(isWhiteTurn) rook = getTileAt(1, 'a');
 			else 			rook = getTileAt(8, 'a');
-			
 			if(!isPathSidewayEmpty(rook, to)) return false;
-			
 		}
 		return isCastlingMovePossible;
 	}

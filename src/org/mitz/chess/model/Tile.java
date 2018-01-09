@@ -163,7 +163,7 @@ public class Tile {
 	}
 
 	public boolean hasKingPiece() {
-		return getPiece().isKingPiece();
+		return !isEmpty() && getPiece().isKingPiece();
 	}
 
 	public boolean hasPawnPiece() {

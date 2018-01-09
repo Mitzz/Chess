@@ -22,7 +22,7 @@ public class GameMovement {
 		board = game.getBoard();
 	}
 	
-//	@Test
+	@Test
 	public void whiteKingsideCastlingValidMovement() {
 		simpleValidMovement('g', 1, 'f', 3);
 		simpleValidMovement('g', 8, 'f', 6);
@@ -33,7 +33,7 @@ public class GameMovement {
 		simpleValidMovement('e', 1, 'g', 1);
 	}
 	
-//	@Test
+	@Test
 	public void whiteKingsideCastlingNonvalidMovement() {
 		simpleValidMovement('g', 1, 'f', 3);
 		simpleValidMovement('g', 8, 'f', 6);
@@ -103,7 +103,7 @@ public class GameMovement {
 		assertTrue("Source and Target Piece are same", board.getTileAt(sourceRank, sourceFile).getPiece().getColor() != board.getTileAt(targetRank, targetFile).getPiece().getColor());
 	}
 
-	private void invalid(char sourceFile, int sourceRank, char targetFile, int targetRank) {
+	protected void invalid(char sourceFile, int sourceRank, char targetFile, int targetRank) {
 		Tile sourceTile = null;
 		Tile targetTile = null;
 		Piece sourcePiece = null;
