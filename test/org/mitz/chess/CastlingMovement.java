@@ -26,11 +26,13 @@ public class CastlingMovement {
 		simpleValidMovement('b', 7, 'b', 6);
 		simpleValidMovement('f', 1, 'e', 2);
 		simpleValidMovement('c', 7, 'c', 5);
-		simpleValidMovement('e', 1, 'g', 1);
+		
+		castlingValidMovement('e', 1, 'g', 1);
+		board.render();
 	}
 	
 	@Test
-	public void whiteKingsideCastlingNonvalidMovement() {
+	public void whiteKingsideCastlingNonvalidMovementDueToRookMovement() {
 		simpleValidMovement('g', 1, 'f', 3);
 		simpleValidMovement('g', 8, 'f', 6);
 		simpleValidMovement('e', 2, 'e', 3);
@@ -44,11 +46,45 @@ public class CastlingMovement {
 		invalid('e', 1, 'g', 1);
 	}
 	
+	@Test
+	public void whiteKingsideCastlingNonvalidMovementDueToKingMovement() {
+		simpleValidMovement('g', 1, 'f', 3);
+		simpleValidMovement('g', 8, 'f', 6);
+		simpleValidMovement('e', 2, 'e', 3);
+		simpleValidMovement('b', 7, 'b', 6);
+		simpleValidMovement('f', 1, 'e', 2);
+		simpleValidMovement('c', 7, 'c', 5);
+		simpleValidMovement('e', 1, 'f', 1);
+		simpleValidMovement('b', 8, 'c', 6);
+		simpleValidMovement('f', 1, 'e', 1);
+		simpleValidMovement('d', 7, 'd', 5);
+		invalid('e', 1, 'g', 1);
+		
+	}
+	
+	@Test
+	public void whiteQueensideCastlingValidMovement() {
+		simpleValidMovement('d', 2, 'd', 4);
+		simpleValidMovement('e', 7, 'e', 6);
+		simpleValidMovement('c', 1, 'e', 3);
+		simpleValidMovement('f', 8, 'e', 7);
+		simpleValidMovement('d', 1, 'd', 3);
+		simpleValidMovement('b', 8, 'a', 6);
+		simpleValidMovement('b', 1, 'c', 3);
+		simpleValidMovement('g', 8, 'f', 6);
+		castlingValidMovement('e', 1, 'c', 1);
+		game.render();
+	}
+	
 	private void invalid(char sourceFile, int sourceRank, char targetFile, int targetRank) {
 		movement.invalid(sourceFile, sourceRank, targetFile, targetRank);
 	}
 	
 	private void simpleValidMovement(char sourceFile, int sourceRank, char targetFile, int targetRank) {
 		movement.simpleValidMovement(sourceFile, sourceRank, targetFile, targetRank);
+	}
+	
+	private void castlingValidMovement(char sourceFile, int sourceRank, char targetFile, int targetRank) {
+		movement.castlingValidMovement(sourceFile, sourceRank, targetFile, targetRank);
 	}
 }

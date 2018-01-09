@@ -57,11 +57,15 @@ public class Board {
 			return false;
 		}
 		
-		if(isCastlingMove(from, to, isWhiteTurn) && (!isCastlingMovePossible(from, to, isWhiteTurn) || isKingCheckBeforeMove)) {//Confused
+		boolean isCastlingMovement = false;
+		if(isCastlingMove(from, to, isWhiteTurn) && (!(isCastlingMovement = isCastlingMovePossible(from, to, isWhiteTurn)) || isKingCheckBeforeMove)) {//Confused
 			to.movePieceTo(from, killedPiece);
 			System.out.println("Piece Movement Blocked due to no castling possible");
 			successfulStep--;
 			return false;
+		}
+		if(isCastlingMovement && !isKingCheckBeforeMove) {
+			doRookMovementForCastling(from, to, isWhiteTurn);
 		}
 		
 		determineCastlingPossibility(from, to, isWhiteTurn);
@@ -78,6 +82,14 @@ public class Board {
 		return valid;
 	}
 	
+	private void doRookMovementForCastling(Tile from, Tile to, boolean isWhiteTurn) {
+		if(to.getFile() == 'c') {
+			getTileAt(to.getRank(), 'a').movePieceTo(getTileAt(to.getRank(), (char)(to.getFile() + 1)));
+		} else {
+			getTileAt(to.getRank(), 'h').movePieceTo(getTileAt(to.getRank(),(char)(to.getFile() - 1)));
+		}
+	}
+
 	private void determineCastlingPossibility(Tile from, Tile to, boolean isWhiteTurn) {
 		if(isWhiteTurn) {
 			if(to.hasKingPiece()) {
@@ -107,10 +119,10 @@ public class Board {
 	}
 
 	private boolean isCastlingMovePossible(Tile from, Tile to, boolean isWhiteTurn) {
-		boolean isCastlingKingSide = (to.getFile() - from.getFile()) == 2;
+		
 		boolean isCastlingMovePossible = isWhiteTurn ? (isWhiteCastlingPossibleOnKingSide || isWhiteCastlingPossibleOnQueenSide) : (isBlackCastlingPossibleOnKingSide || isBlackCastlingPossibleOnQueenSide);
 		if(!isCastlingMovePossible) return isCastlingMovePossible;
-		
+		boolean isCastlingKingSide = (to.getFile() - from.getFile()) == 2;
 		if(isCastlingKingSide && isWhiteTurn && !isWhiteCastlingPossibleOnKingSide) 	return false;  
 		if(!isCastlingKingSide && isWhiteTurn && !isWhiteCastlingPossibleOnQueenSide) 	return false;
 		if(isCastlingKingSide && !isWhiteTurn && !isBlackCastlingPossibleOnKingSide) 	return false;

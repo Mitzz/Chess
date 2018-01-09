@@ -132,4 +132,20 @@ public class MovementTestUtility {
 		targetPiece = targetTile.getPiece();
 		assertNotSame("Source and Target Piece must not be same after invalid valid movement", sourcePiece, targetPiece);
 	}
+
+	public void castlingValidMovement(char sourceFile, int sourceRank, char targetFile, int targetRank) {
+		valid(sourceFile, sourceRank, targetFile, targetRank);
+		Tile targetTile = board.getTileAt(targetRank, targetFile);
+		Piece targetPiece = targetTile.getPiece();
+		assertTrue("Target Piece must be King", targetPiece.isKingPiece());
+		if(isKingSideCastling(sourceFile, sourceRank, targetFile, targetRank)) {
+			assertTrue("Rook Piece must be moved during castling", !board.getTileAt(targetRank, (char)(targetFile - 1)).isEmpty());
+		} else {
+			assertTrue("Rook Piece must be moved during castling", !board.getTileAt(targetRank, (char)(targetFile + 1)).isEmpty());
+		}
+	}
+	
+	private boolean isKingSideCastling(char sourceFile, int sourceRank, char targetFile, int targetRank) {
+		return targetFile - sourceFile > 0;
+	}
 }
