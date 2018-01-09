@@ -12,6 +12,10 @@ public class Board {
 
 	private Tile[][] tiles;
 	private int successfulStep = 1;
+	private boolean isWhiteCastlingPossibleOnKingSide = true;
+	private boolean isWhiteCastlingPossibleOnQueenSide = true;
+	private boolean isBlackCastlingPossibleOnKingSide = true;
+	private boolean isBlackCastlingPossibleOnQueenSide = true;
 	
 	public Board() {
 		tiles = new Tile[8][8];
@@ -28,32 +32,39 @@ public class Board {
 			System.out.println("Either Source and Target Tile not valid");
 			return false;
 		}
-		if(to.equals(from)) {
-			System.out.println("Both Source and Target Tile are same");
-			return false;
-		}
 		if(!from.isEmpty() && !isMoveByTurn(isWhiteTurn, from)) {
 			System.out.println("Move Invalid due wrong player played");
 			return false;
 		}
 		Piece killedPiece = null;
 		boolean valid = isPieceMoveValid(from, to);
+		boolean isKingCheckBeforeMove = false;
 		if(!valid) return false;
 		if(valid) {
+			isKingCheckBeforeMove = from.hasKingPiece() && isKingCheckAt(from);
 			killedPiece = from.movePieceTo(to);
 			successfulStep++;
 		}
-		boolean afterMoveStillCheck = false;
+		boolean isKingCheckAfterMove = false;
 		
-		if(isWhiteTurn) afterMoveStillCheck = isWhiteKingCheck();
-		else 			afterMoveStillCheck = isBlackKingCheck();
+		if(isWhiteTurn) isKingCheckAfterMove = isWhiteKingCheck();
+		else 			isKingCheckAfterMove = isBlackKingCheck();
 		
-		if(afterMoveStillCheck) {
+		if(isKingCheckAfterMove) {
 			to.movePieceTo(from, killedPiece);
 			System.out.println("Piece Movement Blocked due to check");
 			successfulStep--;
 			return false;
 		}
+		
+		if(isCastlingMove(from, to, isWhiteTurn) && (!isCastlingMovePossible(from, to, isWhiteTurn) || isKingCheckBeforeMove)) {//Confused
+			to.movePieceTo(from, killedPiece);
+			System.out.println("Piece Movement Blocked due to no castling possible");
+			successfulStep--;
+			return false;
+		}
+		
+		determineCastlingPossibility(from, to, isWhiteTurn);
 		
 		if(isPawnPromotion(isWhiteTurn, to)) {
 			System.out.println("Finally a promotion");
@@ -67,6 +78,60 @@ public class Board {
 		return valid;
 	}
 	
+	private void determineCastlingPossibility(Tile from, Tile to, boolean isWhiteTurn) {
+		if(isWhiteTurn) {
+			if(to.hasKingPiece()) {
+				isWhiteCastlingPossibleOnQueenSide = false;
+				isWhiteCastlingPossibleOnKingSide = false;
+			}
+			else if(from.isFirstRank() && from.getFile() == 'a') {
+				isWhiteCastlingPossibleOnQueenSide = false;
+			} else {
+				isWhiteCastlingPossibleOnQueenSide = false;
+			}
+		} else {
+			if(to.hasKingPiece()) {
+				isBlackCastlingPossibleOnQueenSide = false;
+				isBlackCastlingPossibleOnKingSide = false;
+			}
+			else if(from.isLastRank() && from.getFile() == 'a') {
+				isBlackCastlingPossibleOnQueenSide = false;
+			} else {
+				isBlackCastlingPossibleOnQueenSide = false;
+			}
+		}
+		
+		System.out.println(String.format("Castling: WK - %s, WQ - %s, BK - %s, BQ - %s", isWhiteCastlingPossibleOnKingSide, isWhiteCastlingPossibleOnQueenSide, isBlackCastlingPossibleOnKingSide, isBlackCastlingPossibleOnQueenSide));
+	}
+
+	private boolean isCastlingMovePossible(Tile from, Tile to, boolean isWhiteTurn) {
+		boolean isCastlingMovePossible = isWhiteTurn ? (isWhiteCastlingPossibleOnKingSide || isWhiteCastlingPossibleOnQueenSide) : (isBlackCastlingPossibleOnKingSide || isBlackCastlingPossibleOnQueenSide);
+		if(!isCastlingMovePossible) return isCastlingMovePossible;
+		
+		boolean isCastlingKingSide = (to.getFile() - from.getFile()) == 2;
+		Tile rook = null;
+		if(isCastlingKingSide) {
+			if(isWhiteTurn) rook = getTileAt(1, 'h');
+			else 			rook = getTileAt(8, 'h');
+			
+			if(!isPathSidewayEmpty(rook, to)) return false;
+			
+			
+		} else {
+			if(isWhiteTurn) rook = getTileAt(1, 'a');
+			else 			rook = getTileAt(8, 'a');
+			
+			if(!isPathSidewayEmpty(rook, to)) return false;
+			
+		}
+		return isCastlingMovePossible;
+	}
+
+	private boolean isCastlingMove(Tile from, Tile to, boolean isWhiteTurn) {
+		boolean condition = to.hasKingPiece() && (isWhiteTurn ? from.isFirstRank() : from.isLastRank()) && (Math.abs(from.getFile() - to.getFile()) == 2); 
+		return condition;
+	}
+
 	private boolean isGameOver(boolean isWhiteTurn) {
 		Tile kingTile = null;
 		if(isWhiteTurn)
@@ -78,18 +143,20 @@ public class Board {
 	}
 
 	private boolean canKingMove(Tile kingTile) {
-		List<Tile> opponentTilesForKingCheckAt;
+		List<Tile> opponentTilesForKingCheckAt = null;
+		//King move mandatory or not
 		opponentTilesForKingCheckAt = getTilesForKingCheckAt(kingTile);
 		if(opponentTilesForKingCheckAt.size() == 0) {
-			System.out.println("Board.isGameOver : No Possibility ");
+			System.out.println("Board.isGameOver : No Possibility since king movement is not mandatory");
 			return false; 
 		}
 		
-		System.out.println("Board.isGameOver : Possibility ");
-		System.out.println("Board.isGameOver(opponentTilesForKingCheckAt)");
+		System.out.println("Board.isGameOver : Possibility since king movement is mandatory");
+		System.out.println("Board.isGameOver(opponentTiles responsible for king movement)");
 		opponentTilesForKingCheckAt.stream().forEach(e -> System.out.println(e.getPosition()));
 		
-		if(opponentTilesForKingCheckAt.size() < 2) {
+		//Can't kill two pieces in one move
+		if(opponentTilesForKingCheckAt.size() == 1) {
 			List<Tile> userTiles =  getValidMovementTilesAt(opponentTilesForKingCheckAt.get(0));
 			System.out.println("Board.isGameOver(userTiles)");
 			userTiles.stream().forEach(e -> System.out.println(e.getPosition()));
@@ -198,22 +265,20 @@ public class Board {
 		return tiles[rank - 1][file - 97];
 	}
 	
-	
-	
-	private void setPawnForPromotion(Tile to) {
+	private void setPawnForPromotion(Tile tile) {
 		
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedReader kin = new BufferedReader(new InputStreamReader(System.in));
 		try {
 			String menu = "1 -> Queen, 2 -> Rook, 3 -> Knight, 4 -> Bishop";
 			System.out.println(menu);
-			String s = br.readLine();
-			int i = Integer.parseInt(s);
-			Piece piece = null;
-			if(to.isFirstRank())
-				piece = Piece.getInstance(i, Color.BLACK, to);
+			String userInput = kin.readLine();
+			int userSelection = Integer.parseInt(userInput);
+			Piece promotedPiece = null;
+			if(tile.isFirstRank())
+				promotedPiece = Piece.getInstance(userSelection, Color.BLACK, tile);
 			else
-				piece = Piece.getInstance(i, Color.WHITE, to);
-			to.setPiece(piece);
+				promotedPiece = Piece.getInstance(userSelection, Color.WHITE, tile);
+			tile.setPiece(promotedPiece);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -221,9 +286,9 @@ public class Board {
 
 	private boolean isPawnPromotion(boolean isWhiteTurn, Tile tile) {
 		if(isWhiteTurn) 
-			return (tile.isLastRank() && tile.isPawn());
+			return (tile.isLastRank() && tile.hasPawnPiece());
 		else 
-			return (tile.isFirstRank() && tile.isPawn());
+			return (tile.isFirstRank() && tile.hasPawnPiece());
 	}
 	
 	private boolean isBlackKingCheck() {
@@ -448,7 +513,7 @@ public class Board {
 				Tile tile = tiles[rank][file];
 				if(tile.isEmpty()) continue;
 				if(tile.getPiece().getColor() != color) continue;
-				if(tile.isKingPiece()) return tile;
+				if(tile.hasKingPiece()) return tile;
 			}
 		}
 		return null;

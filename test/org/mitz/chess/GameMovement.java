@@ -22,6 +22,33 @@ public class GameMovement {
 		board = game.getBoard();
 	}
 	
+//	@Test
+	public void whiteKingsideCastlingValidMovement() {
+		simpleValidMovement('g', 1, 'f', 3);
+		simpleValidMovement('g', 8, 'f', 6);
+		simpleValidMovement('e', 2, 'e', 3);
+		simpleValidMovement('b', 7, 'b', 6);
+		simpleValidMovement('f', 1, 'e', 2);
+		simpleValidMovement('c', 7, 'c', 5);
+		simpleValidMovement('e', 1, 'g', 1);
+	}
+	
+//	@Test
+	public void whiteKingsideCastlingNonvalidMovement() {
+		simpleValidMovement('g', 1, 'f', 3);
+		simpleValidMovement('g', 8, 'f', 6);
+		simpleValidMovement('e', 2, 'e', 3);
+		simpleValidMovement('b', 7, 'b', 6);
+		simpleValidMovement('f', 1, 'e', 2);
+		simpleValidMovement('c', 7, 'c', 5);
+		simpleValidMovement('h', 1, 'g', 1);
+		simpleValidMovement('h', 7, 'h', 5);
+		simpleValidMovement('g', 1, 'h', 1);
+		simpleValidMovement('b', 8, 'c', 6);
+		invalid('e', 1, 'g', 1);
+		game.render();
+	}
+	
 	public void simpleValidMovement(char sourceFile, int sourceRank, char targetFile, int targetRank) {
 		valid(sourceFile, sourceRank, targetFile, targetRank);
 		

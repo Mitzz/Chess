@@ -162,11 +162,11 @@ public class Tile {
 		return true;
 	}
 
-	public boolean isKingPiece() {
+	public boolean hasKingPiece() {
 		return getPiece().isKingPiece();
 	}
 
-	public boolean isPawn() {
+	public boolean hasPawnPiece() {
 		return !isEmpty() && piece.isPawn(); 
 	}
 
