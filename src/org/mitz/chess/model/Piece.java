@@ -53,10 +53,10 @@ public class Piece {
 		return false;
 	}
 
-	public static Piece getInstance(int pieceSelection, Color color, Tile tile) {
+	public static Piece getInstance(int i, Color color, Tile tile) {
 		//1 -> Queen, 2 -> Rook, 3 -> Knight, 4 -> Bishop
 		Piece piece = null;
-		switch (pieceSelection) {
+		switch (i) {
 		case 1:
 			piece = new Queen(color, tile);
 			break;

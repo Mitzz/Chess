@@ -148,4 +148,16 @@ public class MovementTestUtility {
 	private boolean isKingSideCastling(char sourceFile, int sourceRank, char targetFile, int targetRank) {
 		return targetFile - sourceFile > 0;
 	}
+
+	public void enPassantValidMovement(char sourceFile, int sourceRank, char targetFile, int targetRank) {
+		valid(sourceFile, sourceRank, targetFile, targetRank);
+		Tile targetTile = board.getTileAt(targetRank, targetFile);
+		Piece targetPiece = targetTile.getPiece();
+		assertTrue("Target Piece must be Pawn", targetPiece.isPawn());
+		/*if(isKingSideCastling(sourceFile, sourceRank, targetFile, targetRank)) {
+			assertTrue("Rook Piece must be moved during castling", !board.getTileAt(targetRank, (char)(targetFile - 1)).isEmpty());
+		} else {
+			assertTrue("Rook Piece must be moved during castling", !board.getTileAt(targetRank, (char)(targetFile + 1)).isEmpty());
+		}*/
+	}
 }

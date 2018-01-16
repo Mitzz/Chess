@@ -108,6 +108,7 @@ public class CastlingMovement {
 		simpleValidMovement('c', 1, 'e', 3);
 		simpleValidMovement('d', 6, 'b', 4);
 		invalid('e', 1, 'c', 1);
+		simpleValidMovement('e', 1, 'd', 1);
 		game.render();
 	}
 	

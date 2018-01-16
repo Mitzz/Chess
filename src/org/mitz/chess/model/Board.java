@@ -16,6 +16,7 @@ public class Board {
 	private boolean isWhiteCastlingPossibleOnQueenSide = true;
 	private boolean isBlackCastlingPossibleOnKingSide = true;
 	private boolean isBlackCastlingPossibleOnQueenSide = true;
+	private Tile enPassantTile;
 	
 	public Board() {
 		tiles = new Tile[8][8];
@@ -36,13 +37,14 @@ public class Board {
 			System.out.println("Move Invalid due wrong player played");
 			return false;
 		}
-		Piece killedPiece = null;
-		boolean valid = isPieceMoveValid(from, to) || (from.hasKingPiece() && isCastlingMove(to, from, isWhiteTurn));
+		Piece capturedPiece = null;
+		boolean isEnPassantMove = false;
+		boolean valid = isPieceMoveValid(from, to) || (from.hasKingPiece() && isCastlingMove(to, from, isWhiteTurn)) || (isEnPassantMove = isEnPassantMove(from, to));
 		boolean isKingCheckBeforeMove = false;
 		if(!valid) return false;
 		if(valid) {
 			isKingCheckBeforeMove = from.hasKingPiece() && isKingCheckAt(from);
-			killedPiece = from.movePieceTo(to);
+			capturedPiece = from.movePieceTo(to);
 			successfulStep++;
 		}
 		boolean isKingCheckAfterMove = false;
@@ -51,7 +53,7 @@ public class Board {
 		else 			isKingCheckAfterMove = isBlackKingCheck();
 		
 		if(isKingCheckAfterMove) {
-			to.movePieceTo(from, killedPiece);
+			to.movePieceTo(from, capturedPiece);
 			System.out.println("Piece Movement Blocked due to check");
 			successfulStep--;
 			return false;
@@ -59,17 +61,21 @@ public class Board {
 		
 		boolean isCastlingMovement = false;
 		if(isCastlingMove(from, to, isWhiteTurn) && (!(isCastlingMovement = isCastlingMovePossible(from, to, isWhiteTurn)) || isKingCheckBeforeMove)) {//Confused
-			to.movePieceTo(from, killedPiece);
+			to.movePieceTo(from, capturedPiece);
 			System.out.println("Piece Movement Blocked due to no castling possible");
 			successfulStep--;
 			return false;
 		}
+		
 		if(isCastlingMovement && !isKingCheckBeforeMove) {
 			doRookMovementForCastling(from, to, isWhiteTurn);
 		}
 		
+		if(isEnPassantMove) {
+			removeCapturedPieceInEnPassant(from, to);
+		}
 		determineCastlingPossibility(from, to, isWhiteTurn);
-		
+		determineEnPassantTile(from, to);
 		if(isPawnPromotion(isWhiteTurn, to)) {
 			System.out.println("Finally a promotion");
 			setPawnForPromotion(to);
@@ -82,6 +88,32 @@ public class Board {
 		return valid;
 	}
 	
+	private void removeCapturedPieceInEnPassant(Tile from, Tile to) {
+		int rankOffset = 0;
+		if(from.getRank() > to.getRank()) rankOffset = +1;
+		else 							  rankOffset = -1;
+		
+		System.out.println("Captured Piece for 'en passant' move at: " + tiles[enPassantTile.getRankIndex() + rankOffset][enPassantTile.getFileIndex()].getPosition());
+		tiles[enPassantTile.getRankIndex() + rankOffset][enPassantTile.getFileIndex()].removePiece();
+	}
+
+	private boolean isEnPassantMove(Tile from, Tile to) {
+		System.out.println("Board.isEnPassantMove()" + (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to)));
+		return (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to) );
+	}
+
+	private void determineEnPassantTile(Tile from, Tile to) {
+		if(!to.isEmpty() && to.getPiece().isPawn() && from.isMovementSideways(to) && Math.abs(from.getRank() - to.getRank()) == 2) {
+			int rankOffset = 0;
+			if(from.getRank() > to.getRank()) rankOffset = +1;
+			else 							  rankOffset = -1;
+			enPassantTile = tiles[to.getRankIndex() + rankOffset][from.getFileIndex()];
+		} else {
+			enPassantTile = null;
+		}
+		System.out.println("Board.determineEnPassantTile(EnpassantTile): " + ((enPassantTile == null) ? "None": enPassantTile.getPosition()));
+	}
+
 	private void doRookMovementForCastling(Tile from, Tile to, boolean isWhiteTurn) {
 		if(to.getFile() == 'c') {
 			getTileAt(to.getRank(), 'a').movePieceTo(getTileAt(to.getRank(), (char)(to.getFile() + 1)));
@@ -244,11 +276,10 @@ public class Board {
 		if(from.equals(to)) 				return false;
 		if(isSameOpponentPiece(from, to)) 	return false;
 		
-		boolean isPathEmpty = true;
 		boolean isMoveValid = from.getPiece().validateMove(to);
-		
 		if(!isMoveValid) return false;
 		
+		boolean isPathEmpty = true;
 		if(from.isMovementDiagonal(to) && !isPathDiagonallyEmpty(from, to)) 
 			isPathEmpty = false;
 		if(from.isMovementSideways(to) && !isPathSidewayEmpty(from, to)) 

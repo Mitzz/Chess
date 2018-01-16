@@ -59,8 +59,9 @@ public class Tile {
 			piece = to.getPiece();
 			System.out.println("Piece Killed");
 		}
-		to.setPiece(this.getPiece());
+		Piece p = this.getPiece();
 		removePiece();
+		to.setPiece(p);
 		
 		return piece;
 	}
@@ -74,8 +75,9 @@ public class Tile {
 		return this;
 	}
 	
-	private void removePiece() {
+	public void removePiece() {
 		//Removal of Tile
+		this.piece.setTile(this);
 		this.piece = null;
 	}
 
