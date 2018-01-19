@@ -119,7 +119,7 @@ public class Tile {
 		return (char)(97 + this.file);
 	}
 	
-	public int getFileIndex() {
+	private int getFileIndex() {
 		return this.file;
 	}
 	
@@ -127,7 +127,7 @@ public class Tile {
 		return 1 + this.rank;
 	}
 	
-	public int getRankIndex() {
+	private int getRankIndex() {
 		return this.rank;
 	}
 	

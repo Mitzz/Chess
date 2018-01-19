@@ -93,8 +93,8 @@ public class Board {
 		if(from.getRank() > to.getRank()) rankOffset = +1;
 		else 							  rankOffset = -1;
 		
-		System.out.println("Captured Piece for 'en passant' move at: " + tiles[enPassantTile.getRankIndex() + rankOffset][enPassantTile.getFileIndex()].getPosition());
-		tiles[enPassantTile.getRankIndex() + rankOffset][enPassantTile.getFileIndex()].removePiece();
+		System.out.println("Captured Piece for 'en passant' move at: " + tiles[enPassantTile.getRank() - 1 + rankOffset][enPassantTile.getFile() - 97].getPosition());
+		tiles[enPassantTile.getRank() - 1 + rankOffset][enPassantTile.getFile() - 97].removePiece();
 	}
 
 	private boolean isEnPassantMove(Tile from, Tile to) {
@@ -107,7 +107,7 @@ public class Board {
 			int rankOffset = 0;
 			if(from.getRank() > to.getRank()) rankOffset = +1;
 			else 							  rankOffset = -1;
-			enPassantTile = tiles[to.getRankIndex() + rankOffset][from.getFileIndex()];
+			enPassantTile = tiles[to.getRank() - 1 + rankOffset][from.getFile() - 97];
 		} else {
 			enPassantTile = null;
 		}
@@ -212,14 +212,14 @@ public class Board {
 		}
 		
 //		System.out.println("Game over testing - Black King");
-		if(isKingMovePossible(kingTile.getRankIndex() + 1, kingTile.getFileIndex() + 0, kingTile)) return false;
-		if(isKingMovePossible(kingTile.getRankIndex() + 1, kingTile.getFileIndex() + 1, kingTile)) return false;
-		if(isKingMovePossible(kingTile.getRankIndex() + 0, kingTile.getFileIndex() + 1, kingTile)) return false;
-		if(isKingMovePossible(kingTile.getRankIndex() - 1, kingTile.getFileIndex() + 1, kingTile)) return false;
-		if(isKingMovePossible(kingTile.getRankIndex() - 1, kingTile.getFileIndex() + 0, kingTile)) return false;
-		if(isKingMovePossible(kingTile.getRankIndex() - 1, kingTile.getFileIndex() - 1, kingTile)) return false;
-		if(isKingMovePossible(kingTile.getRankIndex() + 0, kingTile.getFileIndex() - 1, kingTile)) return false;
-		if(isKingMovePossible(kingTile.getRankIndex() + 1, kingTile.getFileIndex() - 1, kingTile)) return false;
+		if(isKingMovePossible((kingTile.getRank() - 1) + 1, (kingTile.getFile() - 97) + 0, kingTile)) return false;
+		if(isKingMovePossible((kingTile.getRank() - 1) + 1, (kingTile.getFile() - 97) + 1, kingTile)) return false;
+		if(isKingMovePossible((kingTile.getRank() - 1) + 0, (kingTile.getFile() - 97) + 1, kingTile)) return false;
+		if(isKingMovePossible((kingTile.getRank() - 1) - 1, (kingTile.getFile() - 97) + 1, kingTile)) return false;
+		if(isKingMovePossible((kingTile.getRank() - 1) - 1, (kingTile.getFile() - 97) + 0, kingTile)) return false;
+		if(isKingMovePossible((kingTile.getRank() - 1) - 1, (kingTile.getFile() - 97) - 1, kingTile)) return false;
+		if(isKingMovePossible((kingTile.getRank() - 1) + 0, (kingTile.getFile() - 97) - 1, kingTile)) return false;
+		if(isKingMovePossible((kingTile.getRank() - 1) + 1, (kingTile.getFile() - 97) - 1, kingTile)) return false;
 		return true;
 	}
 	
@@ -386,8 +386,8 @@ public class Board {
 	private List<Tile> getTilesForKingCheckByKnightAt(Tile kingTile) {
 		List<Integer> i = Arrays.asList(1, -1, 2, -2);
 		List<Tile> tilesc = new ArrayList<>();
-		int file = kingTile.getFileIndex();
-		int rank = kingTile.getRankIndex();
+		int file = (kingTile.getFile() - 97);
+		int rank = kingTile.getRank() - 1;
 		for(Integer v: i) {
 			for(Integer w: i) {
 				if(Math.abs(v) != Math.abs(w) && isValidTileAt(v + rank, w + file) && isCheckBy(kingTile, tiles[v + rank][w + file])) {
@@ -402,8 +402,8 @@ public class Board {
 	private boolean isCheckByKnight(Tile kingTile) {
 		List<Integer> i = Arrays.asList(1, -1, 2, -2);
 		
-		int file = kingTile.getFileIndex();
-		int rank = kingTile.getRankIndex();
+		int file = (kingTile.getFile() - 97);
+		int rank = kingTile.getRank() - 1;
 		for(Integer v: i) {
 			for(Integer w: i) {
 				if(Math.abs(v) != Math.abs(w) && isValidTileAt(v + rank, w + file) && isCheckBy(kingTile, tiles[v + rank][w + file])) {
@@ -510,8 +510,8 @@ public class Board {
 
 	private Tile getNextNonEmptyTile(Tile from, int rankOffset, int fileOffset) {
 
-		int fromRank = from.getRankIndex();
-		int fromFile = from.getFileIndex();
+		int fromRank = from.getRank() - 1;
+		int fromFile = from.getFile() - 97;
 		fromRank += rankOffset;
 		fromFile += fileOffset;
 		while(isValidTileAt(fromRank, fromFile)) {
@@ -569,13 +569,13 @@ public class Board {
 
 	private boolean isPathSidewayEmpty(Tile from, Tile to) {
 		int xOffset = new Integer(to.getRank()).compareTo(new Integer(from.getRank()));
-		int yOffset = new Integer(to.getFileIndex()).compareTo(new Integer(from.getFileIndex()));
+		int yOffset = new Integer(to.getFile() - 97).compareTo(new Integer(from.getFile() - 97));
 		return isPathEmpty(to, from, xOffset, yOffset);
 	}
 
 	private boolean isPathDiagonallyEmpty(Tile from, Tile to) {
 		int xOffset = new Integer(to.getRank()).compareTo(new Integer(from.getRank()));
-		int yOffset = new Integer(to.getFileIndex()).compareTo(new Integer(from.getFileIndex()));
+		int yOffset = new Integer(to.getFile() - 97).compareTo(new Integer(from.getFile() - 97));
 		return isPathEmpty(to, from, xOffset, yOffset);
 	}
 
@@ -592,15 +592,15 @@ public class Board {
 //		System.out.println("Rank Offset: " + rankOffset + ", File Offset: " + fileOffset);
 //		int toRank = to.getRank() - 1;
 //		int toFile = to.getFileIndex();
-		int fromRank = from.getRankIndex();
-		int fromFile = from.getFileIndex();
+		int fromRank = from.getRank() - 1;
+		int fromFile = from.getFile() - 97;
 		if(!validateSourceTargetTile(to, from)) {
 			return false;
 		}
 		
 		fromRank += rankOffset;
 		fromFile += fileOffset;
-		while(!(to.getRankIndex() == fromRank && to.getFileIndex() == fromFile)) {
+		while(!(to.getRank() - 1 == fromRank && (to.getFile() - 97) == fromFile)) {
 			System.out.println(String.format("Empty at %s:%s", tiles[fromRank][fromFile].getPosition(), tiles[fromRank][fromFile].isEmpty()));
 			if(!tiles[fromRank][fromFile].isEmpty()) {
 				System.out.println(tiles[fromRank][fromFile].getPosition() + " is not empty");

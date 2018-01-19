@@ -23,7 +23,7 @@ public class King extends Piece{
 		boolean valid = false;
 		Tile selfTile = this.getTile();
 		int rankDiff = Math.abs(selfTile.getRank() - to.getRank());
-		int fileIndexDiff = Math.abs(selfTile.getFileIndex() - to.getFileIndex());
+		int fileIndexDiff = Math.abs(selfTile.getFile() - to.getFile());
 		if((rankDiff == 0 || rankDiff == 1) && (fileIndexDiff == 0 || fileIndexDiff == 1) && (to.isEmpty() || (to.getPiece().getColor() != getColor()))) {
 			message = "1 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
 			valid = true;

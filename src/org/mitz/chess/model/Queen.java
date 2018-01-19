@@ -23,9 +23,9 @@ public class Queen extends Piece {
 		boolean valid = false;
 		Tile selfTile = this.getTile();
 		int rankDiff = Math.abs(selfTile.getRank() - to.getRank());
-		int fileIndexDiff = Math.abs(selfTile.getFileIndex() - to.getFileIndex());
+		int fileIndexDiff = Math.abs(selfTile.getFile() - to.getFile());
 		if(((rankDiff == fileIndexDiff) || 
-				((rankDiff > 0 && selfTile.getFileIndex() == to.getFileIndex()) ||
+				((rankDiff > 0 && selfTile.getFile() == to.getFile()) ||
 						(0 < fileIndexDiff && selfTile.getRank() == to.getRank()))) && 
 				(to.isEmpty() || (!to.isEmpty() && getColor() != to.getPiece().getColor()))) {
 			message = "1 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();

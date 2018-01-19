@@ -154,10 +154,10 @@ public class MovementTestUtility {
 		Tile targetTile = board.getTileAt(targetRank, targetFile);
 		Piece targetPiece = targetTile.getPiece();
 		assertTrue("Target Piece must be Pawn", targetPiece.isPawn());
-		/*if(isKingSideCastling(sourceFile, sourceRank, targetFile, targetRank)) {
-			assertTrue("Rook Piece must be moved during castling", !board.getTileAt(targetRank, (char)(targetFile - 1)).isEmpty());
-		} else {
-			assertTrue("Rook Piece must be moved during castling", !board.getTileAt(targetRank, (char)(targetFile + 1)).isEmpty());
-		}*/
+		int rankOffset = 0;
+		if(sourceRank > targetRank) 	  rankOffset = +1;
+		else 							  rankOffset = -1;
+		assertTrue("Tile must be empty", board.getTileAt(targetRank + rankOffset, targetFile).isEmpty());
+		
 	}
 }

@@ -22,7 +22,7 @@ public class Bishop extends Piece{
 		String message = "Piece '" + PIECE_DESC + "' movement invalid from " + this.getTile().getPosition() + " to " + to.getPosition();
 		boolean valid = false;
 		Tile selfTile = this.getTile();
-		if((Math.abs(selfTile.getRank() - to.getRank()) == Math.abs(selfTile.getFileIndex() - to.getFileIndex())) && 
+		if((Math.abs(selfTile.getRank() - to.getRank()) == Math.abs(selfTile.getFile() - to.getFile())) && 
 				(to.isEmpty() || (!to.isEmpty() && getColor() != to.getPiece().getColor()))) {
 			message = "1 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
 			valid = true;
