@@ -6,16 +6,18 @@ import org.mitz.chess.model.Board;
 import org.mitz.chess.model.Game;
 
 public class GameMovement {
-	
+	 
 	private Game game;
 	private Board board;
 	private MovementTestUtility movement;
+	private GameStateTest state;
 	
 	@Before
 	public void setUp() {
 		game = new Game();
 		board = game.getBoard();
 		movement = new MovementTestUtility(game, board);
+		state = new GameStateTest(game);
 	}
 	
 	@Test
@@ -440,10 +442,14 @@ public class GameMovement {
 		pawnPromotion('e', 2, 'e', 1);//Promoted to Queen
 		simpleValidMovement('e', 8, 'd', 8);
 		simpleValidMovement('g', 1, 'g', 8);
+		validateGameOver();
 		game.render();
 	}
 
-
+	public void validateGameOver() {
+		state.validateGameOver();
+	}
+	
 	private void invalidPieceMoveDueToCheckByOpponent(char sourceFile, int sourceRank, char targetFile, int targetRank) {
 		movement.invalidPieceMoveDueToCheckByOpponent(sourceFile, sourceRank, targetFile, targetRank);
 	}
