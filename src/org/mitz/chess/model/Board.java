@@ -18,6 +18,39 @@ public class Board {
 	private boolean isBlackCastlingPossibleOnQueenSide = true;
 	private Tile enPassantTile;
 	
+	private enum DirectionWeight{
+		LEFT(-1), RIGHT(1), UP(1), DOWN(-1);
+		
+		private int weight;
+		
+		private DirectionWeight(int wight){
+			this.weight = wight;
+		}
+		
+		public int weight(){
+			return weight;
+		}
+	}
+	
+	private enum Direction {
+		LEFT 		(DirectionWeight.LEFT.weight()	, 0),//5 
+		RIGHT		(DirectionWeight.RIGHT.weight(), 0), //1
+		UP			(0								, DirectionWeight.UP.weight()),//3 
+		DOWN		(0								, DirectionWeight.DOWN.weight()), //7
+		UP_LEFT		(DirectionWeight.LEFT.weight()	, DirectionWeight.UP.weight()), //4
+		UP_RIGHT	(DirectionWeight.RIGHT.weight(), DirectionWeight.UP.weight()), //2
+		DOWN_RIGHT	(DirectionWeight.RIGHT.weight(), DirectionWeight.DOWN.weight()), //8
+		DOWN_LEFT	(DirectionWeight.LEFT.weight()	, DirectionWeight.DOWN.weight());//6
+		
+		final int col;
+		final int row;
+		
+		private Direction(int col, int row){
+			this.col = col;
+			this.row = row;
+		}
+	};
+	
 	public Board() {
 		tiles = new Tile[8][8];
 		for(int rank = 0; rank < 8; rank++)
@@ -218,17 +251,21 @@ public class Board {
 	}
 
 	private boolean isKingMovePossible(Tile kingTile) {
-		int kingRank = kingTile.getRank() - 1;
-		int kingFile = kingTile.getFile() - 97;
+//		int kingRank = kingTile.getRank() - 1;
+//		int kingFile = kingTile.getFile() - 97;
 		
-		if(isKingMovePossible(kingRank + 1, kingFile + 0, kingTile)) return true;
-		if(isKingMovePossible(kingRank + 1, kingFile + 1, kingTile)) return true;
-		if(isKingMovePossible(kingRank + 0, kingFile + 1, kingTile)) return true;
-		if(isKingMovePossible(kingRank - 1, kingFile + 1, kingTile)) return true;
-		if(isKingMovePossible(kingRank - 1, kingFile + 0, kingTile)) return true;
-		if(isKingMovePossible(kingRank - 1, kingFile - 1, kingTile)) return true;
-		if(isKingMovePossible(kingRank + 0, kingFile - 1, kingTile)) return true;
-		if(isKingMovePossible(kingRank + 1, kingFile - 1, kingTile)) return true;
+		for(Direction direction: Direction.values()) {
+			if(isKingMovePossible(direction, kingTile)) return true;
+		}
+		
+//		if(isKingMovePossible(kingRank + 1, kingFile + 0, kingTile)) return true;
+//		if(isKingMovePossible(kingRank + 1, kingFile + 1, kingTile)) return true;
+//		if(isKingMovePossible(kingRank + 0, kingFile + 1, kingTile)) return true;
+//		if(isKingMovePossible(kingRank - 1, kingFile + 1, kingTile)) return true;
+//		if(isKingMovePossible(kingRank - 1, kingFile + 0, kingTile)) return true;
+//		if(isKingMovePossible(kingRank - 1, kingFile - 1, kingTile)) return true;
+//		if(isKingMovePossible(kingRank + 0, kingFile - 1, kingTile)) return true;
+//		if(isKingMovePossible(kingRank + 1, kingFile - 1, kingTile)) return true;
 		return false;
 	}
 	
@@ -242,6 +279,10 @@ public class Board {
 		}
 		
 		return tiles;
+	}
+	
+	private boolean isKingMovePossible(Direction direction, Tile kingTile) {
+		return isKingMovePossible(direction.row, direction.col, kingTile);
 	}
 	
 	private boolean isKingMovePossible(int r, int f, Tile kingTile) {
