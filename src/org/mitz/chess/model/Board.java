@@ -33,14 +33,14 @@ public class Board {
 	}
 	
 	private enum Direction {
-		LEFT 		(DirectionWeight.LEFT.weight()	, 0),//5 
-		RIGHT		(DirectionWeight.RIGHT.weight(), 0), //1
-		UP			(0								, DirectionWeight.UP.weight()),//3 
-		DOWN		(0								, DirectionWeight.DOWN.weight()), //7
-		UP_LEFT		(DirectionWeight.LEFT.weight()	, DirectionWeight.UP.weight()), //4
-		UP_RIGHT	(DirectionWeight.RIGHT.weight(), DirectionWeight.UP.weight()), //2
-		DOWN_RIGHT	(DirectionWeight.RIGHT.weight(), DirectionWeight.DOWN.weight()), //8
-		DOWN_LEFT	(DirectionWeight.LEFT.weight()	, DirectionWeight.DOWN.weight());//6
+		LEFT 		(DirectionWeight.LEFT.weight()	, 0), 
+		RIGHT		(DirectionWeight.RIGHT.weight(), 0), 
+		UP			(0								, DirectionWeight.UP.weight()), 
+		DOWN		(0								, DirectionWeight.DOWN.weight()), 
+		UP_LEFT		(DirectionWeight.LEFT.weight()	, DirectionWeight.UP.weight()), 
+		UP_RIGHT	(DirectionWeight.RIGHT.weight(), DirectionWeight.UP.weight()), 
+		DOWN_RIGHT	(DirectionWeight.RIGHT.weight(), DirectionWeight.DOWN.weight()), 
+		DOWN_LEFT	(DirectionWeight.LEFT.weight()	, DirectionWeight.DOWN.weight());
 		
 		final int col;
 		final int row;
@@ -208,10 +208,51 @@ public class Board {
 
 	public boolean isGameOver(boolean isWhiteTurn) {
 		boolean isGameOver = false;
+		System.out.println("Board.isStalement():"  + isStalemate(isWhiteTurn));
 		isGameOver = isCheckmate(isWhiteTurn);
+//		if(!isGameOver) 
+//			isGameOver = isStalemate(isWhiteTurn);
 		return isGameOver;
 	}
 	
+	private boolean isStalemate(boolean isWhiteTurn) {
+		List<Piece> allPieces = isWhiteTurn ? getAllBlackPieces() : getAllWhitePieces();
+		boolean isMovementPossible = allPieces.stream().filter(e -> !e.isKingPiece()).anyMatch(obj -> isMovementPossibleFrom(obj.getTile()));
+		return !isMovementPossible;
+	}
+	
+	private boolean isMovementPossibleFrom(Tile tile) {
+		
+		Direction[] directions = Direction.values();
+		boolean[] exhausted = new boolean[directions.length];
+		int step = 1;
+		while(!areAllTrue(exhausted)) {
+			for(Direction direction: directions) {
+				if(!exhausted[direction.ordinal()]) {
+					Tile nextTile = getNextTileFrom(tile, step, direction);
+					if(nextTile == null) exhausted[direction.ordinal()] = true;
+					else {
+						if(isPieceMoveValid(tile, nextTile)) return true;
+					}
+				}
+			}
+			step++;
+		}
+		
+		return false;
+	}
+	
+	private Tile getNextTileFrom(Tile tile, int step, Direction direction) {
+		if(isValidTileAt(step * direction.row, step * direction.col)) return tiles[step * direction.row][step * direction.col];
+		return null;
+	}
+
+	public static boolean areAllTrue(boolean[] array)
+	{
+	    for(boolean b : array) if(!b) return false;
+	    return true;
+	}
+
 	private boolean isCheckmate(boolean isWhiteTurn) {
 		Tile kingTile = null;
 		if(isWhiteTurn)
