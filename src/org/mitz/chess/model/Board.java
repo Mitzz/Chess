@@ -41,6 +41,15 @@ public class Board {
 		UP_RIGHT	(DirectionWeight.RIGHT.weight(), DirectionWeight.UP.weight()), 
 		DOWN_RIGHT	(DirectionWeight.RIGHT.weight(), DirectionWeight.DOWN.weight()), 
 		DOWN_LEFT	(DirectionWeight.LEFT.weight()	, DirectionWeight.DOWN.weight());
+//		LEFT_LEFT_UP 		(DirectionWeight.LEFT.weight()	* 2, DirectionWeight.UP.weight()), 
+//		LEFT_LEFT_DOWN 		(DirectionWeight.LEFT.weight()	* 2, DirectionWeight.DOWN.weight()),
+//		UP_UP_LEFT 		(DirectionWeight.LEFT.weight(), DirectionWeight.UP.weight() * 2), 
+//		UP_UP_RIGHT 		(DirectionWeight.RIGHT.weight(), DirectionWeight.UP.weight()* 2),
+//		RIGHT_RIGHT_UP 		(DirectionWeight.RIGHT.weight() * 2	, DirectionWeight.UP.weight()), 
+//		RIGHT_RIGHT_DOWN 		(DirectionWeight.RIGHT.weight()	* 2, DirectionWeight.DOWN.weight()),
+//		DOWN_DOWN_LEFT 		(DirectionWeight.LEFT.weight(), DirectionWeight.DOWN.weight() * 2), 
+//		DOWN_DOWN_RIGHT 		(DirectionWeight.RIGHT.weight(), DirectionWeight.DOWN.weight() * 2);
+		
 		
 		final int col;
 		final int row;
@@ -209,22 +218,21 @@ public class Board {
 	}
 
 	public GameState isGameOver(boolean isWhiteTurn) {
-		boolean isGameOver = false;
-		isGameOver = isCheckmate(isWhiteTurn);
-		if(isGameOver) return GameState.OVER_DUE_TO_CHECKMATE;
-		if(!isGameOver) 
-			isGameOver = isStalemate(isWhiteTurn);
-		if(isGameOver) return GameState.OVER_DUE_TO_STALEMATE;
+		Tile kingTile = isWhiteTurn ? getBlackKingTile() : getWhiteKingTile();
+		boolean isKingMovemntMandatory = isKingMoveMandatory(kingTile);
+		boolean isKingMovementPossible = isKingMovePossible(kingTile);
+		if(isKingMovemntMandatory && !isKingMovementPossible) return GameState.OVER_DUE_TO_CHECKMATE;
+		if(!isKingMovementPossible && !isPiecesMovementPossible(isWhiteTurn)) return GameState.OVER_DUE_TO_STALEMATE;
 		return GameState.IN_PROGRESS;
 	}
 	
-	private boolean isStalemate(boolean isWhiteTurn) {
+	private boolean isPiecesMovementPossible(boolean isWhiteTurn) {
 		System.out.println("Checking for Stalement");
 		List<Piece> allPieces = isWhiteTurn ? getAllBlackPieces() : getAllWhitePieces();
 		System.out.println("Pieces on board!!!");
 		allPieces.forEach(e -> System.out.println(e.getTile().getPosition()));
 		boolean isMovementPossible = allPieces.stream().filter(e -> !e.isKingPiece()).anyMatch(obj -> isMovementPossibleFrom(obj.getTile()));
-		return !isMovementPossible;
+		return isMovementPossible;
 	}
 	
 	private boolean isMovementPossibleFrom(Tile tile) {
@@ -247,6 +255,18 @@ public class Board {
 			}
 			System.out.println(String.format("************************ Step %s Over****", step));
 			step++;
+		}
+		
+		
+		List<Integer> i = Arrays.asList(1, -1, 2, -2);
+		for(Integer v: i) {
+			for(Integer w: i) {
+				int rank = v + tile.getRank() - 1;
+				int file = w + tile.getFile() - 97;
+				if(Math.abs(v) != Math.abs(w) && isValidTileAt(rank, file) && isPieceMoveValid(tile, tiles[rank][file])) {
+					return true;
+				}
+			}
 		}
 		
 		return false;

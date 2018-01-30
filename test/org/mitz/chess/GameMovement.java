@@ -442,11 +442,12 @@ public class GameMovement {
 		pawnPromotion('e', 2, 'e', 1);//Promoted to Queen
 		simpleValidMovement('e', 8, 'd', 8);
 		simpleValidMovement('g', 1, 'g', 8);
-		validateGameOver();
 		game.render();
+		validateGameOverByCheckmate();
+		
 	}
 
-	public void validateGameOver() {
+	public void validateGameOverByCheckmate() {
 		state.validateGameOverByCheckmate();
 	}
 	
