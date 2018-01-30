@@ -13,13 +13,11 @@ public class Game {
 	}
 
 	public boolean move(int fromRank, char fromFile, int toRank, char toFile) {
-		setStatus(GameState.IN_PROGRESS);
 		if(board.move(isWhiteTurn, fromRank - 1, (int)fromFile - 97, toRank - 1, (int)toFile - 97)) {
 			System.out.println("Checking for GAME OVER!!!!");
-			if(board.isGameOver(isWhiteTurn)) {
-				System.out.println("GAME OVER!!!!");
-				setStatus(GameState.OVER);
-			}
+			GameState gameState = board.isGameOver(isWhiteTurn);
+			setStatus(gameState);
+			System.out.println("Game State: " + gameState);
 			isWhiteTurn = !isWhiteTurn;
 			return true;
 		}
@@ -40,5 +38,15 @@ public class Game {
 
 	private void setStatus(GameState status) {
 		this.status = status;
+	}
+	
+	public void clear() {
+		if(GameState.NEW == getStatus()) {
+			for(int rank = 1; rank <= 8; rank++) {
+				for(char file = 'a'; file <= 'h'; file++) {
+					board.getTileAt(rank, file).removePiece();
+				}
+			}
+		}
 	}
 }

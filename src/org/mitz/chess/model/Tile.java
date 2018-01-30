@@ -75,10 +75,13 @@ public class Tile {
 		return this;
 	}
 	
-	public void removePiece() {
-		//Removal of Tile
-		this.piece.setTile(this);
-		this.piece = null;
+	public Tile removePiece() {
+		//Change during random game state
+		if(!isEmpty()) {
+			this.piece.setTile(null);
+			this.piece = null;
+		}
+		return this;
 	}
 
 	public Tile setPiece(Piece piece) {

@@ -10,14 +10,14 @@ public class GameMovement {
 	private Game game;
 	private Board board;
 	private MovementTestUtility movement;
-	private GameStateTest state;
+	private GameStateTestUtility state;
 	
 	@Before
 	public void setUp() {
 		game = new Game();
 		board = game.getBoard();
 		movement = new MovementTestUtility(game, board);
-		state = new GameStateTest(game);
+		state = new GameStateTestUtility(game);
 	}
 	
 	@Test
@@ -447,7 +447,7 @@ public class GameMovement {
 	}
 
 	public void validateGameOver() {
-		state.validateGameOver();
+		state.validateGameOverByCheckmate();
 	}
 	
 	private void invalidPieceMoveDueToCheckByOpponent(char sourceFile, int sourceRank, char targetFile, int targetRank) {

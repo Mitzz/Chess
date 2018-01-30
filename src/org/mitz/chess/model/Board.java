@@ -117,6 +117,8 @@ public class Board {
 		return valid;
 	}
 	
+	
+	
 	private void removeCapturedPieceInEnPassant(Tile from, Tile to) {
 		int rankOffset = 0;
 		if(from.getRank() > to.getRank()) rankOffset = +1;
@@ -206,36 +208,44 @@ public class Board {
 		return condition;
 	}
 
-	public boolean isGameOver(boolean isWhiteTurn) {
+	public GameState isGameOver(boolean isWhiteTurn) {
 		boolean isGameOver = false;
-		System.out.println("Board.isStalement():"  + isStalemate(isWhiteTurn));
 		isGameOver = isCheckmate(isWhiteTurn);
-//		if(!isGameOver) 
-//			isGameOver = isStalemate(isWhiteTurn);
-		return isGameOver;
+		if(isGameOver) return GameState.OVER_DUE_TO_CHECKMATE;
+		if(!isGameOver) 
+			isGameOver = isStalemate(isWhiteTurn);
+		if(isGameOver) return GameState.OVER_DUE_TO_STALEMATE;
+		return GameState.IN_PROGRESS;
 	}
 	
 	private boolean isStalemate(boolean isWhiteTurn) {
+		System.out.println("Checking for Stalement");
 		List<Piece> allPieces = isWhiteTurn ? getAllBlackPieces() : getAllWhitePieces();
+		System.out.println("Pieces on board!!!");
+		allPieces.forEach(e -> System.out.println(e.getTile().getPosition()));
 		boolean isMovementPossible = allPieces.stream().filter(e -> !e.isKingPiece()).anyMatch(obj -> isMovementPossibleFrom(obj.getTile()));
 		return !isMovementPossible;
 	}
 	
 	private boolean isMovementPossibleFrom(Tile tile) {
-		
+		System.out.println("Board.isMovementPossibleFrom(tile): " + tile.getPosition());
 		Direction[] directions = Direction.values();
 		boolean[] exhausted = new boolean[directions.length];
 		int step = 1;
 		while(!areAllTrue(exhausted)) {
+			System.out.println(String.format("************************ Step %s ****", step));
 			for(Direction direction: directions) {
-				if(!exhausted[direction.ordinal()]) {
+				int index = direction.ordinal();
+				System.out.println(String.format("Exhausted at %s : %s", index, exhausted[index]));
+				if(!exhausted[index]) {
 					Tile nextTile = getNextTileFrom(tile, step, direction);
-					if(nextTile == null) exhausted[direction.ordinal()] = true;
+					if(nextTile == null) exhausted[index] = true;
 					else {
 						if(isPieceMoveValid(tile, nextTile)) return true;
 					}
 				}
 			}
+			System.out.println(String.format("************************ Step %s Over****", step));
 			step++;
 		}
 		
@@ -243,8 +253,17 @@ public class Board {
 	}
 	
 	private Tile getNextTileFrom(Tile tile, int step, Direction direction) {
-		if(isValidTileAt(step * direction.row, step * direction.col)) return tiles[step * direction.row][step * direction.col];
-		return null;
+		Tile nextTile = null;
+		int rank = step * direction.row + tile.getRank() - 1;
+		int file = step * direction.col + tile.getFile() - 97;
+		if(isValidTileAt(rank, file)) 
+			nextTile = getTileAt(rank, file);
+		if(nextTile != null)
+			System.out.println("Next Tile: " + nextTile.getPosition());
+		else {
+			System.out.println("Next Tile: " + null);
+		}
+		return nextTile;
 	}
 
 	public static boolean areAllTrue(boolean[] array)
@@ -292,22 +311,37 @@ public class Board {
 	}
 
 	private boolean isKingMovePossible(Tile kingTile) {
-//		int kingRank = kingTile.getRank() - 1;
-//		int kingFile = kingTile.getFile() - 97;
-		
 		for(Direction direction: Direction.values()) {
 			if(isKingMovePossible(direction, kingTile)) return true;
 		}
 		
-//		if(isKingMovePossible(kingRank + 1, kingFile + 0, kingTile)) return true;
-//		if(isKingMovePossible(kingRank + 1, kingFile + 1, kingTile)) return true;
-//		if(isKingMovePossible(kingRank + 0, kingFile + 1, kingTile)) return true;
-//		if(isKingMovePossible(kingRank - 1, kingFile + 1, kingTile)) return true;
-//		if(isKingMovePossible(kingRank - 1, kingFile + 0, kingTile)) return true;
-//		if(isKingMovePossible(kingRank - 1, kingFile - 1, kingTile)) return true;
-//		if(isKingMovePossible(kingRank + 0, kingFile - 1, kingTile)) return true;
-//		if(isKingMovePossible(kingRank + 1, kingFile - 1, kingTile)) return true;
 		return false;
+	}
+	
+	private boolean isKingMovePossible(Direction direction, Tile kingTile) {
+		return isKingMovePossible(kingTile.getRank() - 1 +  direction.row, kingTile.getFile() - 97 + direction.col, kingTile);
+	}
+	
+	private boolean isKingMovePossible(int r, int f, Tile kingTile) {
+		
+		if(!isValidTileAt(r, f)) 
+			return false;
+		
+//		Color color = sourceTile.getPiece().getColor();
+		Tile possibleMovementTile = getTileAt(r, f);
+		
+		System.out.println("Board.isMovePossible(KingTile): " + possibleMovementTile.getPosition());
+		boolean isMovePossible = true;
+		if(possibleMovementTile.isEmpty() || !isSameOpponentPiece(kingTile, possibleMovementTile)) {
+			System.out.println("Inside");
+			Piece removedPiece = kingTile.movePieceTo(possibleMovementTile);
+			isMovePossible = !isKingCheckAt(possibleMovementTile);
+			possibleMovementTile.movePieceTo(kingTile, removedPiece);
+		} else {
+			return false;
+		}
+		 
+		return isMovePossible;
 	}
 	
 	private List<Tile> getValidMovementTilesAt(Tile targetTile){
@@ -322,31 +356,7 @@ public class Board {
 		return tiles;
 	}
 	
-	private boolean isKingMovePossible(Direction direction, Tile kingTile) {
-		return isKingMovePossible(direction.row, direction.col, kingTile);
-	}
 	
-	private boolean isKingMovePossible(int r, int f, Tile kingTile) {
-		
-		if(!isValidTileAt(r, f)) 
-			return false;
-		
-//		Color color = sourceTile.getPiece().getColor();
-		Tile possibleMovementTile = getTileAt(r, f);
-		
-		System.out.println("Board.isMovePossible(opponentTile): " + possibleMovementTile.getPosition());
-		boolean isMovePossible = true;
-		if(possibleMovementTile.isEmpty() || !isSameOpponentPiece(kingTile, possibleMovementTile)) {
-			System.out.println("Inside");
-			Piece removedPiece = kingTile.movePieceTo(possibleMovementTile);
-			isMovePossible = !isKingCheckAt(possibleMovementTile);
-			possibleMovementTile.movePieceTo(kingTile, removedPiece);
-		} else {
-			return false;
-		}
-		 
-		return isMovePossible;
-	}
 
 	private boolean isPieceMoveValid(Tile from, Tile to) {
 		if(from.isEmpty()) 					return false;
@@ -418,44 +428,22 @@ public class Board {
 	
 	private boolean isKingCheckAt(Tile kingTile) {
 		System.out.println("King Tile Present at: " + kingTile.getPosition());
-		if(isCheckBy(kingTile, getNextNonEmptyTile(kingTile, 1, 0))) return true;
-		if(isCheckBy(kingTile, getNextNonEmptyTile(kingTile, 1, 1))) return true;
-		if(isCheckBy(kingTile, getNextNonEmptyTile(kingTile, 0, 1))) return true;
-		if(isCheckBy(kingTile, getNextNonEmptyTile(kingTile, -1, 1))) return true;
-		if(isCheckBy(kingTile, getNextNonEmptyTile(kingTile, -1, 0))) return true;
-		if(isCheckBy(kingTile, getNextNonEmptyTile(kingTile, -1, -1))) return true;
-		if(isCheckBy(kingTile, getNextNonEmptyTile(kingTile, 0, -1))) return true;
-		if(isCheckBy(kingTile, getNextNonEmptyTile(kingTile, 1, -1))) return true;
+		
+		for(Direction direction: Direction.values()) {
+			if(isCheckBy(kingTile, getNextNonEmptyTile(kingTile, direction))) return true;
+		}
+		
 		return isCheckByKnight(kingTile);
 	}
 	
 	private List<Tile> getOpponentTilesResponsibleForCheckToKing(Tile kingTile) {
 		System.out.println("King Tile Present at: " + kingTile.getPosition());
 		List<Tile> opponentTiles = new ArrayList<>();
-		Tile nonEmptyTile = getNextNonEmptyTile(kingTile, 1, 0);
-		if(isCheckBy(kingTile, nonEmptyTile)) opponentTiles.add(nonEmptyTile);
-		
-		nonEmptyTile = getNextNonEmptyTile(kingTile, 1, 1);
-		if(isCheckBy(kingTile, nonEmptyTile)) opponentTiles.add(nonEmptyTile);
-		
-		nonEmptyTile = getNextNonEmptyTile(kingTile, -1, 1);
-		if(isCheckBy(kingTile, nonEmptyTile)) opponentTiles.add(nonEmptyTile);
-		
-		nonEmptyTile = getNextNonEmptyTile(kingTile, -1, 0);
-		if(isCheckBy(kingTile, nonEmptyTile)) opponentTiles.add(nonEmptyTile);
-		
-		nonEmptyTile = getNextNonEmptyTile(kingTile, -1, -1);
-		if(isCheckBy(kingTile, nonEmptyTile)) opponentTiles.add(nonEmptyTile);
-		
-		nonEmptyTile = getNextNonEmptyTile(kingTile, 0, -1);
-		if(isCheckBy(kingTile, nonEmptyTile)) opponentTiles.add(nonEmptyTile);
-		
-		nonEmptyTile = getNextNonEmptyTile(kingTile, 1, -1);
-		if(isCheckBy(kingTile, nonEmptyTile)) opponentTiles.add(nonEmptyTile);
-		
-		nonEmptyTile = getNextNonEmptyTile(kingTile, 0, 1);
-		if(isCheckBy(kingTile, nonEmptyTile)) opponentTiles.add(nonEmptyTile);
-		
+		Tile nonEmptyTile = null;
+		for (Direction direction : Direction.values()) {
+			nonEmptyTile = getNextNonEmptyTile(kingTile, direction);
+			if(isCheckBy(kingTile, nonEmptyTile)) opponentTiles.add(nonEmptyTile);
+		}
 		opponentTiles.addAll(getTilesForKingCheckByKnightAt(kingTile));
 		return opponentTiles;
 	}
@@ -477,6 +465,7 @@ public class Board {
 	}
 
 	private boolean isCheckByKnight(Tile kingTile) {
+		System.out.println("Board.isCheckByKnight()");
 		List<Integer> i = Arrays.asList(1, -1, 2, -2);
 		
 		int file = (kingTile.getFile() - 97);
@@ -493,6 +482,7 @@ public class Board {
 	}
 
 	private boolean isCheckBy(Tile kingTile, Tile opponentTile) {
+		
 		if(opponentTile != null && !opponentTile.isEmpty() && !isSameOpponentPiece(kingTile, opponentTile) && opponentTile.getPiece().validateMove(kingTile)) {
 			System.out.println("Check due to Opponent tile at " + opponentTile.getPosition());
 			return true;
@@ -583,21 +573,32 @@ public class Board {
 
 	private boolean isSameOpponentPiece(Tile v, Tile w) {
 		return (!v.isEmpty() && !w.isEmpty() && v.getPiece().getColor() == w.getPiece().getColor());
+	
+	}
+	
+	private Tile getNextNonEmptyTile(Tile from, Direction direction) {
+		return getNextNonEmptyTile(from, direction.row, direction.col);
 	}
 
 	private Tile getNextNonEmptyTile(Tile from, int rankOffset, int fileOffset) {
 
+		System.out.println("Board.getNextNonEmptyTile(from, rankOffset, fileOffset): " + from.getPosition() + " <-> " + rankOffset + " <-> " + fileOffset);
+		Tile nonEmptyTile = null;
 		int fromRank = from.getRank() - 1;
 		int fromFile = from.getFile() - 97;
 		fromRank += rankOffset;
 		fromFile += fileOffset;
 		while(isValidTileAt(fromRank, fromFile)) {
-			if(!tiles[fromRank][fromFile].isEmpty()) 
-				return tiles[fromRank][fromFile];
+			if(!tiles[fromRank][fromFile].isEmpty()) { 
+				nonEmptyTile = tiles[fromRank][fromFile];
+				break;
+			}
 			fromRank += rankOffset;
 			fromFile += fileOffset;
 		}
-		return null;
+		if(null != nonEmptyTile)
+			System.out.println("Non Empty Tile: " + nonEmptyTile.getPosition());
+		return nonEmptyTile;
 	}
 	
 	/*private boolean isWhitePieceMovementPossibleAt(Tile tile) {
@@ -678,9 +679,9 @@ public class Board {
 		fromRank += rankOffset;
 		fromFile += fileOffset;
 		while(!(to.getRank() - 1 == fromRank && (to.getFile() - 97) == fromFile)) {
-			System.out.println(String.format("Empty at %s:%s", tiles[fromRank][fromFile].getPosition(), tiles[fromRank][fromFile].isEmpty()));
+//			System.out.println(String.format("Empty at %s:%s", tiles[fromRank][fromFile].getPosition(), tiles[fromRank][fromFile].isEmpty()));
 			if(!tiles[fromRank][fromFile].isEmpty()) {
-				System.out.println(tiles[fromRank][fromFile].getPosition() + " is not empty");
+//				System.out.println(tiles[fromRank][fromFile].getPosition() + " is not empty");
 				return false;
 			}
 			fromRank += rankOffset;
