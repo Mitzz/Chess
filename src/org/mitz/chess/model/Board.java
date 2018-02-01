@@ -199,17 +199,33 @@ public class Board {
 		if(!isCastlingKingSide && isWhiteTurn && !isWhiteCastlingPossibleOnQueenSide) 	return false;
 		if(isCastlingKingSide && !isWhiteTurn && !isBlackCastlingPossibleOnKingSide) 	return false;
 		if(!isCastlingKingSide && !isWhiteTurn && !isBlackCastlingPossibleOnQueenSide) 	return false;
-		Tile rook = null;
-		if(isCastlingKingSide) {
-			if(isWhiteTurn) rook = getTileAt(1, 'h');
-			else 			rook = getTileAt(8, 'h');
-			if(!isPathSidewayEmpty(rook, to)) return false;
-		} else {
-			if(isWhiteTurn) rook = getTileAt(1, 'a');
-			else 			rook = getTileAt(8, 'a');
-			if(!isPathSidewayEmpty(rook, to)) return false;
-		}
+
+		isCastlingMovePossible = isPathEmptyForCastling(to, isWhiteTurn, isCastlingKingSide);
+
 		return isCastlingMovePossible;
+	}
+	
+	private boolean isPathEmptyForCastling(Tile to, boolean isWhiteTurn, boolean isCastlingKingSide) {
+		return isKingPathEmptyForCastling(to, isWhiteTurn, isCastlingKingSide) && isRookPathEmptyForCastling(to, isWhiteTurn, isCastlingKingSide);
+	}
+
+	private boolean isRookPathEmptyForCastling(Tile to, boolean isWhiteTurn, boolean isCastlingKingSide) {
+		char file = ' ';
+		if(isCastlingKingSide) 	file = 'h';
+		else 					file = 'a';
+		
+		return isPathEmptyForCastling(to, isWhiteTurn, file);
+	}
+
+	private boolean isKingPathEmptyForCastling(Tile to, boolean isWhiteTurn, boolean isCastlingKingSide) {
+		return isPathEmptyForCastling(to, isWhiteTurn, 'e');
+	}
+
+	private boolean isPathEmptyForCastling(Tile to, boolean isWhiteTurn, char file) {
+		Tile sourceTile;
+		if(isWhiteTurn) sourceTile = getTileAt(1, file);
+		else 			sourceTile = getTileAt(8, file);
+		return isPathSidewayEmpty(sourceTile, to);
 	}
 
 	private boolean isCastlingMove(Tile from, Tile to, boolean isWhiteTurn) {

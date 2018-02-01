@@ -1,9 +1,15 @@
 package org.mitz.chess;
 
+import java.awt.Color;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.mitz.chess.model.Bishop;
 import org.mitz.chess.model.Board;
 import org.mitz.chess.model.Game;
+import org.mitz.chess.model.King;
+import org.mitz.chess.model.Rook;
+import org.mitz.chess.model.Tile;
 
 public class CastlingMovement {
 	
@@ -110,6 +116,24 @@ public class CastlingMovement {
 		invalid('e', 1, 'c', 1);
 		simpleValidMovement('e', 1, 'd', 1);
 		game.render();
+	}
+	
+	@Test
+	public void bishopPiecePresence() {
+		game.clear();
+		
+		Tile t = board.getTileAt(1, 'e');
+		t.setPiece(new King(Color.WHITE, t));
+		
+		t = board.getTileAt(8, 'e');
+		t.setPiece(new King(Color.BLACK, t));
+		
+		t = board.getTileAt(1, 'f');
+		t.setPiece(new Bishop(Color.WHITE, t));
+		
+		t = board.getTileAt(1, 'h');
+		t.setPiece(new Rook(Color.WHITE, t));
+		invalid('e', 1, 'g', 1);
 	}
 	
 	private void invalid(char sourceFile, int sourceRank, char targetFile, int targetRank) {
