@@ -8,8 +8,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Board {
+import org.apache.log4j.Logger;
 
+public class Board {
+	final static Logger logger = Logger.getLogger(Board.class);
+	
 	private Tile[][] tiles;
 	private int successfulStep = 1;
 	private boolean isWhiteCastlingPossibleOnKingSide = true;
@@ -70,23 +73,23 @@ public class Board {
 	public boolean move(boolean isWhiteTurn, int fromRank, int fromFile, int toRank, int toFile) {
 		Tile from = tiles[fromRank][fromFile];
 		Tile to = tiles[toRank][toFile];
-		System.out.println("------------Movement Step " + successfulStep + " Initiated from " + from.getPosition() + " to " + to.getPosition() + "for " + (isWhiteTurn ? "white" : "black") + "----------");
+		logger.info("------------Movement Step " + successfulStep + " Initiated from " + from.getPosition() + " to " + to.getPosition() + "for " + (isWhiteTurn ? "white" : "black") + "----------");
 		if(!validateSourceTargetTile(to, from)) {
-			System.out.println("Either Source and Target Tile not valid");
 			return false;
 		}
 		if(!from.isEmpty() && !isMoveByTurn(isWhiteTurn, from)) {
-			System.out.println("Move Invalid due wrong player played");
+			logger.info("Move Invalid due wrong player played");
 			return false;
 		}
 		Piece capturedPiece = null;
 		boolean isEnPassantMove = false;
 		boolean isCastlingMove = false;
 		boolean valid = isPieceMoveValid(from, to) || (isCastlingMove = isCastlingMovePossible(from, to, isWhiteTurn)) || (isEnPassantMove = isEnPassantMove(from, to));
-//		boolean isKingCheckBeforeMove = false;
-		if(!valid) return false;
+		if(!valid) {
+			logger.info("Movement Invalid");
+			return false;
+		}
 		if(valid) {
-//			isKingCheckBeforeMove = from.hasKingPiece() && isKingCheckAt(from);
 			capturedPiece = from.movePieceTo(to);
 			successfulStep++;
 		}
@@ -97,18 +100,10 @@ public class Board {
 		
 		if(isKingCheckAfterMove) {
 			to.movePieceTo(from, capturedPiece);
-			System.out.println("Piece Movement Blocked due to check");
+			logger.info("Movement Blocked due to check");
 			successfulStep--;
 			return false;
 		}
-		
-		
-//		if(isCastlingMove(from, to, isWhiteTurn) && (!(isCastlingMove = isCastlingMovePossible(from, to, isWhiteTurn)) || isKingCheckBeforeMove)) {//Confused
-//			to.movePieceTo(from, capturedPiece);
-//			System.out.println("Piece Movement Blocked due to no castling possible");
-//			successfulStep--;
-//			return false;
-//		}
 		
 		if(isCastlingMove) {
 			doRookMovementForCastling(from, to, isWhiteTurn);
@@ -120,7 +115,7 @@ public class Board {
 		determineCastlingPossibility(from, to, isWhiteTurn);
 		determineEnPassantTile(from, to);
 		if(isPawnPromotion(isWhiteTurn, to)) {
-			System.out.println("Finally a promotion");
+			logger.info("Pawn promotion");
 			setPawnForPromotion(to);
 		}
 		
@@ -139,8 +134,10 @@ public class Board {
 	}
 
 	private boolean isEnPassantMove(Tile from, Tile to) {
-		System.out.println("Board.isEnPassantMove(): " + (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to)));
-		return (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to) );
+		logger.info("Enpassant Movement Possibility Check");
+		boolean isEnPassantMovePossible = (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to) ); 
+		logger.info("Enpassant Movement: " + isEnPassantMovePossible);
+		return isEnPassantMovePossible;
 	}
 
 	private void determineEnPassantTile(Tile from, Tile to) {
@@ -152,7 +149,7 @@ public class Board {
 		} else {
 			enPassantTile = null;
 		}
-		System.out.println("Board.determineEnPassantTile(EnpassantTile): " + ((enPassantTile == null) ? "None": enPassantTile.getPosition()));
+		logger.debug("EnpassantTile: " + ((enPassantTile == null) ? "None": enPassantTile.getPosition()));
 	}
 
 	private void doRookMovementForCastling(Tile from, Tile to, boolean isWhiteTurn) {
@@ -188,10 +185,11 @@ public class Board {
 			}
 		}
 		
-		System.out.println(String.format("Castling: WK - %s, WQ - %s, BK - %s, BQ - %s", isWhiteCastlingPossibleOnKingSide, isWhiteCastlingPossibleOnQueenSide, isBlackCastlingPossibleOnKingSide, isBlackCastlingPossibleOnQueenSide));
+		logger.info(String.format("Castling Status: WK - %s, WQ - %s, BK - %s, BQ - %s", isWhiteCastlingPossibleOnKingSide, isWhiteCastlingPossibleOnQueenSide, isBlackCastlingPossibleOnKingSide, isBlackCastlingPossibleOnQueenSide));
 	}
 
 	private boolean isCastlingMovePossible(Tile from, Tile to, boolean isWhiteTurn) {
+		logger.info("Castling Movement Possibility Check");
 		if(!from.hasKingPiece()) return false;
 		if(isKingCheckAt(from)) return false;
 		boolean isCastlingMovePossible = isWhiteTurn ? (isWhiteCastlingPossibleOnKingSide || isWhiteCastlingPossibleOnQueenSide) : (isBlackCastlingPossibleOnKingSide || isBlackCastlingPossibleOnQueenSide);
@@ -204,6 +202,7 @@ public class Board {
 
 		isCastlingMovePossible = isPathEmptyForCastling(to, isWhiteTurn, isCastlingKingSide);
 
+		logger.info("Castling Movement: " + isCastlingMovePossible);
 		return isCastlingMovePossible;
 	}
 	
@@ -232,6 +231,7 @@ public class Board {
 
 	public GameState isGameOver(boolean isWhiteTurn) {
 		Tile kingTile = isWhiteTurn ? getBlackKingTile() : getWhiteKingTile();
+		logger.info("*****Game Over Check********");
 		boolean isKingMovemntMandatory = isKingMoveMandatory(kingTile);
 		boolean isKingMovementPossible = isKingMovePossible(kingTile);
 		if(isKingMovemntMandatory && !isKingMovementPossible) return GameState.OVER_DUE_TO_CHECKMATE;
@@ -385,6 +385,7 @@ public class Board {
 		if(isSameOpponentPiece(from, to)) 	return false;
 		
 		boolean isMoveValid = from.getPiece().validateMove(to);
+		logger.info("Piece move valid: " + isMoveValid);
 		if(!isMoveValid) return false;
 		
 		boolean isPathEmpty = true;
@@ -392,7 +393,7 @@ public class Board {
 			isPathEmpty = false;
 		if(from.isMovementSideways(to) && !isPathSidewayEmpty(from, to)) 
 			isPathEmpty = false;
-		
+		logger.info("Path Empty: " + isPathEmpty);
 		return isPathEmpty;
 	}
 
@@ -715,11 +716,11 @@ public class Board {
 
 	private boolean validateSourceTargetTile(Tile to, Tile from) {
 		if(!isValidTile(from)) {
-			System.out.println("Move Invalid due to invalid source tile");
+			logger.info("Move Invalid due to invalid source tile");
 			return false;
 		}
 		if(!isValidTile(to)) {
-			System.out.println("Move Invalid due to invalid destination tile");
+			logger.info("Move Invalid due to invalid destination tile");
 			return false;
 		}
 		

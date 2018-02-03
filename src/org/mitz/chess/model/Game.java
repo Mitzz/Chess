@@ -1,7 +1,10 @@
 package org.mitz.chess.model;
 
+import org.apache.log4j.Logger;
+
 public class Game {
 
+	private static final Logger logger = Logger.getLogger(Game.class);
 	private Board board;
 	private boolean isWhiteTurn;
 	private GameState status;
@@ -13,11 +16,12 @@ public class Game {
 	}
 
 	public boolean move(int fromRank, char fromFile, int toRank, char toFile) {
-		if(board.move(isWhiteTurn, fromRank - 1, (int)fromFile - 97, toRank - 1, (int)toFile - 97)) {
-			System.out.println("Checking for GAME OVER!!!!");
+		boolean isMoveValid = board.move(isWhiteTurn, fromRank - 1, (int)fromFile - 97, toRank - 1, (int)toFile - 97);
+		logger.info("Movement Status: " + isMoveValid);
+		if(isMoveValid) {
 			GameState gameState = board.isGameOver(isWhiteTurn);
 			setStatus(gameState);
-			System.out.println("Game State: " + gameState);
+			logger.info("Game State: " + gameState);
 			isWhiteTurn = !isWhiteTurn;
 			return true;
 		}
