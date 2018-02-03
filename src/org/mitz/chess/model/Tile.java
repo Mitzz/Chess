@@ -2,8 +2,11 @@ package org.mitz.chess.model;
 
 import java.awt.Color;
 
+import org.apache.log4j.Logger;
+
 public class Tile {
 
+	private final static Logger logger = Logger.getLogger(Tile.class);
 	private final int rank;
 	private final int file;
 	private Color color;
@@ -57,7 +60,7 @@ public class Tile {
 		Piece piece = null;
 		if(!to.isEmpty()) {
 			piece = to.getPiece();
-			System.out.println("Piece Killed");
+			logger.debug("Piece Killed");
 		}
 		Piece p = this.getPiece();
 		removePiece();
@@ -112,9 +115,9 @@ public class Tile {
 //			valid = false;
 //		}
 //		if(valid)
-//			System.out.println(error);
+//			logger.debug(error);
 //		else 
-//			System.out.println(error);
+//			logger.debug(error);
 //		return valid;
 //	}
 	

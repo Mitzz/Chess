@@ -16,8 +16,8 @@ public class Game {
 	}
 
 	public boolean move(int fromRank, char fromFile, int toRank, char toFile) {
-		boolean isMoveValid = board.move(isWhiteTurn, fromRank - 1, (int)fromFile - 97, toRank - 1, (int)toFile - 97);
-		logger.info("Movement Status: " + isMoveValid);
+		boolean isMoveValid = board.move(isWhiteTurn, fromRank, fromFile, toRank , toFile );
+		logger.info("Movement Status: "	 + isMoveValid);
 		if(isMoveValid) {
 			GameState gameState = board.isGameOver(isWhiteTurn);
 			setStatus(gameState);

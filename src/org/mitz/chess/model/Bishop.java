@@ -2,8 +2,11 @@ package org.mitz.chess.model;
 
 import java.awt.Color;
 
+import org.apache.log4j.Logger;
+
 public class Bishop extends Piece{
 
+	private final static Logger logger = Logger.getLogger(Bishop.class);
 	private final String PIECE_NAME = "BISHOP";
 	private final String PIECE_DESC;
 
@@ -28,9 +31,9 @@ public class Bishop extends Piece{
 			valid = true;
 		}
 		if(valid)
-			System.out.println("Pawn.validateMove(message): " + message);
+			logger.debug("Pawn.validateMove(message): " + message);
 		else
-			System.out.println("Pawn.validateMove(message): " + message);
+			logger.debug("Pawn.validateMove(message): " + message);
 		return valid;
 	}
 	

@@ -2,8 +2,11 @@ package org.mitz.chess.model;
 
 import java.awt.Color;
 
+import org.apache.log4j.Logger;
+
 public class Rook extends Piece{
 
+	private final static Logger logger = Logger.getLogger(Rook.class);
 	private final String PIECE_NAME = "ROOK";
 	private final String PIECE_DESC;
 
@@ -36,9 +39,9 @@ public class Rook extends Piece{
 			valid = true;
 		}
 		if(valid)
-			System.out.println("Rook.validateMove(message): " + message);
+			logger.debug("Rook.validateMove(message): " + message);
 		else
-			System.out.println("Rook.validateMove(message): " + message);
+			logger.debug("Rook.validateMove(message): " + message);
 		return valid;
 	}
 
