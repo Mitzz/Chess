@@ -138,7 +138,7 @@ public class Board {
 	}
 
 	private boolean isEnPassantMove(Tile from, Tile to) {
-		System.out.println("Board.isEnPassantMove()" + (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to)));
+		System.out.println("Board.isEnPassantMove(): " + (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to)));
 		return (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to) );
 	}
 
@@ -265,7 +265,7 @@ public class Board {
 					Tile nextTile = getNextTileFrom(tile, step, direction);
 					if(nextTile == null) exhausted[index] = true;
 					else {
-						if(isPieceMoveValid(tile, nextTile)) return true;
+						if(isPieceMoveValid(tile, nextTile) || isEnPassantMove(tile, nextTile)) return true;
 					}
 				}
 			}

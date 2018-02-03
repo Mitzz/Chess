@@ -1,5 +1,7 @@
 package org.mitz.chess;
 
+import static org.junit.Assert.assertTrue;
+
 import java.awt.Color;
 
 import org.junit.Before;
@@ -9,6 +11,7 @@ import org.mitz.chess.model.Game;
 import org.mitz.chess.model.King;
 import org.mitz.chess.model.Knight;
 import org.mitz.chess.model.Pawn;
+import org.mitz.chess.model.Piece;
 import org.mitz.chess.model.Queen;
 import org.mitz.chess.model.Rook;
 import org.mitz.chess.model.Tile;
@@ -184,6 +187,47 @@ public class StalemateTest {
 		
 	}
 	
+	@Test
+	public void game8() {
+		game.clear();
+		Tile t = board.getTileAt(7, 'f');
+		t.setPiece(new King(Color.WHITE, t));
+		
+		t = board.getTileAt(5, 'g');
+		t.setPiece(new Queen(Color.WHITE, t));
+		
+		t = board.getTileAt(8, 'h');
+		t.setPiece(new King(Color.BLACK, t));
+		
+		t = board.getTileAt(5, 'b');
+		t.setPiece(new Pawn(Color.BLACK, t));
+		
+		t = board.getTileAt(3, 'b');
+		t.setPiece(new Pawn(Color.WHITE, t));
+		
+		t = board.getTileAt(2, 'c');
+		t.setPiece(new Pawn(Color.WHITE, t));
+		
+		t = board.getTileAt(1, 'c');
+		t.setPiece(new Rook(Color.WHITE, t));
+		
+		simpleValidMovement('g', 5, 'g', 6);
+		validateGameInProgress();
+		simpleValidMovement('b', 5, 'b', 4);
+		validateGameInProgress();
+		simpleValidMovement('c', 2, 'c', 4);
+		validateGameInProgress();
+		enPassantValidMovement('b', 4, 'c', 3);
+		validateGameInProgress();
+		simpleValidMovement('b', 3, 'b', 4);
+		validateGameInProgress();
+		simpleValidMovement('c', 3, 'c', 2);
+		validateGameInProgress();
+		simpleValidMovement('b', 4, 'b', 5);
+		validateGameOverByStalemate();
+		game.render();
+	}
+	
 	private void simpleValidMovement(char sourceFile, int sourceRank, char targetFile, int targetRank) {
 		movement.simpleValidMovement(sourceFile, sourceRank, targetFile, targetRank);
 	}
@@ -194,5 +238,9 @@ public class StalemateTest {
 	
 	public void validateGameInProgress() {
 		state.validateGameInProgress();
+	}
+
+	public void enPassantValidMovement(char sourceFile, int sourceRank, char targetFile, int targetRank) {
+		movement.enPassantValidMovement(sourceFile, sourceRank, targetFile, targetRank);
 	}
 }
