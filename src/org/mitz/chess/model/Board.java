@@ -110,13 +110,9 @@ public class Board {
 			return false;
 		}
 		
-		if(isCastlingMove) {
-			doRookMovementForCastling(from, to, isWhiteTurn);
-		}
+		if(isCastlingMove)  doRookMovementForCastling(from, to, isWhiteTurn);
+		if(isEnPassantMove) removeCapturedPieceInEnPassant(from, to);
 		
-		if(isEnPassantMove) {
-			removeCapturedPieceInEnPassant(from, to);
-		}
 		determineCastlingPossibility(from, to, isWhiteTurn);
 		determineEnPassantTile(from, to);
 		if(isPawnPromotion(isWhiteTurn, to)) {
@@ -195,8 +191,9 @@ public class Board {
 
 	private boolean isCastlingMovePossible(Tile from, Tile to, boolean isWhiteTurn) {
 		logger.info("Castling Movement Possibility Check");
-		if(!from.hasKingPiece()) return false;
-		if(isKingCheckAt(from)) return false;
+		if(!from.hasKingPiece()) 	return false;
+		if(isKingCheckAt(from)) 	return false;
+		if(!to.isEmpty()) 			return false;
 		boolean isCastlingMovePossible = isWhiteTurn ? (isWhiteCastlingPossibleOnKingSide || isWhiteCastlingPossibleOnQueenSide) : (isBlackCastlingPossibleOnKingSide || isBlackCastlingPossibleOnQueenSide);
 		if(!isCastlingMovePossible) return isCastlingMovePossible;
 		boolean isCastlingKingSide = (to.getFile() - from.getFile()) == 2;

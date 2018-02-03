@@ -136,6 +136,26 @@ public class CastlingMovement {
 		invalid('e', 1, 'g', 1);
 	}
 	
+	@Test
+	public void opponentPiecePresence() {
+		game.clear();
+		
+		Tile t = board.getTileAt(1, 'e');
+		t.setPiece(new King(Color.WHITE, t));
+		
+		t = board.getTileAt(8, 'e');
+		t.setPiece(new King(Color.BLACK, t));
+		
+		t = board.getTileAt(1, 'g');
+		t.setPiece(new Bishop(Color.BLACK, t));
+		
+		t = board.getTileAt(1, 'h');
+		t.setPiece(new Rook(Color.WHITE, t));
+		
+		invalid('e', 1, 'g', 1);
+		game.render();
+	}
+	
 	private void invalid(char sourceFile, int sourceRank, char targetFile, int targetRank) {
 		movement.invalid(sourceFile, sourceRank, targetFile, targetRank);
 	}
