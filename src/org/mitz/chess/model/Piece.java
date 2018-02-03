@@ -12,18 +12,17 @@ public class Piece {
 		this.tile = tile;
 	}
 
-	public void move(Tile from, Tile to) {
-
-	}
+//	public void move(Tile from, Tile to) {
+//
+//	}
 
 	public boolean validateMove(Tile to) {
-
 		return true;
 	}
 
-	public void remove() {
-		this.tile = null;
-	}
+//	public void remove() {
+//		this.tile = null;
+//	}
 	
 	public Tile getTile() {
 		return tile;

@@ -81,11 +81,12 @@ public class Board {
 		}
 		Piece capturedPiece = null;
 		boolean isEnPassantMove = false;
-		boolean valid = isPieceMoveValid(from, to) || (from.hasKingPiece() && isCastlingMove(to, from, isWhiteTurn)) || (isEnPassantMove = isEnPassantMove(from, to));
-		boolean isKingCheckBeforeMove = false;
+		boolean isCastlingMove = false;
+		boolean valid = isPieceMoveValid(from, to) || (isCastlingMove = isCastlingMovePossible(from, to, isWhiteTurn)) || (isEnPassantMove = isEnPassantMove(from, to));
+//		boolean isKingCheckBeforeMove = false;
 		if(!valid) return false;
 		if(valid) {
-			isKingCheckBeforeMove = from.hasKingPiece() && isKingCheckAt(from);
+//			isKingCheckBeforeMove = from.hasKingPiece() && isKingCheckAt(from);
 			capturedPiece = from.movePieceTo(to);
 			successfulStep++;
 		}
@@ -101,15 +102,15 @@ public class Board {
 			return false;
 		}
 		
-		boolean isCastlingMovement = false;
-		if(isCastlingMove(from, to, isWhiteTurn) && (!(isCastlingMovement = isCastlingMovePossible(from, to, isWhiteTurn)) || isKingCheckBeforeMove)) {//Confused
-			to.movePieceTo(from, capturedPiece);
-			System.out.println("Piece Movement Blocked due to no castling possible");
-			successfulStep--;
-			return false;
-		}
 		
-		if(isCastlingMovement && !isKingCheckBeforeMove) {
+//		if(isCastlingMove(from, to, isWhiteTurn) && (!(isCastlingMove = isCastlingMovePossible(from, to, isWhiteTurn)) || isKingCheckBeforeMove)) {//Confused
+//			to.movePieceTo(from, capturedPiece);
+//			System.out.println("Piece Movement Blocked due to no castling possible");
+//			successfulStep--;
+//			return false;
+//		}
+		
+		if(isCastlingMove) {
 			doRookMovementForCastling(from, to, isWhiteTurn);
 		}
 		
@@ -191,7 +192,8 @@ public class Board {
 	}
 
 	private boolean isCastlingMovePossible(Tile from, Tile to, boolean isWhiteTurn) {
-		
+		if(!from.hasKingPiece()) return false;
+		if(isKingCheckAt(from)) return false;
 		boolean isCastlingMovePossible = isWhiteTurn ? (isWhiteCastlingPossibleOnKingSide || isWhiteCastlingPossibleOnQueenSide) : (isBlackCastlingPossibleOnKingSide || isBlackCastlingPossibleOnQueenSide);
 		if(!isCastlingMovePossible) return isCastlingMovePossible;
 		boolean isCastlingKingSide = (to.getFile() - from.getFile()) == 2;
@@ -226,11 +228,6 @@ public class Board {
 		if(isWhiteTurn) sourceTile = getTileAt(1, file);
 		else 			sourceTile = getTileAt(8, file);
 		return isPathSidewayEmpty(sourceTile, to);
-	}
-
-	private boolean isCastlingMove(Tile from, Tile to, boolean isWhiteTurn) {
-		boolean condition = to.hasKingPiece() && (isWhiteTurn ? from.isFirstRank() : from.isLastRank()) && (Math.abs(from.getFile() - to.getFile()) == 2); 
-		return condition;
 	}
 
 	public GameState isGameOver(boolean isWhiteTurn) {
@@ -306,18 +303,6 @@ public class Board {
 	{
 	    for(boolean b : array) if(!b) return false;
 	    return true;
-	}
-
-	private boolean isCheckmate(boolean isWhiteTurn) {
-		Tile kingTile = null;
-		if(isWhiteTurn)
-			kingTile = getBlackKingTile();
-		else 
-			kingTile = getWhiteKingTile();
-		
-		boolean isKingMoveMandatory = isKingMoveMandatory(kingTile);
-		
-		return isKingMoveMandatory && !isKingMovePossible(kingTile);
 	}
 
 	private boolean isKingMoveMandatory(Tile kingTile) {
