@@ -231,7 +231,7 @@ public class Board {
 		return isPathSidewayEmpty(sourceTile, to);
 	}
 
-	public GameState isGameOver(boolean isWhiteTurn) {
+	public GameState getGameStatus(boolean isWhiteTurn) {
 		Tile kingTile = isWhiteTurn ? getBlackKingTile() : getWhiteKingTile();
 		logger.info("*****Game Over Check********");
 		boolean isKingMovemntMandatory = isKingMoveMandatory(kingTile);

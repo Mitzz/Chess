@@ -1,7 +1,5 @@
 package org.mitz.chess;
 
-import static org.junit.Assert.assertTrue;
-
 import java.awt.Color;
 
 import org.junit.Before;
@@ -11,7 +9,6 @@ import org.mitz.chess.model.Game;
 import org.mitz.chess.model.King;
 import org.mitz.chess.model.Knight;
 import org.mitz.chess.model.Pawn;
-import org.mitz.chess.model.Piece;
 import org.mitz.chess.model.Queen;
 import org.mitz.chess.model.Rook;
 import org.mitz.chess.model.Tile;

@@ -19,7 +19,7 @@ public class Game {
 		boolean isMoveValid = board.move(isWhiteTurn, fromRank, fromFile, toRank , toFile );
 		logger.info("Movement Status: "	 + isMoveValid);
 		if(isMoveValid) {
-			GameState gameState = board.isGameOver(isWhiteTurn);
+			GameState gameState = board.getGameStatus(isWhiteTurn);
 			setStatus(gameState);
 			logger.info("Game State: " + gameState);
 			isWhiteTurn = !isWhiteTurn;
