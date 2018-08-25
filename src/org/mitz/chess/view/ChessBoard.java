@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 
 import org.mitz.chess.model.Board;
 import org.mitz.chess.model.Game;
+import org.mitz.chess.model.Piece;
 
 public class ChessBoard extends JPanel{
 	private Game game;
@@ -85,6 +86,15 @@ public class ChessBoard extends JPanel{
 
 	private void drawBoard(Graphics g) {
 		Board board = game.getBoard();
-		
+		for(int rank = 1; rank <= 8; rank++) {
+			for(char file = 'a'; file <= 'h'; file++) {
+				
+				RectangleComponent rectangleComponent = new RectangleComponent(((int)file - 96)  * squareSize + xOffset, rank * squareSize + yOffset, squareSize, squareSize);
+				rectangleComponent.interiorColor((((int)file + rank) % 2 == 0) ? Color.WHITE : Color.BLACK).draw(g);
+				
+				System.out.println(rank +  ":" + file);
+				Piece piece = board.getTileAt(rank, file).getPiece();
+			}
+		}
 	}
 }
