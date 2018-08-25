@@ -9,6 +9,7 @@ public class ChessView {
 		frame.setLocation(100, 100);
 		frame.setSize(500, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().add(new ChessPanel());
 		frame.setVisible(true);
 	}
 }
