@@ -87,11 +87,13 @@ public class RectangleComponent{
 	}
 	
 	public RectangleComponent drawChar(Graphics g, char ch, Color color) {
-		g.setColor(color);
-//		Point topLeft = ComponentUtility.getTopLeft(center, width, height);
-		g.drawString(String.valueOf(ch), center.x - 3, center.y + 3);
-		return this;
+		return drawUnicode(g, String.valueOf(ch), color);
 	}
 	
-	
+	public RectangleComponent drawUnicode(Graphics g, String ch, Color color) {
+		g.setColor(color);
+//		Point topLeft = ComponentUtility.getTopLeft(center, width, height);
+		g.drawString(ch, center.x - 3, center.y + 3);
+		return this;
+	}
 }
