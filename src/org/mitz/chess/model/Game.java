@@ -53,4 +53,9 @@ public class Game {
 			}
 		}
 	}
+
+	public boolean isWhiteTurn() {
+		return isWhiteTurn;
+	}
+	
 }

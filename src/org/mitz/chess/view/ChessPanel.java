@@ -12,7 +12,17 @@ public class ChessPanel extends JPanel {
 		setLayout(null);
 		setBackground(new Color(0, 100, 0));
 		
-		ChessBoard board = new ChessBoard();
+		JLabel player2Label = new JLabel("Player 2");
+		player2Label.setBounds(130, 8, 210, 24);
+		player2Label.setForeground(Color.CYAN);
+		add(player2Label);
+		
+		JLabel player1Label = new JLabel("Player 1");
+		player1Label.setBounds(130, 280, 210, 24);
+		player1Label.setForeground(Color.CYAN);
+		add(player1Label);
+		
+		ChessBoard board = new ChessBoard(player1Label, player2Label);
 		board.setBounds(25, 30, 252, 252);
 		add(board);
 		board.addMouseListener(board);
@@ -25,16 +35,6 @@ public class ChessPanel extends JPanel {
 		resignBtn.setBounds(300, 130, 110, 24);
 		add(resignBtn);
 		
-		JLabel player2Label = new JLabel("Player 2");
-		player2Label.setBounds(130, 8, 210, 24);
-		player2Label.setForeground(Color.CYAN);
-		add(player2Label);
-		
-		JLabel player1Label = new JLabel("Player 1");
-		player1Label.setBounds(130, 280, 210, 24);
-		player1Label.setForeground(Color.CYAN);
-		add(player1Label);
-		
 		JLabel gameStatusLabel = new JLabel("Click 'New Game' to start new game");
 		gameStatusLabel.setBounds(30, 315, 210, 24);
 		gameStatusLabel.setForeground(Color.CYAN);
@@ -44,6 +44,9 @@ public class ChessPanel extends JPanel {
 		movementStatusLabel.setBounds(30, 350, 210, 24);
 		movementStatusLabel.setForeground(Color.CYAN);
 		add(movementStatusLabel);
+		
+		newGameBtn.addActionListener((e) -> board.reset());
+		newGameBtn.addActionListener((e) -> gameStatusLabel.setText("Game in progress"));
 		
 	}
 }

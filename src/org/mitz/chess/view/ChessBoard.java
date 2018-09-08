@@ -5,10 +5,13 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.mitz.chess.model.Board;
 import org.mitz.chess.model.Game;
+import org.mitz.chess.model.GameState;
 import org.mitz.chess.model.Piece;
 import org.mitz.chess.model.Tile;
 
@@ -17,13 +20,28 @@ public class ChessBoard extends JPanel implements MouseListener{
 	private int squareSize = 25;
 	private int xOffset = 1;
 	private int yOffset = 1;
+	private JLabel player1Label;
+	private JLabel player2Label;
+	
 	
 	public ChessBoard() {
 		init();
 	}
 
+	public ChessBoard(JLabel player1Label, JLabel player2Label) {
+		this.player1Label = player1Label;
+		this.player2Label = player2Label;
+		init();
+	}
+
 	private void init() {
 		game = new Game();
+	}
+	
+	public void reset() {
+		game = new Game();
+		updatePlayerTurn();
+		repaint();
 	}
 
 	@Override
@@ -31,6 +49,18 @@ public class ChessBoard extends JPanel implements MouseListener{
 		super.paintComponent(g);
 		drawLabel(g);
 		drawBoard(g);
+	}
+
+	private void updatePlayerTurn() {
+		if(game.getStatus() == GameState.IN_PROGRESS || game.getStatus() == GameState.NEW) {
+			if(game.isWhiteTurn()) {
+				player1Label.setText("White Player Turn");
+				player2Label.setText("Black Player");
+			} else {
+				player2Label.setText("Black Player Turn");
+				player1Label.setText("White Player");
+			}
+		}
 	}
 
 	private void drawLabel(Graphics g) {
