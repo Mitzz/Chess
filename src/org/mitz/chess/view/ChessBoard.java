@@ -2,6 +2,8 @@ package org.mitz.chess.view;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
@@ -10,7 +12,7 @@ import org.mitz.chess.model.Game;
 import org.mitz.chess.model.Piece;
 import org.mitz.chess.model.Tile;
 
-public class ChessBoard extends JPanel{
+public class ChessBoard extends JPanel implements MouseListener{
 	private Game game;
 	private int squareSize = 25;
 	private int xOffset = 1;
@@ -93,7 +95,6 @@ public class ChessBoard extends JPanel{
 				RectangleComponent rectangleComponent = new RectangleComponent(((int)file - 96)  * squareSize + xOffset, rank * squareSize + yOffset, squareSize, squareSize);
 				rectangleComponent.interiorColor((((int)file + rank) % 2 == 0) ? new Color(240, 220, 130) : new Color(138, 51, 36)).draw(g);
 				
-				System.out.println(rank +  ":" + file);
 				Tile tile = board.getTileAt(9 - rank, file);
 				if(!tile.isEmpty()) {
 					Piece piece = tile.getPiece();
@@ -101,5 +102,31 @@ public class ChessBoard extends JPanel{
 				}
 			}
 		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		System.out.println(String.format("Mouse Clicked at (x,y) -> (%d, %d)", e.getX(), e.getY()));
+		System.out.println(String.format("Mouse Clicked at (file, rank) -> (%s, %s)", (char)(e.getX() / 25 - 1 + 97), 9 - (e.getY() / 25)));
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+//		System.out.println("Mouse Entered");
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+//		System.out.println("Mouse Exited");
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+//		System.out.println("Mouse Pressed");
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+//		System.out.println("Mouse Released");
 	}
 }

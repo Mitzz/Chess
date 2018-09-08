@@ -15,6 +15,7 @@ public class ChessPanel extends JPanel {
 		ChessBoard board = new ChessBoard();
 		board.setBounds(25, 30, 252, 252);
 		add(board);
+		board.addMouseListener(board);
 		
 		JButton newGameBtn = new JButton("New Game");
 		newGameBtn.setBounds(300, 70, 110, 24);
