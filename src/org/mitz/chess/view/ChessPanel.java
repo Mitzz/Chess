@@ -34,9 +34,10 @@ public class ChessPanel extends JPanel {
 		JButton resignBtn = new JButton("Resign");
 		resignBtn.setBounds(300, 130, 110, 24);
 		add(resignBtn);
+		resignBtn.setEnabled(false);
 		
 		JLabel gameStatusLabel = new JLabel("Click 'New Game' to start new game");
-		gameStatusLabel.setBounds(30, 315, 210, 24);
+		gameStatusLabel.setBounds(30, 315, 510, 24);
 		gameStatusLabel.setForeground(Color.CYAN);
 		add(gameStatusLabel);
 		
@@ -47,6 +48,15 @@ public class ChessPanel extends JPanel {
 		
 		newGameBtn.addActionListener((e) -> board.reset());
 		newGameBtn.addActionListener((e) -> gameStatusLabel.setText("Game in progress"));
+		newGameBtn.addActionListener((e) -> resignBtn.setEnabled(true));
 		
+		resignBtn.addActionListener( e -> {
+			if(board.isWhiteTurn()) {
+				gameStatusLabel.setText("White Player Resigned. Click 'New Game' to start new game");
+			} else {
+				gameStatusLabel.setText("Black Player Resigned. Click 'New Game' to start new game");
+			}
+			resignBtn.setEnabled(false);
+		});
 	}
 }

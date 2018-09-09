@@ -159,4 +159,8 @@ public class ChessBoard extends JPanel implements MouseListener{
 	public void mouseReleased(MouseEvent e) {
 //		System.out.println("Mouse Released");
 	}
+	
+	public boolean isWhiteTurn() {
+		return game.isWhiteTurn();
+	}
 }
