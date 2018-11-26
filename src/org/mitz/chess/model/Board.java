@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -123,8 +126,50 @@ public class Board {
 		return valid;
 	}
 	
+	public Collection<Tile> getWhiteMovableTiles(){
+		Collection<Tile> movableTiles = new HashSet<>();
+		Collection<Tile> tiles = getWhileTiles();
+		Collection<Tile> otherTiles = getNonWhiteTiles();
+		
+		movableTiles = tiles.stream().filter(tile -> (otherTiles.stream().anyMatch(otherTile -> isPieceMoveValid(tile, otherTile)))).collect(Collectors.toSet());
+		System.out.println(movableTiles.size());
+		return movableTiles;
+	}
 	
+	private Collection<Tile> getNonWhiteTiles() {
+		Collection<Tile> tilesCol = new ArrayList<>();
+		for(int rank = 0; rank < 8; rank++) {
+			for(int file = 0; file < 8; file++) {
+				Tile tile = tiles[rank][file]; 
+				if(tile.isEmpty() || tile.getPiece().getColor() != Color.WHITE) {
+					tilesCol.add(tile);
+				}
+			}
+		}
+		return tilesCol;
+	}
+
+	private Collection<Tile> getWhileTiles() {
+		return getTiles(Color.WHITE);
+	}
 	
+	private Collection<Tile> getBlackTiles() {
+		return getTiles(Color.BLACK);
+	}
+	
+	private Collection<Tile> getTiles(Color color) {
+		Collection<Tile> tilesCol = new ArrayList<>();
+		for(int rank = 0; rank < 8; rank++) {
+			for(int file = 0; file < 8; file++) {
+				Tile tile = tiles[rank][file]; 
+				if(!tile.isEmpty() && tile.getPiece().getColor() == color) {
+					tilesCol.add(tile);
+				}
+			}
+		}
+		return tilesCol;
+	}
+
 	private void removeCapturedPieceInEnPassant(Tile from, Tile to) {
 		int rankOffset = 0;
 		if(from.getRank() > to.getRank()) rankOffset = +1;
@@ -411,7 +456,7 @@ public class Board {
 		}
 		return pieces;
 	}
-
+	
 	private Tile getTileAt(int r, int f) {
 		return tiles[r][f];
 	}
