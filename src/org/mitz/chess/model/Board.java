@@ -9,9 +9,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.mitz.utility.CollectionUtility;
 
 public class Board {
 	final static Logger logger = Logger.getLogger(Board.class);
@@ -128,7 +130,7 @@ public class Board {
 	
 	public Collection<Tile> getWhiteMovableTiles(){
 		Collection<Tile> movableTiles = new HashSet<>();
-		Collection<Tile> tiles = getWhileTiles();
+		Collection<Tile> tiles = getWhiteTiles();
 		Collection<Tile> otherTiles = getNonWhiteTiles();
 		
 		movableTiles = tiles.stream().filter(tile -> (otherTiles.stream().anyMatch(otherTile -> isPieceMoveValid(tile, otherTile)))).collect(Collectors.toSet());
@@ -137,39 +139,21 @@ public class Board {
 	}
 	
 	private Collection<Tile> getNonWhiteTiles() {
-		Collection<Tile> tilesCol = new ArrayList<>();
-		for(int rank = 0; rank < 8; rank++) {
-			for(int file = 0; file < 8; file++) {
-				Tile tile = tiles[rank][file]; 
-				if(tile.isEmpty() || tile.getPiece().getColor() != Color.WHITE) {
-					tilesCol.add(tile);
-				}
-			}
-		}
-		return tilesCol;
+		return getTiles(isEmptyTile().or(isBlackPieceTile()));
 	}
-
-	private Collection<Tile> getWhileTiles() {
-		return getTiles(Color.WHITE);
+	
+	private Collection<Tile> getNonBlackTiles() {
+		return getTiles(isEmptyTile().or(isWhitePieceTile()));
+	}
+	
+	private Collection<Tile> getWhiteTiles() {
+		return getTiles(isNonEmptyTile().and(isWhitePieceTile()));
 	}
 	
 	private Collection<Tile> getBlackTiles() {
-		return getTiles(Color.BLACK);
+		return getTiles(isNonEmptyTile().and(isBlackPieceTile()));
 	}
 	
-	private Collection<Tile> getTiles(Color color) {
-		Collection<Tile> tilesCol = new ArrayList<>();
-		for(int rank = 0; rank < 8; rank++) {
-			for(int file = 0; file < 8; file++) {
-				Tile tile = tiles[rank][file]; 
-				if(!tile.isEmpty() && tile.getPiece().getColor() == color) {
-					tilesCol.add(tile);
-				}
-			}
-		}
-		return tilesCol;
-	}
-
 	private void removeCapturedPieceInEnPassant(Tile from, Tile to) {
 		int rankOffset = 0;
 		if(from.getRank() > to.getRank()) rankOffset = +1;
@@ -424,7 +408,15 @@ public class Board {
 		return tiles;
 	}
 	
-	
+	public Collection<Tile> getPossibleMovementTilesFrom(Tile sourceTile){
+		if(!isValidTile(sourceTile) || sourceTile.isEmpty()) return new ArrayList<>();
+		Collection<Tile> targetTiles = (sourceTile.getPiece().getColor() == Color.BLACK ? getNonBlackTiles() : getNonWhiteTiles());
+		Collection<Tile> possibleMovementTiles = 
+				targetTiles.stream()
+					.filter(targetTile -> isPieceMoveValid(sourceTile, targetTile))
+					.collect(Collectors.toList());
+		return possibleMovementTiles;
+	}
 
 	private boolean isPieceMoveValid(Tile from, Tile to) {
 		if(from.isEmpty()) 					return false;
@@ -726,9 +718,9 @@ public class Board {
 		return isPathEmpty(to, from, xOffset, yOffset);
 	}
 
-	private boolean isValidTile(Tile to) {
-		return (to.getRank() <= 8 && to.getRank() >= 1) && 
-				(to.getFile() == 'a' || to.getFile() == 'b' || to.getFile() == 'c' || to.getFile() == 'd' || to.getFile() == 'e' || to.getFile() == 'f' || to.getFile() == 'g' || to.getFile() == 'h' );
+	private boolean isValidTile(Tile tile) {
+		return (tile.getRank() <= 8 && tile.getRank() >= 1) && 
+				(tile.getFile() == 'a' || tile.getFile() == 'b' || tile.getFile() == 'c' || tile.getFile() == 'd' || tile.getFile() == 'e' || tile.getFile() == 'f' || tile.getFile() == 'g' || tile.getFile() == 'h' );
 	}
 
 	private boolean isMoveByTurn(boolean isWhiteTurn, Tile tile) {
@@ -785,5 +777,28 @@ public class Board {
 			
 			System.out.println();
 		}
+	}
+	
+	private Predicate<Tile> isEmptyTile() {
+		return Tile::isEmpty;
+	}
+	
+	private Predicate<Tile> isNonEmptyTile() {
+		return isEmptyTile().negate();
+	}
+	
+	private Predicate<Tile> isWhitePieceTile() {
+		return (tile -> tile.getPiece().getColor() == Color.WHITE);
+	}
+	
+	private Predicate<Tile> isBlackPieceTile() {
+		return (tile -> tile.getPiece().getColor() == Color.BLACK);
+	}
+	
+	private Collection<Tile> getTiles(Predicate<Tile> predicate){
+		return CollectionUtility.getList(tiles)
+			.stream()
+			.filter(predicate)
+			.collect(Collectors.toList());
 	}
 }

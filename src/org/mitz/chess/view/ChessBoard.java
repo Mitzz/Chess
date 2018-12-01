@@ -4,9 +4,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -123,20 +123,28 @@ public class ChessBoard extends JPanel implements MouseListener{
 
 	private void drawBoard(Graphics g) {
 		Board board = game.getBoard();
-		Collection<Tile> whiteMovableTiles = board.getWhiteMovableTiles();
+		Collection<Tile> movableTiles = board.getWhiteMovableTiles();
+		Collection<Tile> possibleMovementTiles = new ArrayList<>();
+		if(isPresent(movableTiles, clickedRank, clickedFile)) {
+			possibleMovementTiles = board.getPossibleMovementTilesFrom(board.getTileAt(clickedRank, clickedFile));
+		}
+		System.out.println(String.format("Possible Movement Tiles Size: %s", possibleMovementTiles.size()));
+		possibleMovementTiles.forEach(tile -> System.out.println(tile.getPosition()));
 		RectangleComponent rectangleComponent = null;
 		for(int rank = 1; rank <= 8; rank++) {
 			for(char file = 'a'; file <= 'h'; file++) {
-				
+				System.out.println(String.format("Processing: (%s, %s)", file, rank));
 				rectangleComponent = new RectangleComponent(((int)file - 96)  * squareSize + xOffset, rank * squareSize + yOffset, squareSize, squareSize);
 				rectangleComponent.interiorColor((((int)file + rank) % 2 == 0) ? new Color(240, 220, 130) : new Color(138, 51, 36)).draw(g);
-				if(isPresent(whiteMovableTiles, 9 - rank, file)) {
+				if(isPresent(movableTiles, 9 - rank, file)) {
 					rectangleComponent.borderColor(Color.BLACK).borderThickness(2).border(g);
 				}
-				if(isPresent(whiteMovableTiles, clickedRank, clickedFile) && clickedFile == file && clickedRank == (9 - rank)) {
+				if(isPresent(movableTiles, clickedRank, clickedFile) && clickedFile == file && clickedRank == (9 - rank)) {
 					rectangleComponent.borderColor(Color.CYAN).borderThickness(2).border(g);
 				}
-				
+				if(isPresent(possibleMovementTiles, 9 - rank, file)) {
+					rectangleComponent.borderColor(Color.white).borderThickness(2).border(g);
+				}
 				Tile tile = board.getTileAt(9 - rank, file);
 				if(!tile.isEmpty()) {
 					Piece piece = tile.getPiece();
@@ -146,17 +154,19 @@ public class ChessBoard extends JPanel implements MouseListener{
 		}
 	}
 	
+	
+	
 	private boolean isPresent(Collection<Tile> tiles, int rank, char file) {
 		return tiles.stream().anyMatch(tile -> isEqual(tile, rank, file));
 	}
 	
 	private boolean isEqual(Tile tile, int rank, char file) {
-		return !tile.isEmpty() && tile.getFile() == file && tile.getRank() == rank;
+		return tile.getFile() == file && tile.getRank() == rank;
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		System.out.println(String.format("Mouse Clicked at (x,y) -> (%d, %d)", e.getX(), e.getY()));
+//		System.out.println(String.format("Mouse Clicked at (x,y) -> (%d, %d)", e.getX(), e.getY()));
 		
 		System.out.println(String.format("Mouse Clicked at (file, rank) -> (%s, %s)", (char)(e.getX() / 25 - 1 + 97), 9 - (e.getY() / 25)));
 		clickedRank = 9 - (e.getY() / 25);
