@@ -139,7 +139,11 @@ public class Board {
 
 	private boolean isEnPassantMove(Tile from, Tile to) {
 		logger.info("Enpassant Movement Possibility Check");
-		boolean isEnPassantMovePossible = (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to) ); 
+		boolean isEnPassantMovePossible = (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to) && 
+					Arrays.asList(Direction.DOWN_LEFT, Direction.DOWN_RIGHT, Direction.UP_LEFT, Direction.UP_RIGHT).stream()
+						.map(dir -> getNextTileFrom(from, 1, dir))
+						.filter(this::isValidTile)
+						.anyMatch(tile -> tile.equals(enPassantTile))); 
 		logger.info("Enpassant Movement: " + isEnPassantMovePossible);
 		return isEnPassantMovePossible;
 	}
@@ -194,12 +198,14 @@ public class Board {
 
 	private boolean isCastlingMovePossible(Tile from, Tile to, boolean isWhiteTurn) {
 		logger.info("Castling Movement Possibility Check");
-		if(!from.hasKingPiece()) 	return false;
-		if(isKingCheckAt(from)) 	return false;
-		if(!to.isEmpty()) 			return false;
+		if(to.getRank() != from.getRank()) 	return false;
+		if(!to.isEmpty()) 					return false;
+		if(!from.hasKingPiece()) 			return false;
+		if(isKingCheckAt(from)) 			return false;
 		boolean isCastlingMovePossible = isWhiteTurn ? (isWhiteCastlingPossibleOnKingSide || isWhiteCastlingPossibleOnQueenSide) : (isBlackCastlingPossibleOnKingSide || isBlackCastlingPossibleOnQueenSide);
 		if(!isCastlingMovePossible) return isCastlingMovePossible;
 		boolean isCastlingKingSide = (to.getFile() - from.getFile()) == 2;
+		if(!isCastlingKingSide && to.getFile() != 'c') return false; 
 		if(isCastlingKingSide && isWhiteTurn && !isWhiteCastlingPossibleOnKingSide) 	return false;  
 		if(!isCastlingKingSide && isWhiteTurn && !isWhiteCastlingPossibleOnQueenSide) 	return false;
 		if(isCastlingKingSide && !isWhiteTurn && !isBlackCastlingPossibleOnKingSide) 	return false;
@@ -387,7 +393,7 @@ public class Board {
 		Collection<Tile> targetTiles = (sourceTile.getPiece().getColor() == Color.BLACK ? getNonBlackTiles() : getNonWhiteTiles());
 		Collection<Tile> possibleMovementTiles = 
 				targetTiles.stream()
-					.filter(targetTile -> isPieceMoveValid(sourceTile, targetTile))
+					.filter(targetTile -> isPieceMoveValid(sourceTile, targetTile) || isEnPassantMove(sourceTile, targetTile) || isCastlingMovePossible(sourceTile, targetTile, Color.WHITE == sourceTile.getPiece().getColor())) 
 					.collect(Collectors.toList());
 		return possibleMovementTiles;
 	}
@@ -408,6 +414,10 @@ public class Board {
 			isPathEmpty = false;
 		logger.info("Path Empty: " + isPathEmpty);
 		return isPathEmpty;
+	}
+	
+	private boolean isDebugPoint(Tile from, Tile to) {
+		return from.hasKingPiece() && to.isEmpty() && to.getFile() == 'b' && (to.getRank() == 8 || to.getRank() == 1);
 	}
 
 	private List<Piece> getAllBlackPieces() {
@@ -693,7 +703,7 @@ public class Board {
 	}
 
 	private boolean isValidTile(Tile tile) {
-		return (tile.getRank() <= 8 && tile.getRank() >= 1) && 
+		return (tile != null && tile.getRank() <= 8 && tile.getRank() >= 1) && 
 				(tile.getFile() == 'a' || tile.getFile() == 'b' || tile.getFile() == 'c' || tile.getFile() == 'd' || tile.getFile() == 'e' || tile.getFile() == 'f' || tile.getFile() == 'g' || tile.getFile() == 'h' );
 	}
 
@@ -802,10 +812,10 @@ public class Board {
 	
 	public Collection<Tile> getMovableTilesOf(Color color){
 		Collection<Tile> movableTiles = new HashSet<>();
-		Collection<Tile> tiles = (Color.white == color ? getWhiteTiles() : getBlackTiles());
-		Collection<Tile> otherTiles = (Color.white == color ? getNonWhiteTiles() : getNonBlackTiles());
-		
-		movableTiles = tiles.stream().filter(tile -> (otherTiles.stream().anyMatch(otherTile -> isPieceMoveValid(tile, otherTile)))).collect(Collectors.toSet());
+		boolean isWhite = Color.WHITE == color;
+		Collection<Tile> tiles = (isWhite ? getWhiteTiles() : getBlackTiles());
+		Collection<Tile> otherTiles = (isWhite ? getNonWhiteTiles() : getNonBlackTiles());
+		movableTiles = tiles.stream().filter(tile -> (otherTiles.stream().anyMatch(otherTile -> (isPieceMoveValid(tile, otherTile) || isCastlingMovePossible(tile, otherTile, isWhite) || isEnPassantMove(tile, otherTile))))).collect(Collectors.toSet());
 		return movableTiles;
 	}
 

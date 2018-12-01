@@ -91,8 +91,8 @@ public class CastlingMovement {
 		simpleValidMovement('b', 8, 'a', 6);
 		simpleValidMovement('b', 1, 'c', 3);
 		simpleValidMovement('g', 8, 'f', 6);
+		invalid('e', 1, 'b', 1);
 		castlingValidMovement('e', 1, 'c', 1);
-		
 	}
 	
 	@Test
