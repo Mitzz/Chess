@@ -49,14 +49,6 @@ public class Board {
 		UP_RIGHT	(DirectionWeight.RIGHT.weight(), DirectionWeight.UP.weight()), 
 		DOWN_RIGHT	(DirectionWeight.RIGHT.weight(), DirectionWeight.DOWN.weight()), 
 		DOWN_LEFT	(DirectionWeight.LEFT.weight()	, DirectionWeight.DOWN.weight());
-//		LEFT_LEFT_UP 		(DirectionWeight.LEFT.weight()	* 2, DirectionWeight.UP.weight()), 
-//		LEFT_LEFT_DOWN 		(DirectionWeight.LEFT.weight()	* 2, DirectionWeight.DOWN.weight()),
-//		UP_UP_LEFT 		(DirectionWeight.LEFT.weight(), DirectionWeight.UP.weight() * 2), 
-//		UP_UP_RIGHT 		(DirectionWeight.RIGHT.weight(), DirectionWeight.UP.weight()* 2),
-//		RIGHT_RIGHT_UP 		(DirectionWeight.RIGHT.weight() * 2	, DirectionWeight.UP.weight()), 
-//		RIGHT_RIGHT_DOWN 		(DirectionWeight.RIGHT.weight()	* 2, DirectionWeight.DOWN.weight()),
-//		DOWN_DOWN_LEFT 		(DirectionWeight.LEFT.weight(), DirectionWeight.DOWN.weight() * 2), 
-//		DOWN_DOWN_RIGHT 		(DirectionWeight.RIGHT.weight(), DirectionWeight.DOWN.weight() * 2);
 		
 		
 		final int col;
@@ -94,7 +86,7 @@ public class Board {
 		Piece capturedPiece = null;
 		boolean isEnPassantMove = false;
 		boolean isCastlingMove = false;
-		boolean valid = isPieceMoveValid(from, to) || (isCastlingMove = isCastlingMovePossible(from, to, isWhiteTurn)) || (isEnPassantMove = isEnPassantMove(from, to));
+		boolean valid = isPieceMoveValid(from, to) || (isCastlingMove = isCastlingMovePossible(from, to)) || (isEnPassantMove = isEnPassantMove(from, to));
 		if(!valid) {
 			logger.info("Movement Invalid");
 			return false;
@@ -115,7 +107,7 @@ public class Board {
 			return false;
 		}
 		
-		if(isCastlingMove)  doRookMovementForCastling(from, to, isWhiteTurn);
+		if(isCastlingMove)  doRookMovementForCastling(from, to);
 		if(isEnPassantMove) removeCapturedPieceInEnPassant(from, to);
 		
 		determineCastlingPossibility(from, to, isWhiteTurn);
@@ -148,7 +140,7 @@ public class Board {
 		return isEnPassantMovePossible;
 	}
 
-	private void determineEnPassantTile(Tile from, Tile to) {
+	private Board determineEnPassantTile(Tile from, Tile to) {
 		if(!to.isEmpty() && to.getPiece().isPawn() && from.isMovementSideways(to) && Math.abs(from.getRank() - to.getRank()) == 2) {
 			int rankOffset = 0;
 			if(from.getRank() > to.getRank()) rankOffset = +1;
@@ -158,17 +150,20 @@ public class Board {
 			enPassantTile = null;
 		}
 		logger.debug("EnpassantTile: " + ((enPassantTile == null) ? "None": enPassantTile.getPosition()));
+		return this;
 	}
 
-	private void doRookMovementForCastling(Tile from, Tile to, boolean isWhiteTurn) {
-		if(to.getFile() == 'c') {
+	private Board doRookMovementForCastling(Tile from, Tile to) {
+		boolean isCastlingKingSide = to.getFile() == 'c';
+		if(isCastlingKingSide) {
 			getTileAt(to.getRank(), 'a').movePieceTo(getTileAt(to.getRank(), (char)(to.getFile() + 1)));
 		} else {
 			getTileAt(to.getRank(), 'h').movePieceTo(getTileAt(to.getRank(),(char)(to.getFile() - 1)));
 		}
+		return this;
 	}
 
-	private void determineCastlingPossibility(Tile from, Tile to, boolean isWhiteTurn) {
+	private Board determineCastlingPossibility(Tile from, Tile to, boolean isWhiteTurn) {
 		if(isWhiteTurn) {
 			if(to.hasKingPiece()) {
 				isWhiteCastlingPossibleOnQueenSide = false;
@@ -178,9 +173,7 @@ public class Board {
 				isWhiteCastlingPossibleOnQueenSide = false;
 			} else if(from.isFirstRank() && from.getFile() == 'h') {
 				isWhiteCastlingPossibleOnKingSide = false;
-			} else {
-				logger.debug("White Castling Possible");
-			}
+			} 
 		} else {
 			if(to.hasKingPiece()) {
 				isBlackCastlingPossibleOnQueenSide = false;
@@ -194,54 +187,34 @@ public class Board {
 		}
 		
 		logger.info(String.format("Castling Status: WK - %s, WQ - %s, BK - %s, BQ - %s", isWhiteCastlingPossibleOnKingSide, isWhiteCastlingPossibleOnQueenSide, isBlackCastlingPossibleOnKingSide, isBlackCastlingPossibleOnQueenSide));
+		return this;
 	}
 
-	private boolean isCastlingMovePossible(Tile from, Tile to, boolean isWhiteTurn) {
+	private boolean isCastlingMovePossible(Tile from, Tile to) {
 		logger.info("Castling Movement Possibility Check");
 		if(to.getRank() != from.getRank()) 	return false;
 		if(!to.isEmpty()) 					return false;
 		if(!from.hasKingPiece()) 			return false;
 		if(isKingCheckAt(from)) 			return false;
-		boolean isCastlingMovePossible = isWhiteTurn ? (isWhiteCastlingPossibleOnKingSide || isWhiteCastlingPossibleOnQueenSide) : (isBlackCastlingPossibleOnKingSide || isBlackCastlingPossibleOnQueenSide);
+		boolean isWhite = from.getPiece().getColor() == Color.white;
+				
+		boolean isCastlingMovePossible = isWhite ? (isWhiteCastlingPossibleOnKingSide || isWhiteCastlingPossibleOnQueenSide) : (isBlackCastlingPossibleOnKingSide || isBlackCastlingPossibleOnQueenSide);
 		if(!isCastlingMovePossible) return isCastlingMovePossible;
 		boolean isCastlingKingSide = (to.getFile() - from.getFile()) == 2;
 		if(!isCastlingKingSide && to.getFile() != 'c') return false; 
-		if(isCastlingKingSide && isWhiteTurn && !isWhiteCastlingPossibleOnKingSide) 	return false;  
-		if(!isCastlingKingSide && isWhiteTurn && !isWhiteCastlingPossibleOnQueenSide) 	return false;
-		if(isCastlingKingSide && !isWhiteTurn && !isBlackCastlingPossibleOnKingSide) 	return false;
-		if(!isCastlingKingSide && !isWhiteTurn && !isBlackCastlingPossibleOnQueenSide) 	return false;
+		if(isCastlingKingSide && isWhite && !isWhiteCastlingPossibleOnKingSide) 	return false;  
+		if(!isCastlingKingSide && isWhite && !isWhiteCastlingPossibleOnQueenSide) 	return false;
+		if(isCastlingKingSide && !isWhite && !isBlackCastlingPossibleOnKingSide) 	return false;
+		if(!isCastlingKingSide && !isWhite && !isBlackCastlingPossibleOnQueenSide) 	return false;
 
-		isCastlingMovePossible = isPathEmptyForCastling(to, isWhiteTurn, isCastlingKingSide);
+		isCastlingMovePossible = isPathSidewayEmpty(from, to);
 
 		logger.info("Castling Movement: " + isCastlingMovePossible);
 		return isCastlingMovePossible;
 	}
 	
-	private boolean isPathEmptyForCastling(Tile to, boolean isWhiteTurn, boolean isCastlingKingSide) {
-		return isKingPathEmptyForCastling(to, isWhiteTurn, isCastlingKingSide) && isRookPathEmptyForCastling(to, isWhiteTurn, isCastlingKingSide);
-	}
-
-	private boolean isRookPathEmptyForCastling(Tile to, boolean isWhiteTurn, boolean isCastlingKingSide) {
-		char file = ' ';
-		if(isCastlingKingSide) 	file = 'h';
-		else 					file = 'a';
-		
-		return isPathEmptyForCastling(to, isWhiteTurn, file);
-	}
-
-	private boolean isKingPathEmptyForCastling(Tile to, boolean isWhiteTurn, boolean isCastlingKingSide) {
-		return isPathEmptyForCastling(to, isWhiteTurn, 'e');
-	}
-
-	private boolean isPathEmptyForCastling(Tile to, boolean isWhiteTurn, char file) {
-		Tile sourceTile;
-		if(isWhiteTurn) sourceTile = getTileAt(1, file);
-		else 			sourceTile = getTileAt(8, file);
-		return isPathSidewayEmpty(sourceTile, to);
-	}
-
 	public GameState getGameStatus(boolean isWhiteTurn) {
-		Tile kingTile = isWhiteTurn ? getBlackKingTile() : getWhiteKingTile();
+		Tile kingTile = isWhiteTurn ? getKingTileOf(Color.black) : getKingTileOf(Color.white);
 		logger.info("*****Game Over Check********");
 		boolean isKingMovemntMandatory = isKingMoveMandatory(kingTile);
 		boolean isKingMovementPossible = isKingMovePossible(kingTile);
@@ -252,7 +225,7 @@ public class Board {
 	
 	private boolean isPiecesMovementPossible(boolean isWhiteTurn) {
 		logger.debug("Checking for Stalement");
-		List<Piece> allPieces = isWhiteTurn ? getAllBlackPieces() : getAllWhitePieces();
+		List<Piece> allPieces = isWhiteTurn ? getAllPiecesOf(Color.black) : getAllPiecesOf(Color.white);
 		logger.debug("Pieces on board!!!");
 		allPieces.forEach(e -> logger.debug(e.getTile().getPosition()));
 		boolean isMovementPossible = allPieces.stream().filter(e -> !e.isKingPiece()).anyMatch(obj -> isMovementPossibleFrom(obj.getTile()));
@@ -378,7 +351,7 @@ public class Board {
 	
 	private List<Tile> getValidMovementTilesAt(Tile targetTile){
 		if(targetTile.isEmpty()) return null;
-		List<Piece> opponentPieces = (targetTile.getPiece().getColor() == Color.BLACK ? getAllWhitePieces() : getAllBlackPieces());
+		List<Piece> opponentPieces = (targetTile.getPiece().getColor() == Color.BLACK ? getAllPiecesOf(Color.white) : getAllPiecesOf(Color.black));
 		List<Tile> tiles = new ArrayList<>();
 		for(Piece p: opponentPieces) {
 			Tile tile = p.getTile();
@@ -393,7 +366,7 @@ public class Board {
 		Collection<Tile> targetTiles = (sourceTile.getPiece().getColor() == Color.BLACK ? getNonBlackTiles() : getNonWhiteTiles());
 		Collection<Tile> possibleMovementTiles = 
 				targetTiles.stream()
-					.filter(targetTile -> isPieceMoveValid(sourceTile, targetTile) || isEnPassantMove(sourceTile, targetTile) || isCastlingMovePossible(sourceTile, targetTile, Color.WHITE == sourceTile.getPiece().getColor())) 
+					.filter(targetTile -> isPieceMoveValid(sourceTile, targetTile) || isEnPassantMove(sourceTile, targetTile) || isCastlingMovePossible(sourceTile, targetTile)) 
 					.collect(Collectors.toList());
 		return possibleMovementTiles;
 	}
@@ -416,21 +389,12 @@ public class Board {
 		return isPathEmpty;
 	}
 	
-	private boolean isDebugPoint(Tile from, Tile to) {
-		return from.hasKingPiece() && to.isEmpty() && to.getFile() == 'b' && (to.getRank() == 8 || to.getRank() == 1);
-	}
+//	private boolean isDebugPoint(Tile from, Tile to) {
+//		return from.hasKingPiece() && to.isEmpty() && to.getFile() == 'b' && (to.getRank() == 8 || to.getRank() == 1);
+//	}
 
-	private List<Piece> getAllBlackPieces() {
-		List<Piece> pieces = new ArrayList<>();
-		for(int rank = 0; rank < 8; rank++) {
-			for(int file = 0; file < 8; file++) {
-				Tile tile = tiles[rank][file]; 
-				if(!tile.isEmpty() && tile.getPiece().getColor() == Color.BLACK) {
-					pieces.add(tile.getPiece());
-				}
-			}
-		}
-		return pieces;
+	private List<Piece> getAllPiecesOf(Color color) {
+		return getTilesOf(color).stream().map(Tile::getPiece).collect(Collectors.toList());
 	}
 	
 	private Tile getTileAt(int r, int f) {
@@ -468,7 +432,7 @@ public class Board {
 	}
 	
 	private boolean isBlackKingCheck() {
-		return isKingCheckAt(getBlackKingTile());
+		return isKingCheckAt(getKingTileOf(Color.black));
 	}
 	
 	private boolean isKingCheckAt(Tile kingTile) {
@@ -536,86 +500,9 @@ public class Board {
 	}
 
 	private boolean isWhiteKingCheck() {
-		return isKingCheckAt(getWhiteKingTile());
+		return isKingCheckAt(getKingTileOf(Color.white));
 	}
-
-	/*private boolean isCheck(boolean isWhiteTurn) {
-		Tile kingTile = null;
-		boolean check = false;
-		if(isWhiteTurn) {
-			kingTile = getBlackKingTile();
-		} else {
-			kingTile = getWhiteKingTile();
-		}
-		logger.debug("King Tile Present at: " + kingTile.getPosition());
-		Tile nextTile = null;
-		nextTile = getNextNonEmptyTile(kingTile, 1, 0);
-		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
-			logger.debug("Check Yes due to tile at " + nextTile.getPosition());
-			return true;
-		}
-		nextTile = getNextNonEmptyTile(kingTile, 1, 1);
-		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
-			logger.debug("Check Yes due to tile at " + nextTile.getPosition());
-			return true;
-		}
-		nextTile = getNextNonEmptyTile(kingTile, 0, 1);
-		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
-			logger.debug("Check Yes due to tile at " + nextTile.getPosition());
-			return true;
-		}
-		nextTile = getNextNonEmptyTile(kingTile, -1, 1);
-		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
-			logger.debug("Check Yes due to tile at " + nextTile.getPosition());
-			return true;
-		}
-		nextTile = getNextNonEmptyTile(kingTile, -1, 0);
-		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
-			logger.debug("Check Yes due to tile at " + nextTile.getPosition());
-			return true;
-		}
-		nextTile = getNextNonEmptyTile(kingTile, -1, -1);
-		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
-			logger.debug("Check Yes due to tile at " + nextTile.getPosition());
-			return true;
-		}
-		nextTile = getNextNonEmptyTile(kingTile, 0, -1);
-		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
-			logger.debug("Check Yes due to tile at " + nextTile.getPosition());
-			return true;
-		}
-		nextTile = getNextNonEmptyTile(kingTile, 1, -1);
-		if(nextTile != null && !isSameOpponentPiece(kingTile, nextTile) && nextTile.getPiece().validateMove(kingTile)) {
-			logger.debug("Check Yes due to tile at " + nextTile.getPosition());
-			return true;
-		}
-		
-		List<Point> p = new ArrayList<>();
-		p.add(new Point(kingTile.getRankIndex() + 2, kingTile.getFileIndex() + 1));
-		p.add(new Point(kingTile.getRankIndex() + 1, kingTile.getFileIndex() + 2));
-		p.add(new Point(kingTile.getRankIndex() - 1, kingTile.getFileIndex() + 2));
-		p.add(new Point(kingTile.getRankIndex() - 2, kingTile.getFileIndex() + 1));
-		
-		p.add(new Point(kingTile.getRankIndex() + 2, kingTile.getFileIndex() - 1));
-		p.add(new Point(kingTile.getRankIndex() + 1, kingTile.getFileIndex() - 2));
-		p.add(new Point(kingTile.getRankIndex() - 1, kingTile.getFileIndex() - 2));
-		p.add(new Point(kingTile.getRankIndex() - 2, kingTile.getFileIndex() - 1));
-		
-		for(Point pt: p) {
-			
-			if(isValidTileAt(pt.x, pt.y)) {
-				nextTile = tiles[pt.x][pt.y];
-				if(!isSameOpponentPiece(kingTile, nextTile) && !nextTile.isEmpty() && nextTile.getPiece().validateMove(kingTile)) {
-					logger.debug("Check Yes due to tile at " + nextTile.getPosition());
-					return true;
-				}
-			}
-		}
-		
-		logger.debug("No Check");
-		return false;
-	}*/
-
+	
 	private boolean isSameOpponentPiece(Tile v, Tile w) {
 		return (!v.isEmpty() && !w.isEmpty() && v.getPiece().getColor() == w.getPiece().getColor());
 	
@@ -646,50 +533,16 @@ public class Board {
 		return nonEmptyTile;
 	}
 	
-	/*private boolean isWhitePieceMovementPossibleAt(Tile tile) {
-		for(Piece piece: getAllWhitePieces()) {
-			if(piece.validateMove(tile)) return true;
-		}
-		return false;
-	}*/
-	
-	private List<Piece> getAllWhitePieces(){
-		List<Piece> pieces = new ArrayList<>();
-		for(int rank = 0; rank < 8; rank++) {
-			for(int file = 0; file < 8; file++) {
-				Tile tile = tiles[rank][file]; 
-				if(!tile.isEmpty() && tile.getPiece().getColor() == Color.WHITE) {
-					pieces.add(tile.getPiece());
-				}
-			}
-		}
-		return pieces;
-	}
-	
 	private boolean isValidTileAt(int fromRank, int fromFile) {
 		return (fromRank <= 7 && fromRank >= 0) && (fromFile <= 7 && fromFile >= 0);
 	}
 
-	private Tile getBlackKingTile() {
-		return getKingTile(Color.BLACK);
+	private Tile getKingTileOf(Color color) {
+		boolean isWhite = Color.WHITE == color;
+		Predicate<Tile> pieceColorPredicate = isWhite ? isWhitePieceTile() : isBlackPieceTile();
+		return getTiles(isNonEmptyTile().and(Tile::hasKingPiece).and(pieceColorPredicate)).stream().findFirst().orElse(null);
 	}
 	
-	private Tile getKingTile(Color color) {
-		for(int rank = 0; rank < 8; rank++) {
-			for(int file = 0; file < 8; file++) {
-				Tile tile = tiles[rank][file];
-				if(tile.isEmpty()) continue;
-				if(tile.getPiece().getColor() != color) continue;
-				if(tile.hasKingPiece()) return tile;
-			}
-		}
-		return null;
-	}
-	
-	private Tile getWhiteKingTile() {
-		return getKingTile(Color.WHITE);
-	}
-
 	private boolean isPathSidewayEmpty(Tile from, Tile to) {
 		int xOffset = new Integer(to.getRank()).compareTo(new Integer(from.getRank()));
 		int yOffset = new Integer(to.getFile() - 97).compareTo(new Integer(from.getFile() - 97));
@@ -703,18 +556,19 @@ public class Board {
 	}
 
 	private boolean isValidTile(Tile tile) {
-		return (tile != null && tile.getRank() <= 8 && tile.getRank() >= 1) && 
-				(tile.getFile() == 'a' || tile.getFile() == 'b' || tile.getFile() == 'c' || tile.getFile() == 'd' || tile.getFile() == 'e' || tile.getFile() == 'f' || tile.getFile() == 'g' || tile.getFile() == 'h' );
+		return (tile != null && tile.getRank() <= 8 && tile.getRank() >= 1) &&
+					isInRange(tile.getFile(), 'a', 'h');
+	}
+	
+	private boolean isInRange(char ch, char lo, char hi) {
+		return lo <= ch && ch <= hi;
 	}
 
 	private boolean isMoveByTurn(boolean isWhiteTurn, Tile tile) {
 		return (isWhiteTurn && tile.getPiece().getColor() == Color.WHITE) || (!isWhiteTurn && tile.getPiece().getColor() == Color.BLACK);
 	}
 	
-	public boolean isPathEmpty(Tile to, Tile from, int rankOffset, int fileOffset) {
-//		logger.debug("Rank Offset: " + rankOffset + ", File Offset: " + fileOffset);
-//		int toRank = to.getRank() - 1;
-//		int toFile = to.getFileIndex();
+	private boolean isPathEmpty(Tile to, Tile from, int rankOffset, int fileOffset) {
 		int fromRank = from.getRank() - 1;
 		int fromFile = from.getFile() - 97;
 		if(!validateSourceTargetTile(to, from)) {
@@ -787,12 +641,10 @@ public class Board {
 		return getTiles(isEmptyTile().or(isWhitePieceTile()));
 	}
 	
-	private Collection<Tile> getWhiteTiles() {
-		return getTiles(isNonEmptyTile().and(isWhitePieceTile()));
-	}
-	
-	private Collection<Tile> getBlackTiles() {
-		return getTiles(isNonEmptyTile().and(isBlackPieceTile()));
+	private Collection<Tile> getTilesOf(Color color) {
+		boolean isWhite = Color.white == color;
+		Predicate<Tile> t = isWhite ? isWhitePieceTile() : isBlackPieceTile();
+		return getTiles(isNonEmptyTile().and(t));
 	}
 	
 	private Collection<Tile> getTiles(Predicate<Tile> predicate){
@@ -802,24 +654,16 @@ public class Board {
 			.collect(Collectors.toList());
 	}
 	
-	public Collection<Tile> getWhiteMovableTiles(){
-		return getMovableTilesOf(Color.white);
-	}
-	
-	public Collection<Tile> getBlackMovableTiles(){
-		return getMovableTilesOf(Color.BLACK);
-	}
-	
 	public Collection<Tile> getMovableTilesOf(Color color){
 		Collection<Tile> movableTiles = new HashSet<>();
 		boolean isWhite = Color.WHITE == color;
-		Collection<Tile> tiles = (isWhite ? getWhiteTiles() : getBlackTiles());
+		Collection<Tile> tiles = (isWhite ? getTilesOf(Color.white) : getTilesOf(Color.black));
 		Collection<Tile> otherTiles = (isWhite ? getNonWhiteTiles() : getNonBlackTiles());
-		movableTiles = tiles.stream().filter(tile -> (otherTiles.stream().anyMatch(otherTile -> (isPieceMoveValid(tile, otherTile) || isCastlingMovePossible(tile, otherTile, isWhite) || isEnPassantMove(tile, otherTile))))).collect(Collectors.toSet());
+		movableTiles = tiles.stream().filter(tile -> (otherTiles.stream().anyMatch(otherTile -> (isPieceMoveValid(tile, otherTile) || isCastlingMovePossible(tile, otherTile) || isEnPassantMove(tile, otherTile))))).collect(Collectors.toSet());
 		return movableTiles;
 	}
 
 	public Collection<Tile> getMovableTiles(boolean isWhiteTurn) {
-		return (isWhiteTurn ? getWhiteMovableTiles(): getBlackMovableTiles());
+		return (isWhiteTurn ? getMovableTilesOf(Color.white): getMovableTilesOf(Color.BLACK));
 	}
 }

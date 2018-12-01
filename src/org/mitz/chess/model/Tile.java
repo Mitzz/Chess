@@ -93,34 +93,6 @@ public class Tile {
 		return this;
 	}
 
-//	public boolean validateMove(Tile to) {
-//		
-//		String error = "Movement Successful from " + this.getPosition() + " to " + to.getPosition();
-//		
-//		boolean valid = true;
-//		
-//		//Case 0 - Piece does not exist
-//		if(isEmpty()) {
-//			error = "Movement Failed from " + this.getPosition() + " to " + to.getPosition() + " due to source piece does not exist";
-//			valid = false;
-//		}
-//		//Case I - Piece of Same Color
-//		if(valid && !to.isEmpty() && this.getPiece().getColor() == to.getPiece().getColor()) {
-//			error = "Movement Failed from " + this.getPosition() + " to " + to.getPosition() + " due to destination piece has same color piece as that of source piece";
-//			valid = false;
-//		}
-//		//Case II - Piece Movement Valid
-//		if(valid && !this.getPiece().validateMove(to)) {
-//			error = "Movement Failed from " + this.getPosition() + " to " + to.getPosition() + " due to source piece movement invalid";
-//			valid = false;
-//		}
-//		if(valid)
-//			logger.debug(error);
-//		else 
-//			logger.debug(error);
-//		return valid;
-//	}
-	
 	public char getFile() {
 		return (char)(97 + this.file);
 	}
@@ -132,10 +104,6 @@ public class Tile {
 	public int getRank() {
 		return 1 + this.rank;
 	}
-	
-//	private int getRankIndex() {
-//		return this.rank;
-//	}
 	
 	public String getPosition() {
 		return "(" + getFile() + "," + getRank() + ")";
