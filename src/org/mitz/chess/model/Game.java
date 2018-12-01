@@ -1,5 +1,7 @@
 package org.mitz.chess.model;
 
+import java.util.Collection;
+
 import org.apache.log4j.Logger;
 
 public class Game {
@@ -56,6 +58,10 @@ public class Game {
 
 	public boolean isWhiteTurn() {
 		return isWhiteTurn;
+	}
+
+	public Collection<Tile> getMovableTiles() {
+		return board.getMovableTiles(isWhiteTurn);
 	}
 	
 }

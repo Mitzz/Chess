@@ -128,32 +128,6 @@ public class Board {
 		return valid;
 	}
 	
-	public Collection<Tile> getWhiteMovableTiles(){
-		Collection<Tile> movableTiles = new HashSet<>();
-		Collection<Tile> tiles = getWhiteTiles();
-		Collection<Tile> otherTiles = getNonWhiteTiles();
-		
-		movableTiles = tiles.stream().filter(tile -> (otherTiles.stream().anyMatch(otherTile -> isPieceMoveValid(tile, otherTile)))).collect(Collectors.toSet());
-		System.out.println(movableTiles.size());
-		return movableTiles;
-	}
-	
-	private Collection<Tile> getNonWhiteTiles() {
-		return getTiles(isEmptyTile().or(isBlackPieceTile()));
-	}
-	
-	private Collection<Tile> getNonBlackTiles() {
-		return getTiles(isEmptyTile().or(isWhitePieceTile()));
-	}
-	
-	private Collection<Tile> getWhiteTiles() {
-		return getTiles(isNonEmptyTile().and(isWhitePieceTile()));
-	}
-	
-	private Collection<Tile> getBlackTiles() {
-		return getTiles(isNonEmptyTile().and(isBlackPieceTile()));
-	}
-	
 	private void removeCapturedPieceInEnPassant(Tile from, Tile to) {
 		int rankOffset = 0;
 		if(from.getRank() > to.getRank()) rankOffset = +1;
@@ -795,10 +769,47 @@ public class Board {
 		return (tile -> tile.getPiece().getColor() == Color.BLACK);
 	}
 	
+	private Collection<Tile> getNonWhiteTiles() {
+		return getTiles(isEmptyTile().or(isBlackPieceTile()));
+	}
+	
+	private Collection<Tile> getNonBlackTiles() {
+		return getTiles(isEmptyTile().or(isWhitePieceTile()));
+	}
+	
+	private Collection<Tile> getWhiteTiles() {
+		return getTiles(isNonEmptyTile().and(isWhitePieceTile()));
+	}
+	
+	private Collection<Tile> getBlackTiles() {
+		return getTiles(isNonEmptyTile().and(isBlackPieceTile()));
+	}
+	
 	private Collection<Tile> getTiles(Predicate<Tile> predicate){
 		return CollectionUtility.getList(tiles)
 			.stream()
 			.filter(predicate)
 			.collect(Collectors.toList());
+	}
+	
+	public Collection<Tile> getWhiteMovableTiles(){
+		return getMovableTilesOf(Color.white);
+	}
+	
+	public Collection<Tile> getBlackMovableTiles(){
+		return getMovableTilesOf(Color.BLACK);
+	}
+	
+	public Collection<Tile> getMovableTilesOf(Color color){
+		Collection<Tile> movableTiles = new HashSet<>();
+		Collection<Tile> tiles = (Color.white == color ? getWhiteTiles() : getBlackTiles());
+		Collection<Tile> otherTiles = (Color.white == color ? getNonWhiteTiles() : getNonBlackTiles());
+		
+		movableTiles = tiles.stream().filter(tile -> (otherTiles.stream().anyMatch(otherTile -> isPieceMoveValid(tile, otherTile)))).collect(Collectors.toSet());
+		return movableTiles;
+	}
+
+	public Collection<Tile> getMovableTiles(boolean isWhiteTurn) {
+		return (isWhiteTurn ? getWhiteMovableTiles(): getBlackMovableTiles());
 	}
 }

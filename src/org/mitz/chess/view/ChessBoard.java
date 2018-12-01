@@ -23,9 +23,11 @@ public class ChessBoard extends JPanel implements MouseListener{
 	private int yOffset = 1;
 	private JLabel player1Label;
 	private JLabel player2Label;
-	private int clickedRank;
-	private char clickedFile;
-	
+	private int previousClickedRank;
+	private char previousClickedFile;
+	private int currentClickedRank;
+	private char currentClickedFile;
+	private Collection<Tile> possibleMovementTiles = new ArrayList<>();
 	
 	public ChessBoard() {
 		init();
@@ -39,10 +41,11 @@ public class ChessBoard extends JPanel implements MouseListener{
 
 	private void init() {
 		game = new Game();
+		possibleMovementTiles.clear();
 	}
 	
 	public void reset() {
-		game = new Game();
+		init();
 		updatePlayerTurn();
 		repaint();
 	}
@@ -50,7 +53,6 @@ public class ChessBoard extends JPanel implements MouseListener{
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		System.out.println("ChessBoard.paintComponent()");
 		drawLabel(g);
 		drawBoard(g);
 	}
@@ -123,23 +125,27 @@ public class ChessBoard extends JPanel implements MouseListener{
 
 	private void drawBoard(Graphics g) {
 		Board board = game.getBoard();
-		Collection<Tile> movableTiles = board.getWhiteMovableTiles();
-		Collection<Tile> possibleMovementTiles = new ArrayList<>();
-		if(isPresent(movableTiles, clickedRank, clickedFile)) {
-			possibleMovementTiles = board.getPossibleMovementTilesFrom(board.getTileAt(clickedRank, clickedFile));
+		boolean isMovementValid = false;
+		if(isPresent(possibleMovementTiles, currentClickedRank, currentClickedFile)) {
+			isMovementValid  = game.move(previousClickedRank, previousClickedFile, currentClickedRank, currentClickedFile);
 		}
-		System.out.println(String.format("Possible Movement Tiles Size: %s", possibleMovementTiles.size()));
-		possibleMovementTiles.forEach(tile -> System.out.println(tile.getPosition()));
+		if(isMovementValid) {
+			possibleMovementTiles.clear();
+		}
+		Collection<Tile> movableTiles = game.getMovableTiles();
+		if(isPresent(movableTiles, currentClickedRank, currentClickedFile)) {
+			possibleMovementTiles = board.getPossibleMovementTilesFrom(board.getTileAt(currentClickedRank, currentClickedFile));
+		}
+		
 		RectangleComponent rectangleComponent = null;
 		for(int rank = 1; rank <= 8; rank++) {
 			for(char file = 'a'; file <= 'h'; file++) {
-				System.out.println(String.format("Processing: (%s, %s)", file, rank));
 				rectangleComponent = new RectangleComponent(((int)file - 96)  * squareSize + xOffset, rank * squareSize + yOffset, squareSize, squareSize);
 				rectangleComponent.interiorColor((((int)file + rank) % 2 == 0) ? new Color(240, 220, 130) : new Color(138, 51, 36)).draw(g);
 				if(isPresent(movableTiles, 9 - rank, file)) {
 					rectangleComponent.borderColor(Color.BLACK).borderThickness(2).border(g);
 				}
-				if(isPresent(movableTiles, clickedRank, clickedFile) && clickedFile == file && clickedRank == (9 - rank)) {
+				if(isPresent(movableTiles, currentClickedRank, currentClickedFile) && currentClickedFile == file && currentClickedRank == (9 - rank)) {
 					rectangleComponent.borderColor(Color.CYAN).borderThickness(2).border(g);
 				}
 				if(isPresent(possibleMovementTiles, 9 - rank, file)) {
@@ -157,7 +163,7 @@ public class ChessBoard extends JPanel implements MouseListener{
 	
 	
 	private boolean isPresent(Collection<Tile> tiles, int rank, char file) {
-		return tiles.stream().anyMatch(tile -> isEqual(tile, rank, file));
+		return  (!tiles.isEmpty() && tiles.stream().anyMatch(tile -> isEqual(tile, rank, file)));
 	}
 	
 	private boolean isEqual(Tile tile, int rank, char file) {
@@ -166,11 +172,10 @@ public class ChessBoard extends JPanel implements MouseListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-//		System.out.println(String.format("Mouse Clicked at (x,y) -> (%d, %d)", e.getX(), e.getY()));
-		
-		System.out.println(String.format("Mouse Clicked at (file, rank) -> (%s, %s)", (char)(e.getX() / 25 - 1 + 97), 9 - (e.getY() / 25)));
-		clickedRank = 9 - (e.getY() / 25);
-		clickedFile = (char)(e.getX() / 25 - 1 + 97);
+		previousClickedRank = currentClickedRank;
+		previousClickedFile = currentClickedFile;
+		currentClickedRank = 9 - (e.getY() / 25);
+		currentClickedFile = (char)(e.getX() / 25 - 1 + 97);
 		
 		repaint();
 	}
