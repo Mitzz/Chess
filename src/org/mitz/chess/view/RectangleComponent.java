@@ -8,8 +8,7 @@ public class RectangleComponent{
 	private Point center;
 	private int width;
 	private int height;
-	private Color outlineColor;
-	private Color interiorColor;
+	private Color fillColor;
 	private Color borderColor;
 	private int borderThickness;
 	
@@ -25,13 +24,14 @@ public class RectangleComponent{
 		this.height = height;
 	}
 	
-	public RectangleComponent outlineColor(Color outlineColor){
-		this.outlineColor = outlineColor;
+	public RectangleComponent fillColor(Color interiorColor){
+		this.fillColor = interiorColor;
 		return this;
 	}
 	
-	public RectangleComponent interiorColor(Color interiorColor){
-		this.interiorColor = interiorColor;
+	public RectangleComponent render(Graphics g){
+		g.setColor(fillColor);
+		g.fillRect((int)this.center.getX() - (width/2), (int)this.center.getY() - (height/2), width, height);
 		return this;
 	}
 	
@@ -45,19 +45,13 @@ public class RectangleComponent{
 		return this;
 	}
 
-	public RectangleComponent draw(Graphics g){
-		g.setColor(interiorColor);
-		g.fillRect((int)this.center.getX() - (width/2), (int)this.center.getY() - (height/2), width, height);
-		return this;
-	}
-	
-	public RectangleComponent outline(Graphics g){
-		g.setColor(outlineColor);
+	public RectangleComponent renderThinBorder(Graphics g){
+		g.setColor(borderColor);
 		g.drawRect((int)this.center.getX() - (width/2), (int)this.center.getY() - (height/2), width, height);
 		return this;
 	}
 	
-	public RectangleComponent border(Graphics g){
+	public RectangleComponent renderBorder(Graphics g){
 		g.setColor(borderColor);
 		Point topLeft = ComponentUtility.getTopLeft(center, width, height);
 		for(int i = 0; i < borderThickness; i++){

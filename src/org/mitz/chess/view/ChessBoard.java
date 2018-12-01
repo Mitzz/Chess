@@ -78,47 +78,47 @@ public class ChessBoard extends JPanel implements MouseListener{
 		int c = 0;
 		int r = 0;
 		RectangleComponent rectangleComponent = new RectangleComponent(c * squareSize + xOffset, r * squareSize + yOffset, squareSize, squareSize);
-		rectangleComponent.interiorColor(Color.BLACK).draw(g);
+		rectangleComponent.fillColor(Color.BLACK).render(g);
 
 		r = 9;
 		rectangleComponent = new RectangleComponent(c * squareSize + xOffset, r * squareSize + yOffset, squareSize, squareSize);
-		rectangleComponent.interiorColor(Color.BLACK).draw(g);
+		rectangleComponent.fillColor(Color.BLACK).render(g);
 
 		c = 9;
 		rectangleComponent = new RectangleComponent(c * squareSize + xOffset, r * squareSize + yOffset, squareSize, squareSize);
-		rectangleComponent.interiorColor(Color.BLACK).draw(g);
+		rectangleComponent.fillColor(Color.BLACK).render(g);
 		
 		r = 0;
 		rectangleComponent = new RectangleComponent(c * squareSize + xOffset, r * squareSize + yOffset, squareSize, squareSize);
-		rectangleComponent.interiorColor(Color.BLACK).draw(g);
+		rectangleComponent.fillColor(Color.BLACK).render(g);
 
 		for(c = 1; c <= 8; c++) {
 			rectangleComponent = new RectangleComponent(c * squareSize + xOffset, r * squareSize + yOffset, squareSize, squareSize);
-			rectangleComponent.interiorColor(Color.GRAY).draw(g)
-								.borderThickness(1).borderColor(Color.BLACK).border(g)
+			rectangleComponent.fillColor(Color.GRAY).render(g)
+								.borderThickness(1).borderColor(Color.BLACK).renderBorder(g)
 								.drawChar(g, (char)(96 + c), Color.BLACK);
 		}
 		
 		r = 9;
 		for(c = 1; c <= 8; c++) {
 			rectangleComponent = new RectangleComponent(c * squareSize + xOffset, r * squareSize + yOffset, squareSize, squareSize);
-			rectangleComponent.interiorColor(Color.GRAY).draw(g)
-								.borderThickness(1).borderColor(Color.BLACK).border(g)
+			rectangleComponent.fillColor(Color.GRAY).render(g)
+								.borderThickness(1).borderColor(Color.BLACK).renderBorder(g)
 								.drawChar(g, (char)(96 + c), Color.BLACK);
 		}
 		
 		for(r = 1; r <= 8; r++) {
 			rectangleComponent = new RectangleComponent(c * squareSize + xOffset, r * squareSize + yOffset, squareSize, squareSize);
-			rectangleComponent.interiorColor(Color.GRAY).draw(g)
-								.borderThickness(1).borderColor(Color.BLACK).border(g)
+			rectangleComponent.fillColor(Color.GRAY).render(g)
+								.borderThickness(1).borderColor(Color.BLACK).renderBorder(g)
 								.drawChar(g, (char)((9 - r) + 48), Color.BLACK);
 		}
 		
 		c = 0;
 		for(r = 1; r <= 8; r++) {
 			rectangleComponent = new RectangleComponent(c * squareSize + xOffset, r * squareSize + yOffset, squareSize, squareSize);
-			rectangleComponent.interiorColor(Color.GRAY).draw(g)
-								.borderThickness(1).borderColor(Color.BLACK).border(g)
+			rectangleComponent.fillColor(Color.GRAY).render(g)
+								.borderThickness(1).borderColor(Color.BLACK).renderBorder(g)
 								.drawChar(g, (char)((9 - r) + 48), Color.BLACK);
 		}
 	}
@@ -141,15 +141,15 @@ public class ChessBoard extends JPanel implements MouseListener{
 		for(int rank = 1; rank <= 8; rank++) {
 			for(char file = 'a'; file <= 'h'; file++) {
 				rectangleComponent = new RectangleComponent(((int)file - 96)  * squareSize + xOffset, rank * squareSize + yOffset, squareSize, squareSize);
-				rectangleComponent.interiorColor((((int)file + rank) % 2 == 0) ? new Color(240, 220, 130) : new Color(138, 51, 36)).draw(g);
+				rectangleComponent.fillColor((((int)file + rank) % 2 == 0) ? new Color(240, 220, 130) : new Color(138, 51, 36)).render(g);
 				if(isPresent(movableTiles, 9 - rank, file)) {
-					rectangleComponent.borderColor(Color.BLACK).borderThickness(2).border(g);
+					rectangleComponent.borderColor(Color.BLACK).borderThickness(2).renderBorder(g);
 				}
 				if(isPresent(movableTiles, currentClickedRank, currentClickedFile) && currentClickedFile == file && currentClickedRank == (9 - rank)) {
-					rectangleComponent.borderColor(Color.CYAN).borderThickness(2).border(g);
+					rectangleComponent.borderColor(Color.CYAN).borderThickness(2).renderBorder(g);
 				}
 				if(isPresent(possibleMovementTiles, 9 - rank, file)) {
-					rectangleComponent.borderColor(Color.white).borderThickness(2).border(g);
+					rectangleComponent.borderColor(Color.white).borderThickness(2).renderBorder(g);
 				}
 				Tile tile = board.getTileAt(9 - rank, file);
 				if(!tile.isEmpty()) {
