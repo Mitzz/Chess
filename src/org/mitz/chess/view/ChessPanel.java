@@ -6,6 +6,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.mitz.chess.model.Constants;
+
 public class ChessPanel extends JPanel {
 
 	public ChessPanel() {
@@ -22,12 +24,8 @@ public class ChessPanel extends JPanel {
 		player1Label.setForeground(Color.CYAN);
 		add(player1Label);
 		
-		ChessBoard board = new ChessBoard(player1Label, player2Label);
-		board.setBounds(25, 30, 252, 252);
-		add(board);
-		board.addMouseListener(board);
-		
 		JButton newGameBtn = new JButton("New Game");
+		newGameBtn.setActionCommand(Constants.NEWGAME);
 		newGameBtn.setBounds(300, 70, 110, 24);
 		add(newGameBtn);
 		
@@ -46,9 +44,14 @@ public class ChessPanel extends JPanel {
 		movementStatusLabel.setForeground(Color.CYAN);
 		add(movementStatusLabel);
 		
-		newGameBtn.addActionListener((e) -> board.reset());
-		newGameBtn.addActionListener((e) -> gameStatusLabel.setText("Game in progress"));
+		ChessBoard board = new ChessBoard(gameStatusLabel, newGameBtn, resignBtn);
+		board.setBounds(25, 30, 252, 252);
+		add(board);
+		board.addMouseListener(board);
+		
 		newGameBtn.addActionListener((e) -> resignBtn.setEnabled(true));
+		newGameBtn.addActionListener((e) -> newGameBtn.setEnabled(false));
+		newGameBtn.addActionListener(board);
 		
 		resignBtn.addActionListener( e -> {
 			if(board.isWhiteTurn()) {
@@ -57,6 +60,7 @@ public class ChessPanel extends JPanel {
 				gameStatusLabel.setText("Black Player Resigned. Click 'New Game' to start new game");
 			}
 			resignBtn.setEnabled(false);
+			newGameBtn.setEnabled(true);
 		});
 	}
 }

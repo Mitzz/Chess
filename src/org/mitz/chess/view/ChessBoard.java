@@ -2,40 +2,46 @@ package org.mitz.chess.view;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.mitz.chess.model.Board;
+import org.mitz.chess.model.Constants;
 import org.mitz.chess.model.Game;
 import org.mitz.chess.model.GameState;
 import org.mitz.chess.model.Piece;
 import org.mitz.chess.model.Tile;
 
-public class ChessBoard extends JPanel implements MouseListener{
+public class ChessBoard extends JPanel implements MouseListener, ActionListener{
 	private Game game;
 	private int squareSize = 25;
 	private int xOffset = 1;
 	private int yOffset = 1;
-	private JLabel player1Label;
-	private JLabel player2Label;
 	private int previousClickedRank;
 	private char previousClickedFile;
 	private int currentClickedRank;
 	private char currentClickedFile;
 	private Collection<Tile> possibleMovementTiles = new ArrayList<>();
+	private JLabel gameStatusLabel;
+	private JButton newGameBtn;
+	private JButton resignGameBtn;
 	
 	public ChessBoard() {
 		init();
 	}
 
-	public ChessBoard(JLabel player1Label, JLabel player2Label) {
-		this.player1Label = player1Label;
-		this.player2Label = player2Label;
+	public ChessBoard(JLabel gameStatusLabel, JButton newGameBtn, JButton resignGameBtn) {
+		this.gameStatusLabel = gameStatusLabel;
+		this.newGameBtn = newGameBtn;
+		this.resignGameBtn = resignGameBtn;
 		init();
 	}
 
@@ -46,7 +52,6 @@ public class ChessBoard extends JPanel implements MouseListener{
 	
 	public void reset() {
 		init();
-		updatePlayerTurn();
 		repaint();
 	}
 
@@ -55,19 +60,29 @@ public class ChessBoard extends JPanel implements MouseListener{
 		super.paintComponent(g);
 		drawLabel(g);
 		drawBoard(g);
+		updateGameStatus();
 	}
 
-	private void updatePlayerTurn() {
-		if(game.getStatus() == GameState.IN_PROGRESS || game.getStatus() == GameState.NEW) {
-			if(game.isWhiteTurn()) {
-				player1Label.setText("White Player Turn");
-				player2Label.setText("Black Player");
-			} else {
-				player2Label.setText("Black Player Turn");
-				player1Label.setText("White Player");
-			}
-		}
-	}
+//	private void updatePlayerTurn() {
+//		if(game.getStatus() == GameState.IN_PROGRESS) {
+//			if(game.isWhiteTurn()) {
+//				player1Label.setText("White Player Turn");
+//				player2Label.setText("Black Player");
+//			} else {
+//				player2Label.setText("Black Player Turn");
+//				player1Label.setText("White Player");
+//			}
+//		} else if(game.getStatus() == GameState.OVER_DUE_TO_CHECKMATE) {
+//			if(game.isWhiteTurn()) {
+//				player1Label.setText("White Player");
+//				player2Label.setText("Black Player");
+//			} else {
+//				player2Label.setText("Black Player");
+//				player1Label.setText("White Player");
+//			}
+//			
+//		}
+//	}
 
 	private void drawLabel(Graphics g) {
 		g.setColor(Color.BLACK);
@@ -125,18 +140,21 @@ public class ChessBoard extends JPanel implements MouseListener{
 
 	private void drawBoard(Graphics g) {
 		Board board = game.getBoard();
-		boolean isMovementValid = false;
-		if(isPresent(possibleMovementTiles, currentClickedRank, currentClickedFile)) {
-			isMovementValid  = game.move(previousClickedRank, previousClickedFile, currentClickedRank, currentClickedFile);
+		Collection<Tile> movableTiles = new ArrayList<>();
+		if(game.getStatus() == GameState.IN_PROGRESS) {
+			
+			boolean isMovementValid = false;
+			if(isPresent(possibleMovementTiles, currentClickedRank, currentClickedFile)) {
+				isMovementValid  = game.move(previousClickedRank, previousClickedFile, currentClickedRank, currentClickedFile);
+			}
+			if(isMovementValid) {
+				possibleMovementTiles.clear();
+			}
+			movableTiles = game.getMovableTiles();
+			if(isPresent(movableTiles, currentClickedRank, currentClickedFile)) {
+				possibleMovementTiles = board.getPossibleMovementTilesFrom(board.getTileAt(currentClickedRank, currentClickedFile));
+			}
 		}
-		if(isMovementValid) {
-			possibleMovementTiles.clear();
-		}
-		Collection<Tile> movableTiles = game.getMovableTiles();
-		if(isPresent(movableTiles, currentClickedRank, currentClickedFile)) {
-			possibleMovementTiles = board.getPossibleMovementTilesFrom(board.getTileAt(currentClickedRank, currentClickedFile));
-		}
-		
 		RectangleComponent rectangleComponent = null;
 		for(int rank = 1; rank <= 8; rank++) {
 			for(char file = 'a'; file <= 'h'; file++) {
@@ -160,8 +178,6 @@ public class ChessBoard extends JPanel implements MouseListener{
 		}
 	}
 	
-	
-	
 	private boolean isPresent(Collection<Tile> tiles, int rank, char file) {
 		return  (!tiles.isEmpty() && tiles.stream().anyMatch(tile -> isEqual(tile, rank, file)));
 	}
@@ -170,16 +186,45 @@ public class ChessBoard extends JPanel implements MouseListener{
 		return tile.getFile() == file && tile.getRank() == rank;
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		previousClickedRank = currentClickedRank;
-		previousClickedFile = currentClickedFile;
-		currentClickedRank = 9 - (e.getY() / 25);
-		currentClickedFile = (char)(e.getX() / 25 - 1 + 97);
-		
-		repaint();
+	private void updateGameStatus() {
+		GameState gameStatus = game.getStatus();
+		if(gameStatus == GameState.IN_PROGRESS) {
+			gameStatusLabel.setText(String.format("Game in Progress: %s Player Turns ", (game.isWhiteTurn() ? "White" : "Black")));
+		}
+		if(gameStatus == GameState.NEW) {
+			gameStatusLabel.setText(String.format("Game not Started"));
+		}
+		if(gameStatus == GameState.OVER_DUE_TO_CHECKMATE) {
+			gameStatusLabel.setText(String.format("%s Player won", (game.isWhiteTurn() ? "Black" : "White")));
+			newGameBtn.setEnabled(true);
+			resignGameBtn.setEnabled(false);
+			repaint();
+		}
+		if(gameStatus == GameState.OVER_DUE_TO_STALEMATE) {
+			gameStatusLabel.setText(String.format("Match drawn due to %s Player not have legal moves to move", (!game.isWhiteTurn() ? "Black" : "White")));
+		}
 	}
 
+	public boolean isWhiteTurn() {
+		return game.isWhiteTurn();
+	}
+
+	public boolean isGameOver() {
+		return (GameState.OVER_DUE_TO_CHECKMATE == game.getStatus() || GameState.OVER_DUE_TO_STALEMATE == game.getStatus());
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if(!isGameOver()) {
+			previousClickedRank = currentClickedRank;
+			previousClickedFile = currentClickedFile;
+			currentClickedRank = 9 - (e.getY() / 25);
+			currentClickedFile = (char)(e.getX() / 25 - 1 + 97);
+			repaint();
+		}
+		
+	}
+	
 	@Override
 	public void mouseEntered(MouseEvent e) {
 //		System.out.println("Mouse Entered");
@@ -200,7 +245,13 @@ public class ChessBoard extends JPanel implements MouseListener{
 //		System.out.println("Mouse Released");
 	}
 	
-	public boolean isWhiteTurn() {
-		return game.isWhiteTurn();
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String actionCommand = e.getActionCommand();
+		if(actionCommand == Constants.NEWGAME) {
+			reset();
+			game.setStatus(GameState.IN_PROGRESS);
+			repaint();
+		}
 	}
 }

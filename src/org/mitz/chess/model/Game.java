@@ -42,7 +42,7 @@ public class Game {
 		return status;
 	}
 
-	private void setStatus(GameState status) {
+	public void setStatus(GameState status) {
 		this.status = status;
 	}
 	
