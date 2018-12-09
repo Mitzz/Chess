@@ -7,8 +7,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -83,7 +85,6 @@ public class Board {
 			logger.info("Move Invalid due wrong player played");
 			return false;
 		}
-		Piece capturedPiece = null;
 		boolean isEnPassantMove = false;
 		boolean isCastlingMove = false;
 		boolean valid = isPieceMoveValid(from, to) || (isCastlingMove = isCastlingMovePossible(from, to)) || (isEnPassantMove = isEnPassantMove(from, to));
@@ -91,20 +92,13 @@ public class Board {
 			logger.info("Movement Invalid");
 			return false;
 		}
-		if(valid) {
-			capturedPiece = from.movePieceTo(to);
-			successfulStep++;
-		}
-		boolean isKingCheckAfterMove = false;
 		
-		if(isWhiteTurn) isKingCheckAfterMove = isWhiteKingCheck();
-		else 			isKingCheckAfterMove = isBlackKingCheck();
-		
-		if(isKingCheckAfterMove) {
-			to.movePieceTo(from, capturedPiece);
+		if(isKingCheckAfterPieceMovementOf(from, to)) {
 			logger.info("Movement Blocked due to check");
-			successfulStep--;
 			return false;
+		} else {
+			from.movePieceTo(to);
+			successfulStep++;
 		}
 		
 		if(isCastlingMove)  doRookMovementForCastling(from, to);
@@ -309,6 +303,12 @@ public class Board {
 			if(userTiles.size() >= opponentTilesForKingCheckAt.size()) {
 				logger.debug("King Saved by Piece");
 				return false;
+			} else {
+				boolean canCheckBlocked = canCheckBeBlock(kingTile, opponentTilesForKingCheckAt);
+				if(canCheckBlocked) {
+					logger.debug("King Saved by blocking the path");
+					return false;
+				}
 			}
 		}
 		
@@ -402,6 +402,10 @@ public class Board {
 	}
 	
 	public Tile getTileAt(int rank, char file) {
+		return tiles[rank - 1][file - 97];
+	}
+	
+	public Tile getTileAt(char file, int rank) {
 		return tiles[rank - 1][file - 97];
 	}
 	
@@ -666,4 +670,87 @@ public class Board {
 	public Collection<Tile> getMovableTiles(boolean isWhiteTurn) {
 		return (isWhiteTurn ? getMovableTilesOf(Color.white): getMovableTilesOf(Color.BLACK));
 	}
+	
+	private boolean canCheckBeBlock(Tile kingTile, List<Tile> opponentTiles) {
+		Map<Tile, Boolean> opponentTileToBlock = new HashMap<>();
+		opponentTiles.forEach(opponentTile -> opponentTileToBlock.put(opponentTile, false));
+		opponentTiles.stream()
+			.filter(opponentTile -> (opponentTile.isMovementSideways(kingTile) || opponentTile.isMovementDiagonal(kingTile)))
+			.forEach(opponentTile -> opponentTileToBlock.put(opponentTile, canPathBeBlock(opponentTile, kingTile)));
+		return opponentTileToBlock.entrySet().stream().allMatch(e -> e.getValue());
+	}
+	
+	private boolean canPathBeBlock(Tile from, Tile to) {
+		boolean isKingCheckAfterMovement = false;
+		List<Piece> pieces = getAllPiecesOf(to.getPiece().getColor());
+		Collection<Tile> emptyTiles = getAllEmptyTileBetween(from, to);
+		for(Tile emptyTile: emptyTiles) {
+			for(Piece piece: pieces) {
+				if(!piece.getTile().equals(to)) {
+					boolean isMoveValid = isPieceMoveValid(piece.getTile(), emptyTile);
+					logger.debug(String.format("Movement from {%s} to {%s} is {%s}", piece.getTile().getPosition(), emptyTile.getPosition(), isMoveValid));
+					if(isMoveValid) {
+						isKingCheckAfterMovement = isKingCheckAfterPieceMovementOf(piece.getTile(), emptyTile);
+						logger.debug("Piece at '" + piece.getTile().getPosition() + "' being validated for check by opponent after its movement: " + isKingCheckAfterMovement);
+						if(!isKingCheckAfterMovement) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private Collection<Tile> getAllEmptyTileBetween(Tile from, Tile to) {
+		Collection<Tile> tiles = new HashSet<>();
+		Tile emptyTile = from;
+		while(emptyTile != null) {
+			emptyTile = getNextEmptyTile(emptyTile, to);
+			if(emptyTile != null)
+				tiles.add(emptyTile);
+		}
+		return tiles;
+	}
+	
+	private Tile getNextEmptyTile(Tile from, Tile to) {
+		if(from.equals(to)) return null;
+		int rank = from.getRank() - 1;
+		int file = from.getFile() - 97;
+		if(from.isMovementDiagonal(to)) {
+			if(Math.abs(from.getRank() - to.getRank()) == 1 && Math.abs(from.getFile() - to.getFile()) == 1) return null;
+			if(from.getRank() < to.getRank() && from.getFile() < to.getFile()) 
+				return tiles[rank + 1][file + 1];
+			if(from.getRank() < to.getRank() && from.getFile() > to.getFile()) 
+				return tiles[rank + 1][file - 1];
+			if(from.getRank() > to.getRank() && from.getFile() > to.getFile()) 
+				return tiles[rank - 1][file - 1];
+			if(from.getRank() > to.getRank() && from.getFile() < to.getFile()) 
+				return tiles[rank - 1][file + 1];
+		} else if (from.isMovementSideways(to)){
+			if(Math.abs(from.getRank() - to.getRank()) == 1 || Math.abs(from.getFile() - to.getFile()) == 1) return null;
+			if(from.getRank() == to.getRank()) {
+				if(from.getFile() < to.getFile()) 
+					return tiles[rank][file + 1];
+				else 
+					return tiles[rank][file - 1];
+			} else if (from.getFile() == to.getFile()) {
+				if(from.getRank() < to.getRank()) 
+					return tiles[rank + 1][file];
+				else 
+					return tiles[rank - 1][file];
+				
+			}
+		}
+		return null;
+	}
+	
+	private boolean isKingCheckAfterPieceMovementOf(Tile tile, Tile to) {
+		Piece capturedPiece = tile.movePieceTo(to);
+		boolean isKingCheckAfterMove = isKingCheckAt(getKingTileOf(to.getPiece().getColor()));
+		to.movePieceTo(tile, capturedPiece);
+		
+		return isKingCheckAfterMove;
+	}
+	
 }

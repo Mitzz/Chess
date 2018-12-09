@@ -13,11 +13,17 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.mitz.chess.model.Bishop;
 import org.mitz.chess.model.Board;
 import org.mitz.chess.model.Constants;
 import org.mitz.chess.model.Game;
 import org.mitz.chess.model.GameState;
+import org.mitz.chess.model.King;
+import org.mitz.chess.model.Knight;
+import org.mitz.chess.model.Pawn;
 import org.mitz.chess.model.Piece;
+import org.mitz.chess.model.Queen;
+import org.mitz.chess.model.Rook;
 import org.mitz.chess.model.Tile;
 
 public class ChessBoard extends JPanel implements MouseListener, ActionListener{
@@ -47,12 +53,44 @@ public class ChessBoard extends JPanel implements MouseListener, ActionListener{
 
 	private void init() {
 		game = new Game();
+		setup();
 		possibleMovementTiles.clear();
 	}
 	
 	public void reset() {
 		init();
 		repaint();
+	}
+	
+	private void setup() {
+		game.clear();
+		Board board = game.getBoard();
+		Tile t = board.getTileAt(1, 'e');
+		t.setPiece(new King(Color.WHITE, t));
+		
+		t = board.getTileAt(1, 'd');
+		t.setPiece(new Rook(Color.WHITE, t));
+		
+		t = board.getTileAt(6, 'a');
+		t.setPiece(new Queen(Color.WHITE, t));
+		
+		t = board.getTileAt('a', 4);
+		t.setPiece(new Bishop(Color.WHITE, t));
+		
+		t = board.getTileAt(8, 'e');
+		t.setPiece(new King(Color.BLACK, t));
+		
+		t = board.getTileAt(7, 'e');
+		t.setPiece(new Knight(Color.BLACK, t));
+		
+		t = board.getTileAt(7, 'f');
+		t.setPiece(new Pawn(Color.BLACK, t));
+		
+		t = board.getTileAt(8, 'f');
+		t.setPiece(new Rook(Color.BLACK, t));
+		
+		t = board.getTileAt('c', 6);
+		t.setPiece(new Rook(Color.BLACK, t));
 	}
 
 	@Override
