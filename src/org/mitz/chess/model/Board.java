@@ -717,30 +717,12 @@ public class Board {
 		if(from.equals(to)) return null;
 		int rank = from.getRank() - 1;
 		int file = from.getFile() - 97;
-		if(from.isMovementDiagonal(to)) {
-			if(Math.abs(from.getRank() - to.getRank()) == 1 && Math.abs(from.getFile() - to.getFile()) == 1) return null;
-			if(from.getRank() < to.getRank() && from.getFile() < to.getFile()) 
-				return tiles[rank + 1][file + 1];
-			if(from.getRank() < to.getRank() && from.getFile() > to.getFile()) 
-				return tiles[rank + 1][file - 1];
-			if(from.getRank() > to.getRank() && from.getFile() > to.getFile()) 
-				return tiles[rank - 1][file - 1];
-			if(from.getRank() > to.getRank() && from.getFile() < to.getFile()) 
-				return tiles[rank - 1][file + 1];
-		} else if (from.isMovementSideways(to)){
-			if(Math.abs(from.getRank() - to.getRank()) == 1 || Math.abs(from.getFile() - to.getFile()) == 1) return null;
-			if(from.getRank() == to.getRank()) {
-				if(from.getFile() < to.getFile()) 
-					return tiles[rank][file + 1];
-				else 
-					return tiles[rank][file - 1];
-			} else if (from.getFile() == to.getFile()) {
-				if(from.getRank() < to.getRank()) 
-					return tiles[rank + 1][file];
-				else 
-					return tiles[rank - 1][file];
-				
-			}
+		int finalRank = rank;
+		int finalFile = file;
+		if(!isAdjacent(from, to) && (from.isMovementDiagonal(to) || from.isMovementSideways(to))) {
+			finalRank += new Integer(to.getRank()).compareTo(from.getRank());
+			finalFile += new Integer(to.getFile()).compareTo((int) from.getFile());
+			return tiles[finalRank][finalFile];
 		}
 		return null;
 	}
@@ -751,6 +733,12 @@ public class Board {
 		to.movePieceTo(tile, capturedPiece);
 		
 		return isKingCheckAfterMove;
+	}
+	
+	private boolean isAdjacent(Tile from, Tile to) {
+		boolean isDiagonalAdjacent = Math.abs(from.getRank() - to.getRank()) == 1 && Math.abs(from.getFile() - to.getFile()) == 1;
+		boolean isSidewayAdjacent = Math.abs(from.getRank() - to.getRank()) == 1 || Math.abs(from.getFile() - to.getFile()) == 1;
+		return isDiagonalAdjacent || isSidewayAdjacent;
 	}
 	
 }
