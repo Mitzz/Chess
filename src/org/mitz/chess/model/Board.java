@@ -106,10 +106,10 @@ public class Board {
 		
 		determineCastlingPossibility(from, to, isWhiteTurn);
 		determineEnPassantTile(from, to);
-		if(isPawnPromotion(isWhiteTurn, to)) {
-			logger.info("Pawn promotion");
-			setPawnForPromotion(to);
-		}
+//		if(isPawnPromotion(isWhiteTurn, to)) {
+//			logger.info("Pawn promotion");
+//			setPawnForPromotion(to);
+//		}
 		
 		return valid;
 	}
@@ -741,4 +741,23 @@ public class Board {
 		return isDiagonalAdjacent || isSidewayAdjacent;
 	}
 	
+	public boolean isPawnPromotion(char file, int rank) {
+		Tile tile = getTileAt(file, rank);
+		if(isValidTile(tile) && !tile.isEmpty()) {
+			return isPawnPromotion(Color.WHITE == tile.getPiece().getColor(), tile);
+		} else {
+			return false;
+		}
+	}
+	
+	public void setPawnForPromotion(char file, int rank, String userInput) {
+		Tile tile = getTileAt(file, rank);
+		int userSelection = Integer.parseInt(userInput);
+		Piece promotedPiece = null;
+		if(tile.isFirstRank())
+			promotedPiece = Piece.getInstance(userSelection, Color.BLACK, tile);
+		else
+			promotedPiece = Piece.getInstance(userSelection, Color.WHITE, tile);
+		tile.setPiece(promotedPiece);
+	}
 }

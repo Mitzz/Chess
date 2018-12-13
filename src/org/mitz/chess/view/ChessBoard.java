@@ -11,6 +11,7 @@ import java.util.Collection;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.mitz.chess.model.Bishop;
@@ -187,6 +188,10 @@ public class ChessBoard extends JPanel implements MouseListener, ActionListener{
 			}
 			if(isMovementValid) {
 				possibleMovementTiles.clear();
+				boolean isPawnPromotion = board.isPawnPromotion(currentClickedFile, currentClickedRank);
+				if(isPawnPromotion) {
+					handlePawnPromotion();
+				}
 			}
 			movableTiles = game.getMovableTiles();
 			if(isPresent(movableTiles, currentClickedRank, currentClickedFile)) {
@@ -292,4 +297,11 @@ public class ChessBoard extends JPanel implements MouseListener, ActionListener{
 			repaint();
 		}
 	}
+	
+	private void handlePawnPromotion() {
+		String message = "Promotion of Pawn: 1 -> Queen, 2 -> Rook, 3 -> Knight, 4 -> Bishop"; 
+		String showInputDialog = JOptionPane.showInputDialog(this, message);
+		game.getBoard().setPawnForPromotion(currentClickedFile, currentClickedRank, showInputDialog);
+	}
+
 }
