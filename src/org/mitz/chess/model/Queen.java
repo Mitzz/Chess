@@ -8,11 +8,10 @@ public class Queen extends Piece {
 
 	private final static Logger logger = Logger.getLogger(Queen.class);
 	private final String PIECE_NAME = "QUEEN";
-	private final String PIECE_DESC;
 
 	public Queen(Color color, Tile tile) {
 		super(color, tile);
-		PIECE_DESC = getPieceDescription(PIECE_NAME);  
+		description = getPieceDescription(PIECE_NAME);  
 	}
 
 	@Override
@@ -22,7 +21,7 @@ public class Queen extends Piece {
 	
 	@Override
 	public boolean validateMove(Tile to) {
-		String message = "Piece '" + PIECE_DESC + "' movement invalid from " + this.getTile().getPosition() + " to " + to.getPosition();
+		String message = "Piece '" + description + "' movement invalid from " + this.getTile().getPosition() + " to " + to.getPosition();
 		boolean valid = false;
 		Tile selfTile = this.getTile();
 		int rankDiff = Math.abs(selfTile.getRank() - to.getRank());
@@ -31,7 +30,7 @@ public class Queen extends Piece {
 				((rankDiff > 0 && selfTile.getFile() == to.getFile()) ||
 						(0 < fileIndexDiff && selfTile.getRank() == to.getRank()))) && 
 				(to.isEmpty() || (!to.isEmpty() && getColor() != to.getPiece().getColor()))) {
-			message = "1 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
+			message = "1 - Piece '" + description + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
 			valid = true;
 		}
 		if(valid)

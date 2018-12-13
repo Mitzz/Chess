@@ -79,6 +79,7 @@ public class MovementTestUtility {
 		sourceTile = board.getTileAt(sourceRank, sourceFile);
 		targetTile = board.getTileAt(targetRank, targetFile);
 
+		board.render();
 		boolean isMoveValid = game.move(sourceRank, sourceFile, targetRank, targetFile);
 		assertTrue("Movement valid", isMoveValid);
 		

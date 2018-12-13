@@ -6,6 +6,7 @@ public class Piece {
 	
 	private Tile tile;
 	private Color color;
+	protected String description;
 
 	public Piece(Color color, Tile tile) {
 		this.color = color;
@@ -72,6 +73,14 @@ public class Piece {
 			break;
 		}
 		return piece;
+	}
+	
+	protected void setDescription(String description) {
+		this.description = description;
+	}
+	
+	public String getDescription() {
+		return description;
 	}
 }
 

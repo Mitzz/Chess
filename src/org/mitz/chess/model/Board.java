@@ -106,10 +106,11 @@ public class Board {
 		
 		determineCastlingPossibility(from, to, isWhiteTurn);
 		determineEnPassantTile(from, to);
-//		if(isPawnPromotion(isWhiteTurn, to)) {
-//			logger.info("Pawn promotion");
-//			setPawnForPromotion(to);
-//		}
+		logger.info(String.format("Piece %s moved from %s to %s", to.getPiece().getDescription(), from.getPosition(), to.getPosition()));
+		if(isPawnPromotion(isWhiteTurn, to)) {
+			logger.info("Pawn promotion");
+			setPawnForPromotion(to);
+		}
 		
 		return valid;
 	}
@@ -124,13 +125,13 @@ public class Board {
 	}
 
 	private boolean isEnPassantMove(Tile from, Tile to) {
-		logger.info("Enpassant Movement Possibility Check");
+		logger.debug("Enpassant Movement Possibility Check");
 		boolean isEnPassantMovePossible = (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to) && 
 					Arrays.asList(Direction.DOWN_LEFT, Direction.DOWN_RIGHT, Direction.UP_LEFT, Direction.UP_RIGHT).stream()
 						.map(dir -> getNextTileFrom(from, 1, dir))
 						.filter(this::isValidTile)
 						.anyMatch(tile -> tile.equals(enPassantTile))); 
-		logger.info("Enpassant Movement: " + isEnPassantMovePossible);
+		logger.debug("Enpassant Movement: " + isEnPassantMovePossible);
 		return isEnPassantMovePossible;
 	}
 
@@ -180,12 +181,12 @@ public class Board {
 			}
 		}
 		
-		logger.info(String.format("Castling Status: WK - %s, WQ - %s, BK - %s, BQ - %s", isWhiteCastlingPossibleOnKingSide, isWhiteCastlingPossibleOnQueenSide, isBlackCastlingPossibleOnKingSide, isBlackCastlingPossibleOnQueenSide));
+		logger.debug(String.format("Castling Status: WK - %s, WQ - %s, BK - %s, BQ - %s", isWhiteCastlingPossibleOnKingSide, isWhiteCastlingPossibleOnQueenSide, isBlackCastlingPossibleOnKingSide, isBlackCastlingPossibleOnQueenSide));
 		return this;
 	}
 
 	private boolean isCastlingMovePossible(Tile from, Tile to) {
-		logger.info("Castling Movement Possibility Check");
+		logger.debug("Castling Movement Possibility Check");
 		if(to.getRank() != from.getRank()) 	return false;
 		if(!to.isEmpty()) 					return false;
 		if(!from.hasKingPiece()) 			return false;
@@ -203,7 +204,7 @@ public class Board {
 
 		isCastlingMovePossible = isPathSidewayEmpty(from, to);
 
-		logger.info("Castling Movement: " + isCastlingMovePossible);
+		logger.debug("Castling Movement: " + isCastlingMovePossible);
 		return isCastlingMovePossible;
 	}
 	
@@ -218,7 +219,7 @@ public class Board {
 	}
 	
 	private boolean isPiecesMovementPossible(boolean isWhiteTurn) {
-		logger.debug("Checking for Stalement");
+		logger.info("Checking for Stalement");
 		List<Piece> allPieces = isWhiteTurn ? getAllPiecesOf(Color.black) : getAllPiecesOf(Color.white);
 		logger.debug("Pieces on board!!!");
 		allPieces.forEach(e -> logger.debug(e.getTile().getPosition()));
@@ -377,7 +378,7 @@ public class Board {
 		if(isSameOpponentPiece(from, to)) 	return false;
 		
 		boolean isMoveValid = from.getPiece().validateMove(to);
-		logger.info("Piece move valid: " + isMoveValid);
+		logger.debug("Piece move valid: " + isMoveValid);
 		if(!isMoveValid) return false;
 		
 		boolean isPathEmpty = true;
@@ -385,7 +386,7 @@ public class Board {
 			isPathEmpty = false;
 		if(from.isMovementSideways(to) && !isPathSidewayEmpty(from, to)) 
 			isPathEmpty = false;
-		logger.info("Path Empty: " + isPathEmpty);
+		logger.debug("Path Empty: " + isPathEmpty);
 		return isPathEmpty;
 	}
 	
@@ -433,10 +434,6 @@ public class Board {
 			return (tile.isLastRank() && tile.hasPawnPiece());
 		else 
 			return (tile.isFirstRank() && tile.hasPawnPiece());
-	}
-	
-	private boolean isBlackKingCheck() {
-		return isKingCheckAt(getKingTileOf(Color.black));
 	}
 	
 	private boolean isKingCheckAt(Tile kingTile) {
@@ -497,16 +494,12 @@ public class Board {
 	private boolean isCheckBy(Tile kingTile, Tile opponentTile) {
 		
 		if(opponentTile != null && !opponentTile.isEmpty() && !isSameOpponentPiece(kingTile, opponentTile) && opponentTile.getPiece().validateMove(kingTile)) {
-			logger.debug("Check due to Opponent tile at " + opponentTile.getPosition());
+			logger.info(String.format("Check at %s due to Opponent Piece %s at %s", kingTile.getPosition(), opponentTile.getPiece().getDescription(), opponentTile.getPosition()));
 			return true;
 		}
 		return false;
 	}
 
-	private boolean isWhiteKingCheck() {
-		return isKingCheckAt(getKingTileOf(Color.white));
-	}
-	
 	private boolean isSameOpponentPiece(Tile v, Tile w) {
 		return (!v.isEmpty() && !w.isEmpty() && v.getPiece().getColor() == w.getPiece().getColor());
 	
@@ -597,11 +590,11 @@ public class Board {
 
 	private boolean validateSourceTargetTile(Tile to, Tile from) {
 		if(!isValidTile(from)) {
-			logger.info("Move Invalid due to invalid source tile");
+			logger.debug("Move Invalid due to invalid source tile");
 			return false;
 		}
 		if(!isValidTile(to)) {
-			logger.info("Move Invalid due to invalid destination tile");
+			logger.debug("Move Invalid due to invalid destination tile");
 			return false;
 		}
 		
@@ -613,12 +606,12 @@ public class Board {
 		for(int rank = 7; rank >= 0; rank--) {
 			for(int file = 0; file < 8; file++) {
 				Tile tile = tiles[rank][file];
-				System.out.print(tile.getPosition() + tile.getContent() + " ");
-//				System.out.print(tile.getContent());
+				System.out.print(String.format("%s%s%3$-13s ", tile.getPosition(), tile.getContent(), (tile.isEmpty() ? "" : tile.getPiece().getDescription())));
 			}
 			
 			System.out.println();
 		}
+		System.out.println("---------------------");
 	}
 	
 	private Predicate<Tile> isEmptyTile() {
@@ -685,19 +678,11 @@ public class Board {
 		List<Piece> pieces = getAllPiecesOf(to.getPiece().getColor());
 		Collection<Tile> emptyTiles = getAllEmptyTileBetween(from, to);
 		for(Tile emptyTile: emptyTiles) {
-			for(Piece piece: pieces) {
-				if(!piece.getTile().equals(to)) {
-					boolean isMoveValid = isPieceMoveValid(piece.getTile(), emptyTile);
-					logger.debug(String.format("Movement from {%s} to {%s} is {%s}", piece.getTile().getPosition(), emptyTile.getPosition(), isMoveValid));
-					if(isMoveValid) {
-						isKingCheckAfterMovement = isKingCheckAfterPieceMovementOf(piece.getTile(), emptyTile);
-						logger.debug("Piece at '" + piece.getTile().getPosition() + "' being validated for check by opponent after its movement: " + isKingCheckAfterMovement);
-						if(!isKingCheckAfterMovement) {
-							return true;
-						}
-					}
-				}
-			}
+			isKingCheckAfterMovement = pieces.stream()
+							.filter(piece -> !piece.getTile().equals(to))
+							.filter(piece -> isPieceMoveValid(piece.getTile(), emptyTile))
+							.allMatch(piece -> isKingCheckAfterPieceMovementOf(piece.getTile(), emptyTile));
+			if(!isKingCheckAfterMovement) return true;
 		}
 		return false;
 	}
