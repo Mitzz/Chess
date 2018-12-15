@@ -21,7 +21,7 @@ public class Board {
 	final static Logger logger = Logger.getLogger(Board.class);
 	
 	private Tile[][] tiles;
-	private int successfulStep = 1;
+	private int successfulStep;
 	private boolean isWhiteCastlingPossibleOnKingSide = true;
 	private boolean isWhiteCastlingPossibleOnQueenSide = true;
 	private boolean isBlackCastlingPossibleOnKingSide = true;
@@ -74,22 +74,22 @@ public class Board {
 		fromFile = (int)fromFile - 97;
 		toRank = toRank - 1;
 		toFile = (int)toFile - 97;
-		if(!isValidTileAt(fromRank, fromFile) || !isValidTileAt(toRank, toFile)){
+		Tile from = tiles[fromRank][fromFile];
+		Tile to = tiles[toRank][toFile];
+		logger.info("------------Movement Initiated from " + from.getPosition() + " to " + to.getPosition() + " for " + (isWhiteTurn ? "white" : "black") + "----------");
+		if(!isValidTile(from) || !isValidTile(to)){
 			logger.info(String.format("Move Invalid due to invalid source tile (%s, %s) or destination tile (%s, %s)", fromRank, fromFile, toRank, toFile));
 			return false;
 		}
-		Tile from = tiles[fromRank][fromFile];
-		Tile to = tiles[toRank][toFile];
-		logger.info("------------Movement Step " + successfulStep + " Initiated from " + from.getPosition() + " to " + to.getPosition() + "for " + (isWhiteTurn ? "white" : "black") + "----------");
 		if(!from.isEmpty() && !isMoveByTurn(isWhiteTurn, from)) {
 			logger.info("Move Invalid due wrong player played");
 			return false;
 		}
-		boolean isEnPassantMove = false;
-		boolean isCastlingMove = false;
-		boolean valid = isPieceMoveValid(from, to) || (isCastlingMove = isCastlingMovePossible(from, to)) || (isEnPassantMove = isEnPassantMove(from, to));
-		if(!valid) {
-			logger.info("Movement Invalid");
+		boolean isValidEnPassantMove = false;
+		boolean isValidCastlingMove = false;
+		boolean isValid = isValidPieceMove(from, to) || (isValidCastlingMove = isValidCastlingMove(from, to)) || (isValidEnPassantMove = isValidEnPassantMove(from, to));
+		if(!isValid) {
+			logger.info(String.format("Movement Invalid from %s to %s for piece %s", from.getPosition(), to.getPosition(), from.getPiece() == null ? "NA": from.getPiece().getDescription()));
 			return false;
 		}
 		
@@ -101,18 +101,18 @@ public class Board {
 			successfulStep++;
 		}
 		
-		if(isCastlingMove)  doRookMovementForCastling(from, to);
-		if(isEnPassantMove) removeCapturedPieceInEnPassant(from, to);
+		if(isValidCastlingMove)  doRookMovementForCastling(from, to);
+		if(isValidEnPassantMove) removeCapturedPieceInEnPassant(from, to);
 		
 		determineCastlingPossibility(from, to, isWhiteTurn);
 		determineEnPassantTile(from, to);
-		logger.info(String.format("Piece %s moved from %s to %s", to.getPiece().getDescription(), from.getPosition(), to.getPosition()));
+		logger.info(String.format("%s. Piece %s moved from %s to %s", successfulStep, to.getPiece().getDescription(), from.getPosition(), to.getPosition()));
 		if(isPawnPromotion(isWhiteTurn, to)) {
 			logger.info("Pawn promotion");
 			setPawnForPromotion(to);
 		}
 		
-		return valid;
+		return isValid;
 	}
 	
 	private void removeCapturedPieceInEnPassant(Tile from, Tile to) {
@@ -124,7 +124,7 @@ public class Board {
 		tiles[enPassantTile.getRank() - 1 + rankOffset][enPassantTile.getFile() - 97].removePiece();
 	}
 
-	private boolean isEnPassantMove(Tile from, Tile to) {
+	private boolean isValidEnPassantMove(Tile from, Tile to) {
 		logger.debug("Enpassant Movement Possibility Check");
 		boolean isEnPassantMovePossible = (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to) && 
 					Arrays.asList(Direction.DOWN_LEFT, Direction.DOWN_RIGHT, Direction.UP_LEFT, Direction.UP_RIGHT).stream()
@@ -185,7 +185,7 @@ public class Board {
 		return this;
 	}
 
-	private boolean isCastlingMovePossible(Tile from, Tile to) {
+	private boolean isValidCastlingMove(Tile from, Tile to) {
 		logger.debug("Castling Movement Possibility Check");
 		if(to.getRank() != from.getRank()) 	return false;
 		if(!to.isEmpty()) 					return false;
@@ -241,7 +241,7 @@ public class Board {
 					Tile nextTile = getNextTileFrom(tile, step, direction);
 					if(nextTile == null) exhausted[index] = true;
 					else {
-						if(isPieceMoveValid(tile, nextTile) || isEnPassantMove(tile, nextTile)) return true;
+						if(isValidPieceMove(tile, nextTile) || isValidEnPassantMove(tile, nextTile)) return true;
 					}
 				}
 			}
@@ -255,7 +255,7 @@ public class Board {
 			for(Integer w: i) {
 				int rank = v + tile.getRank() - 1;
 				int file = w + tile.getFile() - 97;
-				if(Math.abs(v) != Math.abs(w) && isValidTileAt(rank, file) && isPieceMoveValid(tile, tiles[rank][file])) {
+				if(Math.abs(v) != Math.abs(w) && isValidTileAt(rank, file) && isValidPieceMove(tile, tiles[rank][file])) {
 					return true;
 				}
 			}
@@ -292,22 +292,21 @@ public class Board {
 			logger.debug("No Possibility of checkmate since king movement is not mandatory");
 			return false; 
 		}
-		logger.debug("Possibility of checkmate since king movement is mandatory");
-		logger.debug("opponentTiles responsible for king movement");
-		opponentTilesForKingCheckAt.stream().forEach(e -> logger.debug(e.getPosition()));
+		logger.info(String.format("Possibility of checkmate since king movement is check at %s by %s pieces", kingTile.getPosition(), opponentTilesForKingCheckAt.size()));
+		logger.info("Opponent Tiles responsible for king movement");
+		opponentTilesForKingCheckAt.stream().forEach(e -> logger.info(e.getPosition()));
 		
 		//Can't kill two opponent pieces in one move
 		if(opponentTilesForKingCheckAt.size() == 1) {
 			List<Tile> userTiles =  getValidMovementTilesAt(opponentTilesForKingCheckAt.get(0));
-			logger.debug("Board.isGameOver(userTiles)");
 			userTiles.stream().forEach(e -> logger.debug(e.getPosition()));
 			if(userTiles.size() >= opponentTilesForKingCheckAt.size()) {
-				logger.debug("King Saved by Piece");
+				logger.info("King Saved by Piece");
 				return false;
 			} else {
 				boolean canCheckBlocked = canCheckBeBlock(kingTile, opponentTilesForKingCheckAt);
 				if(canCheckBlocked) {
-					logger.debug("King Saved by blocking the path");
+					logger.info("King Saved by blocking the path");
 					return false;
 				}
 			}
@@ -356,7 +355,7 @@ public class Board {
 		List<Tile> tiles = new ArrayList<>();
 		for(Piece p: opponentPieces) {
 			Tile tile = p.getTile();
-			if(!p.isKingPiece() && isPieceMoveValid(tile, targetTile)) tiles.add(tile); 
+			if(!p.isKingPiece() && isValidPieceMove(tile, targetTile)) tiles.add(tile); 
 		}
 		
 		return tiles;
@@ -367,12 +366,12 @@ public class Board {
 		Collection<Tile> targetTiles = (sourceTile.getPiece().getColor() == Color.BLACK ? getNonBlackTiles() : getNonWhiteTiles());
 		Collection<Tile> possibleMovementTiles = 
 				targetTiles.stream()
-					.filter(targetTile -> isPieceMoveValid(sourceTile, targetTile) || isEnPassantMove(sourceTile, targetTile) || isCastlingMovePossible(sourceTile, targetTile)) 
+					.filter(targetTile -> isValidPieceMove(sourceTile, targetTile) || isValidEnPassantMove(sourceTile, targetTile) || isValidCastlingMove(sourceTile, targetTile)) 
 					.collect(Collectors.toList());
 		return possibleMovementTiles;
 	}
 
-	private boolean isPieceMoveValid(Tile from, Tile to) {
+	private boolean isValidPieceMove(Tile from, Tile to) {
 		if(from.isEmpty()) 					return false;
 		if(from.equals(to)) 				return false;
 		if(isSameOpponentPiece(from, to)) 	return false;
@@ -494,7 +493,7 @@ public class Board {
 	private boolean isCheckBy(Tile kingTile, Tile opponentTile) {
 		
 		if(opponentTile != null && !opponentTile.isEmpty() && !isSameOpponentPiece(kingTile, opponentTile) && opponentTile.getPiece().validateMove(kingTile)) {
-			logger.info(String.format("Check at %s due to Opponent Piece %s at %s", kingTile.getPosition(), opponentTile.getPiece().getDescription(), opponentTile.getPosition()));
+			logger.debug(String.format("Check at %s due to Opponent Piece %s at %s", kingTile.getPosition(), opponentTile.getPiece().getDescription(), opponentTile.getPosition()));
 			return true;
 		}
 		return false;
@@ -610,6 +609,9 @@ public class Board {
 			}
 			
 			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
 		}
 		System.out.println("---------------------");
 	}
@@ -656,7 +658,7 @@ public class Board {
 		boolean isWhite = Color.WHITE == color;
 		Collection<Tile> tiles = (isWhite ? getTilesOf(Color.white) : getTilesOf(Color.black));
 		Collection<Tile> otherTiles = (isWhite ? getNonWhiteTiles() : getNonBlackTiles());
-		movableTiles = tiles.stream().filter(tile -> (otherTiles.stream().anyMatch(otherTile -> (isPieceMoveValid(tile, otherTile) || isCastlingMovePossible(tile, otherTile) || isEnPassantMove(tile, otherTile))))).collect(Collectors.toSet());
+		movableTiles = tiles.stream().filter(tile -> (otherTiles.stream().anyMatch(otherTile -> (isValidPieceMove(tile, otherTile) || isValidCastlingMove(tile, otherTile) || isValidEnPassantMove(tile, otherTile))))).collect(Collectors.toSet());
 		return movableTiles;
 	}
 
@@ -680,7 +682,7 @@ public class Board {
 		for(Tile emptyTile: emptyTiles) {
 			isKingCheckAfterMovement = pieces.stream()
 							.filter(piece -> !piece.getTile().equals(to))
-							.filter(piece -> isPieceMoveValid(piece.getTile(), emptyTile))
+							.filter(piece -> isValidPieceMove(piece.getTile(), emptyTile))
 							.allMatch(piece -> isKingCheckAfterPieceMovementOf(piece.getTile(), emptyTile));
 			if(!isKingCheckAfterMovement) return true;
 		}

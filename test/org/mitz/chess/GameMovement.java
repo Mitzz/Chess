@@ -420,6 +420,10 @@ public class GameMovement {
 		simpleValidMovement('e', 2, 'f', 2);
 		simpleValidMovement('f', 8, 'e', 8);
 		simpleValidMovement('b', 7, 'c', 6);
+		invalid('e', 8, 'd', 7);
+		invalid('e', 8, 'e', 7);
+		invalid('e', 8, 'f', 7);
+		invalid('e', 8, 'f', 8);
 		simpleValidMovement('e', 8, 'd', 8);
 		simpleValidMovement('e', 4, 'e', 3);
 		simpleValidMovement('b', 6, 'b', 7);
