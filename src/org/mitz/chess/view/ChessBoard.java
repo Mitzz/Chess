@@ -102,27 +102,6 @@ public class ChessBoard extends JPanel implements MouseListener, ActionListener{
 		updateGameStatus();
 	}
 
-//	private void updatePlayerTurn() {
-//		if(game.getStatus() == GameState.IN_PROGRESS) {
-//			if(game.isWhiteTurn()) {
-//				player1Label.setText("White Player Turn");
-//				player2Label.setText("Black Player");
-//			} else {
-//				player2Label.setText("Black Player Turn");
-//				player1Label.setText("White Player");
-//			}
-//		} else if(game.getStatus() == GameState.OVER_DUE_TO_CHECKMATE) {
-//			if(game.isWhiteTurn()) {
-//				player1Label.setText("White Player");
-//				player2Label.setText("Black Player");
-//			} else {
-//				player2Label.setText("Black Player");
-//				player1Label.setText("White Player");
-//			}
-//			
-//		}
-//	}
-
 	private void drawLabel(Graphics g) {
 		g.setColor(Color.BLACK);
 		for(int i = 0; i < xOffset; i++) {
