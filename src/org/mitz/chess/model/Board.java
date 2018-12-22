@@ -152,9 +152,9 @@ public class Board {
 	private Board doRookMovementForCastling(Tile from, Tile to) {
 		boolean isCastlingKingSide = to.getFile() == 'c';
 		if(isCastlingKingSide) {
-			getTileAt(to.getRank(), 'a').movePieceTo(getTileAt(to.getRank(), (char)(to.getFile() + 1)));
+			getTileAt('a', to.getRank()).movePieceTo(getTileAt((char)(to.getFile() + 1), to.getRank()));
 		} else {
-			getTileAt(to.getRank(), 'h').movePieceTo(getTileAt(to.getRank(),(char)(to.getFile() - 1)));
+			getTileAt('h', to.getRank()).movePieceTo(getTileAt((char)(to.getFile() - 1), to.getRank()));
 		}
 		return this;
 	}
@@ -270,7 +270,7 @@ public class Board {
 		int rank = step * direction.row + tile.getRank() - 1;
 		int file = step * direction.col + tile.getFile() - 97;
 		if(isValidTileAt(rank, file)) 
-			nextTile = getTileAt(rank, file);
+			nextTile = getTileAt((char)(step * direction.col + tile.getFile()), step * direction.row + tile.getRank());
 		if(nextTile != null)
 			logger.debug("Next Tile: " + nextTile.getPosition());
 		else {
@@ -328,16 +328,16 @@ public class Board {
 	}
 	
 	private boolean isKingMovePossible(Direction direction, Tile kingTile) {
-		return isKingMovePossible(kingTile.getRank() - 1 +  direction.row, kingTile.getFile() - 97 + direction.col, kingTile);
-	}
-	
-	private boolean isKingMovePossible(int r, int f, Tile kingTile) {
-		
+		int r = kingTile.getRank() - 1 +  direction.row;
+		int f = kingTile.getFile() - 97 + direction.col;
 		if(!isValidTileAt(r, f)) 
 			return false;
+		return isKingMovePossible(kingTile.getRank() + direction.row, (char)(kingTile.getFile() + direction.col), kingTile);
+	}
+	
+	private boolean isKingMovePossible(int r, char f, Tile kingTile) {
 		
-//		Color color = sourceTile.getPiece().getColor();
-		Tile possibleMovementTile = getTileAt(r, f);
+		Tile possibleMovementTile = getTileAt(f, r);
 		
 		logger.debug("Board.isMovePossible(KingTile): " + possibleMovementTile.getPosition());
 		boolean isMovePossible = true;
@@ -399,14 +399,6 @@ public class Board {
 
 	private List<Piece> getAllPiecesOf(Color color) {
 		return getTilesOf(color).stream().map(Tile::getPiece).collect(Collectors.toList());
-	}
-	
-	private Tile getTileAt(int r, int f) {
-		return tiles[r][f];
-	}
-	
-	public Tile getTileAt(int rank, char file) {
-		return tiles[rank - 1][file - 97];
 	}
 	
 	public Tile getTileAt(char file, int rank) {
@@ -533,8 +525,12 @@ public class Board {
 		return nonEmptyTile;
 	}
 	
-	private boolean isValidTileAt(int fromRank, int fromFile) {
-		return (fromRank <= 7 && fromRank >= 0) && (fromFile <= 7 && fromFile >= 0);
+	private boolean isValidTileAt(int rank, int file) {
+		return isValidTileAt((char)(file + 97), rank + 1);
+	}
+	
+	private boolean isValidTileAt(char file, int rank) {
+		return (rank <= 8 && rank >= 1) && isInRange(file, 'a', 'h');
 	}
 
 	private Tile getKingTileOf(Color color) {

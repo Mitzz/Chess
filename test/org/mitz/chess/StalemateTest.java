@@ -30,13 +30,13 @@ public class StalemateTest {
 	@Test
 	public void game1() {
 		game.clear();
-		Tile t = board.getTileAt(7, 'f');
+		Tile t = board.getTileAt('f', 7);
 		t.setPiece(new King(Color.WHITE, t));
 		
-		t = board.getTileAt(5, 'g');
+		t = board.getTileAt('g', 5);
 		t.setPiece(new Queen(Color.WHITE, t));
 		
-		t = board.getTileAt(8, 'h');
+		t = board.getTileAt('h', 8);
 		t.setPiece(new King(Color.BLACK, t));
 		
 		simpleValidMovement('g', 5, 'g', 6);
@@ -47,16 +47,16 @@ public class StalemateTest {
 	@Test
 	public void game2() {
 		game.clear();
-		Tile t = board.getTileAt(7, 'f');
+		Tile t = board.getTileAt('f', 7);
 		t.setPiece(new King(Color.WHITE, t));
 		
-		t = board.getTileAt(5, 'g');
+		t = board.getTileAt('g', 5);
 		t.setPiece(new Queen(Color.WHITE, t));
 		
-		t = board.getTileAt(8, 'h');
+		t = board.getTileAt('h', 8);
 		t.setPiece(new King(Color.BLACK, t));
 		
-		t = board.getTileAt(5, 'b');
+		t = board.getTileAt('b', 5);
 		t.setPiece(new Pawn(Color.BLACK, t));
 		
 		simpleValidMovement('g', 5, 'g', 6);
@@ -67,19 +67,19 @@ public class StalemateTest {
 	@Test
 	public void game3() {
 		game.clear();
-		Tile t = board.getTileAt(7, 'f');
+		Tile t = board.getTileAt('f', 7);
 		t.setPiece(new King(Color.WHITE, t));
 		
-		t = board.getTileAt(5, 'g');
+		t = board.getTileAt('g', 5);
 		t.setPiece(new Queen(Color.WHITE, t));
 		
-		t = board.getTileAt(8, 'h');
+		t = board.getTileAt('h', 8);
 		t.setPiece(new King(Color.BLACK, t));
 		
-		t = board.getTileAt(5, 'b');
+		t = board.getTileAt('b', 5);
 		t.setPiece(new Pawn(Color.BLACK, t));
 		
-		t = board.getTileAt(4, 'b');
+		t = board.getTileAt('b', 4);
 		t.setPiece(new Pawn(Color.WHITE, t));
 		
 		simpleValidMovement('g', 5, 'g', 6);
@@ -91,22 +91,22 @@ public class StalemateTest {
 	@Test
 	public void game4() {
 		game.clear();
-		Tile t = board.getTileAt(7, 'f');
+		Tile t = board.getTileAt('f', 7);
 		t.setPiece(new King(Color.WHITE, t));
 		
-		t = board.getTileAt(5, 'g');
+		t = board.getTileAt('g', 5);
 		t.setPiece(new Queen(Color.WHITE, t));
 		
-		t = board.getTileAt(8, 'h');
+		t = board.getTileAt('h', 8);
 		t.setPiece(new King(Color.BLACK, t));
 		
-		t = board.getTileAt(5, 'b');
+		t = board.getTileAt('b', 5);
 		t.setPiece(new Pawn(Color.BLACK, t));
 		
-		t = board.getTileAt(4, 'b');
+		t = board.getTileAt('b', 4);
 		t.setPiece(new Pawn(Color.WHITE, t));
 		
-		t = board.getTileAt(6, 'b');
+		t = board.getTileAt('b', 6);
 		t.setPiece(new Rook(Color.BLACK, t));
 		game.render();
 		simpleValidMovement('g', 5, 'g', 6);
@@ -118,19 +118,19 @@ public class StalemateTest {
 	@Test
 	public void game5() {
 		game.clear();
-		Tile t = board.getTileAt(7, 'f');
+		Tile t = board.getTileAt('f', 7);
 		t.setPiece(new King(Color.WHITE, t));
 		
-		t = board.getTileAt(5, 'g');
+		t = board.getTileAt('g', 5);
 		t.setPiece(new Queen(Color.WHITE, t));
 		
-		t = board.getTileAt(8, 'h');
+		t = board.getTileAt('h', 8);
 		t.setPiece(new King(Color.BLACK, t));
 		
-		t = board.getTileAt(4, 'b');
+		t = board.getTileAt('b', 4);
 		t.setPiece(new Pawn(Color.WHITE, t));
 		
-		t = board.getTileAt(6, 'b');
+		t = board.getTileAt('b', 6);
 		t.setPiece(new Rook(Color.BLACK, t));
 		game.render();
 		simpleValidMovement('g', 5, 'g', 6);
@@ -142,16 +142,16 @@ public class StalemateTest {
 	@Test
 	public void game6() {
 		game.clear();
-		Tile t = board.getTileAt(7, 'f');
+		Tile t = board.getTileAt('f', 7);
 		t.setPiece(new King(Color.WHITE, t));
 		
-		t = board.getTileAt(5, 'g');
+		t = board.getTileAt('g', 5);
 		t.setPiece(new Queen(Color.WHITE, t));
 		
-		t = board.getTileAt(8, 'h');
+		t = board.getTileAt('h', 8);
 		t.setPiece(new King(Color.BLACK, t));
 		
-		t = board.getTileAt(4, 'b');
+		t = board.getTileAt('b', 4);
 		t.setPiece(new Pawn(Color.WHITE, t));
 		
 		simpleValidMovement('g', 5, 'g', 4);
@@ -163,19 +163,19 @@ public class StalemateTest {
 	@Test
 	public void game7() {
 		game.clear();
-		Tile t = board.getTileAt(7, 'f');
+		Tile t = board.getTileAt('f', 7);
 		t.setPiece(new King(Color.WHITE, t));
 		
-		t = board.getTileAt(5, 'g');
+		t = board.getTileAt('g', 5);
 		t.setPiece(new Queen(Color.WHITE, t));
 		
-		t = board.getTileAt(8, 'h');
+		t = board.getTileAt('h', 8);
 		t.setPiece(new King(Color.BLACK, t));
 		
-		t = board.getTileAt(4, 'b');
+		t = board.getTileAt('b', 4);
 		t.setPiece(new Pawn(Color.WHITE, t));
 		
-		t = board.getTileAt(5, 'b');
+		t = board.getTileAt('b', 5);
 		t.setPiece(new Knight(Color.BLACK, t));
 		
 		simpleValidMovement('g', 5, 'g', 6);
@@ -187,25 +187,25 @@ public class StalemateTest {
 	@Test
 	public void game8() {
 		game.clear();
-		Tile t = board.getTileAt(7, 'f');
+		Tile t = board.getTileAt('f', 7);
 		t.setPiece(new King(Color.WHITE, t));
 		
-		t = board.getTileAt(5, 'g');
+		t = board.getTileAt('g', 5);
 		t.setPiece(new Queen(Color.WHITE, t));
 		
-		t = board.getTileAt(8, 'h');
+		t = board.getTileAt('h', 8);
 		t.setPiece(new King(Color.BLACK, t));
 		
-		t = board.getTileAt(5, 'b');
+		t = board.getTileAt('b', 5);
 		t.setPiece(new Pawn(Color.BLACK, t));
 		
-		t = board.getTileAt(3, 'b');
+		t = board.getTileAt('b', 3);
 		t.setPiece(new Pawn(Color.WHITE, t));
 		
-		t = board.getTileAt(2, 'c');
+		t = board.getTileAt('c', 2);
 		t.setPiece(new Pawn(Color.WHITE, t));
 		
-		t = board.getTileAt(1, 'c');
+		t = board.getTileAt('c', 1);
 		t.setPiece(new Rook(Color.WHITE, t));
 		
 		simpleValidMovement('g', 5, 'g', 6);

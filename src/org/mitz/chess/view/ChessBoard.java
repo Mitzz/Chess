@@ -66,32 +66,35 @@ public class ChessBoard extends JPanel implements MouseListener, ActionListener{
 	private void setup() {
 		game.clear();
 		Board board = game.getBoard();
-		Tile t = board.getTileAt(1, 'e');
+		Tile t = board.getTileAt('e', 1);
 		t.setPiece(new King(Color.WHITE, t));
 		
-		t = board.getTileAt(1, 'd');
+		t = board.getTileAt('d', 1);
 		t.setPiece(new Rook(Color.WHITE, t));
 		
-		t = board.getTileAt(6, 'a');
+		t = board.getTileAt('a', 6);
 		t.setPiece(new Queen(Color.WHITE, t));
 		
 		t = board.getTileAt('a', 4);
 		t.setPiece(new Bishop(Color.WHITE, t));
 		
-		t = board.getTileAt(8, 'e');
+		t = board.getTileAt('e', 2);
+		t.setPiece(new Rook(Color.WHITE, t));
+		
+		t = board.getTileAt('e', 8);
 		t.setPiece(new King(Color.BLACK, t));
 		
-		t = board.getTileAt(7, 'e');
+		t = board.getTileAt('e', 7);
 		t.setPiece(new Knight(Color.BLACK, t));
 		
-		t = board.getTileAt(7, 'f');
+		t = board.getTileAt('f', 7);
 		t.setPiece(new Pawn(Color.BLACK, t));
 		
-		t = board.getTileAt(8, 'f');
+		t = board.getTileAt('f', 8);
 		t.setPiece(new Rook(Color.BLACK, t));
 		
 		t = board.getTileAt('c', 6);
-		t.setPiece(new Rook(Color.BLACK, t));
+		t.setPiece(new Bishop(Color.BLACK, t));
 	}
 
 	@Override
@@ -174,7 +177,7 @@ public class ChessBoard extends JPanel implements MouseListener, ActionListener{
 			}
 			movableTiles = game.getMovableTiles();
 			if(isPresent(movableTiles, currentClickedRank, currentClickedFile)) {
-				possibleMovementTiles = board.getPossibleMovementTilesFrom(board.getTileAt(currentClickedRank, currentClickedFile));
+				possibleMovementTiles = board.getPossibleMovementTilesFrom(board.getTileAt(currentClickedFile, currentClickedRank));
 			}
 		}
 		RectangleComponent rectangleComponent = null;
@@ -191,7 +194,7 @@ public class ChessBoard extends JPanel implements MouseListener, ActionListener{
 				if(isPresent(possibleMovementTiles, 9 - rank, file)) {
 					rectangleComponent.borderColor(Color.white).borderThickness(2).renderBorder(g);
 				}
-				Tile tile = board.getTileAt(9 - rank, file);
+				Tile tile = board.getTileAt(file, 9 - rank);
 				if(!tile.isEmpty()) {
 					Piece piece = tile.getPiece();
 					rectangleComponent.drawUnicode(g, piece.getUnicodeCharacter(), piece.getColor());

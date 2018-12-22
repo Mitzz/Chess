@@ -122,16 +122,16 @@ public class CastlingMovement {
 	public void bishopPiecePresence() {
 		game.clear();
 		
-		Tile t = board.getTileAt(1, 'e');
+		Tile t = board.getTileAt('e', 1);
 		t.setPiece(new King(Color.WHITE, t));
 		
-		t = board.getTileAt(8, 'e');
+		t = board.getTileAt('e', 8);
 		t.setPiece(new King(Color.BLACK, t));
 		
-		t = board.getTileAt(1, 'f');
+		t = board.getTileAt('f', 1);
 		t.setPiece(new Bishop(Color.WHITE, t));
 		
-		t = board.getTileAt(1, 'h');
+		t = board.getTileAt('h', 1);
 		t.setPiece(new Rook(Color.WHITE, t));
 		invalid('e', 1, 'g', 1);
 	}
@@ -140,16 +140,16 @@ public class CastlingMovement {
 	public void opponentPiecePresence() {
 		game.clear();
 		
-		Tile t = board.getTileAt(1, 'e');
+		Tile t = board.getTileAt('e', 1);
 		t.setPiece(new King(Color.WHITE, t));
 		
-		t = board.getTileAt(8, 'e');
+		t = board.getTileAt('e', 8);
 		t.setPiece(new King(Color.BLACK, t));
 		
-		t = board.getTileAt(1, 'g');
+		t = board.getTileAt('g', 1);
 		t.setPiece(new Bishop(Color.BLACK, t));
 		
-		t = board.getTileAt(1, 'h');
+		t = board.getTileAt('h', 1);
 		t.setPiece(new Rook(Color.WHITE, t));
 		
 		invalid('e', 1, 'g', 1);
