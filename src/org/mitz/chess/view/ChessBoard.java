@@ -227,6 +227,9 @@ public class ChessBoard extends JPanel implements MouseListener, ActionListener{
 		}
 		if(gameStatus == GameState.OVER_DUE_TO_STALEMATE) {
 			gameStatusLabel.setText(String.format("Match drawn due to %s Player not have legal moves to move", (!game.isWhiteTurn() ? "Black" : "White")));
+			newGameBtn.setEnabled(true);
+			resignGameBtn.setEnabled(false);
+			repaint();
 		}
 	}
 

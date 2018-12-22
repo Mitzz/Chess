@@ -7,11 +7,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -306,7 +303,7 @@ public class Board {
 				logger.info("King Saved by Piece");
 				return false;
 			} else {
-				boolean canCheckBlocked = canCheckBeBlock(kingTile, opponentTilesForKingCheckAt);
+				boolean canCheckBlocked = getTilesToBlockCheckFrom(opponentTilesForKingCheckAt.get(0)).size() > 0;
 				if(canCheckBlocked) {
 					logger.info("King Saved by blocking the path");
 					return false;
@@ -667,29 +664,6 @@ public class Board {
 		return (isWhiteTurn ? getMovableTilesOf(Color.white): getMovableTilesOf(Color.BLACK));
 	}
 	
-	private boolean canCheckBeBlock(Tile kingTile, List<Tile> opponentTiles) {
-		Map<Tile, Boolean> opponentTileToBlock = new HashMap<>();
-		opponentTiles.forEach(opponentTile -> opponentTileToBlock.put(opponentTile, false));
-		opponentTiles.stream()
-			.filter(opponentTile -> (opponentTile.isMovementSideways(kingTile) || opponentTile.isMovementDiagonal(kingTile)))
-			.forEach(opponentTile -> opponentTileToBlock.put(opponentTile, canPathBeBlock(opponentTile, kingTile)));
-		return opponentTileToBlock.entrySet().stream().allMatch(e -> e.getValue());
-	}
-	
-	private boolean canPathBeBlock(Tile from, Tile to) {
-		boolean isKingCheckAfterMovement = false;
-		List<Piece> pieces = getAllPiecesOf(to.getPiece().getColor());
-		Collection<Tile> emptyTiles = getAllEmptyTileBetween(from, to);
-		for(Tile emptyTile: emptyTiles) {
-			isKingCheckAfterMovement = pieces.stream()
-							.filter(piece -> !piece.getTile().equals(to))
-							.filter(piece -> isValidPieceMove(piece.getTile(), emptyTile))
-							.allMatch(piece -> isKingCheckAfterPieceMovementOf(piece.getTile(), emptyTile));
-			if(!isKingCheckAfterMovement) return true;
-		}
-		return false;
-	}
-	
 	private Collection<Tile> getAllEmptyTileBetween(Tile from, Tile to) {
 		Collection<Tile> tiles = new HashSet<>();
 		Tile emptyTile = from;
@@ -801,7 +775,6 @@ public class Board {
 		return movableTiles;
 	}
 
-	
 	private Collection<Tile> getValidMovementTilesAt(Tile targetTile, Collection<Tile> sourceTiles){
 		return sourceTiles.stream()
 		.filter(sourceTile -> !sourceTile.equals(targetTile))
