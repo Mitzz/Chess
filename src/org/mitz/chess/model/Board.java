@@ -279,7 +279,7 @@ public class Board {
 		return nextTile;
 	}
 
-	public static boolean areAllTrue(boolean[] array)
+	private static boolean areAllTrue(boolean[] array)
 	{
 	    for(boolean b : array) if(!b) return false;
 	    return true;
@@ -288,7 +288,7 @@ public class Board {
 	private boolean isKingMoveMandatory(Tile kingTile) {
 		List<Tile> opponentTilesForKingCheckAt = null;
 		//Is King Check by Opponent Piece
-		opponentTilesForKingCheckAt = getOpponentTilesResponsibleForCheckToKing(kingTile);
+		opponentTilesForKingCheckAt = getOpponentTilesResponsibleForCheck(kingTile);
 		if(opponentTilesForKingCheckAt.size() == 0) {
 			logger.debug("No Possibility of checkmate since king movement is not mandatory");
 			return false; 
@@ -300,7 +300,7 @@ public class Board {
 		
 		//Can't kill two opponent pieces in one move
 		if(opponentTilesForKingCheckAt.size() == 1) {
-			List<Tile> userTiles =  getValidMovementTilesAt(opponentTilesForKingCheckAt.get(0));
+			List<Tile> userTiles =  getValidMovementTilesOfOpponentAt(opponentTilesForKingCheckAt.get(0));
 			userTiles.stream().forEach(e -> logger.debug(e.getPosition()));
 			if(userTiles.size() >= opponentTilesForKingCheckAt.size()) {
 				logger.info("King Saved by Piece");
@@ -317,14 +317,8 @@ public class Board {
 		return true;
 	}
 	
-	
-
 	private boolean isKingMovePossible(Tile kingTile) {
-		for(Direction direction: Direction.values()) {
-			if(isKingMovePossible(direction, kingTile)) return true;
-		}
-		
-		return false;
+		return Arrays.asList(Direction.values()).stream().anyMatch(direction -> isKingMovePossible(direction, kingTile));
 	}
 	
 	private boolean isKingMovePossible(Direction direction, Tile kingTile) {
@@ -353,16 +347,14 @@ public class Board {
 		return isMovePossible;
 	}
 	
-	private List<Tile> getValidMovementTilesAt(Tile targetTile){
+	private List<Tile> getValidMovementTilesOfOpponentAt(Tile targetTile){
 		if(targetTile.isEmpty()) return null;
 		List<Piece> opponentPieces = (targetTile.getPiece().getColor() == Color.BLACK ? getAllPiecesOf(Color.white) : getAllPiecesOf(Color.black));
-		List<Tile> tiles = new ArrayList<>();
-		for(Piece p: opponentPieces) {
-			Tile tile = p.getTile();
-			if(!p.isKingPiece() && isValidPieceMove(tile, targetTile) && !isKingCheckAfterPieceRemovalOf(tile)) tiles.add(tile); 
-		}
-		
-		return tiles;
+		List<Tile> sourceTiles = opponentPieces.stream()
+									.filter(opponentPiece -> !opponentPiece.isKingPiece())
+									.map(Piece::getTile)
+									.collect(Collectors.toList());
+		return new ArrayList<>(getValidMovementTilesAt(targetTile, sourceTiles));
 	}
 	
 	public Collection<Tile> getPossibleMovementTilesFrom(Tile sourceTile){
@@ -441,7 +433,7 @@ public class Board {
 		return isCheckByKnight(kingTile);
 	}
 	
-	private List<Tile> getOpponentTilesResponsibleForCheckToKing(Tile kingTile) {
+	private List<Tile> getOpponentTilesResponsibleForCheck(Tile kingTile) {
 		logger.debug("King Tile Present at: " + kingTile.getPosition());
 		List<Tile> opponentTiles = new ArrayList<>();
 		Tile nonEmptyTile = null;
@@ -658,30 +650,8 @@ public class Board {
 		boolean isWhite = Color.WHITE == color;
 		Tile kingTile = null;
 		if(isKingCheckAt(kingTile = getKingTileOf(isWhite ? Color.WHITE : Color.BLACK))) {
-			logger.info("King Check of white?" + isWhite);
-			if(isKingMovePossible(kingTile)) {
-				movableTiles.add(kingTile);
-			}
-			List<Tile> opponentTilesResponsibleForCheckToKing = getOpponentTilesResponsibleForCheckToKing(kingTile);
-			logger.info(String.format("Opponent Tiles(Size:%s) responsible for check", opponentTilesResponsibleForCheckToKing.size()));
-			opponentTilesResponsibleForCheckToKing.stream().forEach(e -> logger.info(String.format("Opponent Tile position '%s' responsible for check", e.getPosition())));
-			
-			if(opponentTilesResponsibleForCheckToKing.size() == 1) {
-				List<Tile> killTiles = getValidMovementTilesAt(opponentTilesResponsibleForCheckToKing.get(0));
-				movableTiles.addAll(killTiles);
-				
-				List<Piece> pieces = getAllPiecesOf(kingTile.getPiece().getColor());
-				Collection<Tile> emptyTiles = getAllEmptyTileBetween(kingTile, opponentTilesResponsibleForCheckToKing.get(0));
-				Tile tile = kingTile;
-				for(Tile emptyTile: emptyTiles) {
-					movableTiles.addAll(pieces.stream()
-									.filter(piece -> !piece.getTile().equals(tile))
-									.filter(piece -> isValidPieceMove(piece.getTile(), emptyTile))
-									.filter(piece -> !isKingCheckAfterPieceMovementOf(piece.getTile(), emptyTile))
-									.map(piece -> piece.getTile())
-									.collect(Collectors.toSet()));
-				}
-			}
+			logger.debug(String.format("King Check of '%s'", isWhite ? Color.WHITE : Color.BLACK));
+			movableTiles.addAll(getMovableTilesOf(kingTile));
 		} else {
 			Collection<Tile> tiles = (isWhite ? getTilesOf(Color.white) : getTilesOf(Color.black));
 			Collection<Tile> otherTiles = (isWhite ? getNonWhiteTiles() : getNonBlackTiles());
@@ -786,7 +756,7 @@ public class Board {
 		boolean isKingCheckAfterMove = isKingCheckAt(getKingTileOf(capturedPiece.getColor()));
 		if(isKingCheckAfterMove) {
 			Tile kingTile = getKingTileOf(capturedPiece.getColor());
-			List<Tile> opponentTilesResponsibleForCheckToKing = getOpponentTilesResponsibleForCheckToKing(kingTile);
+			List<Tile> opponentTilesResponsibleForCheckToKing = getOpponentTilesResponsibleForCheck(kingTile);
 			tile.setPiece(capturedPiece);
 			if(opponentTilesResponsibleForCheckToKing.size() == 1) {
 				boolean isValidMove = isValidPieceMove(tile, opponentTilesResponsibleForCheckToKing.get(0)) || isValidCastlingMove(tile, opponentTilesResponsibleForCheckToKing.get(0));
@@ -798,5 +768,45 @@ public class Board {
 		}
 		
 		return isKingCheckAfterMove;
+	}
+	
+	private Collection<Tile> getMovableTilesOf(Tile kingTile) {
+		Collection<Tile> movableTiles = new HashSet<>();
+		if(isKingMovePossible(kingTile)) {
+			movableTiles.add(kingTile);
+		}
+		List<Tile> opponentTilesResponsibleForCheckToKing = getOpponentTilesResponsibleForCheck(kingTile);
+		logger.debug(String.format("Opponent Tiles(Size:%s) responsible for check", opponentTilesResponsibleForCheckToKing.size()));
+		opponentTilesResponsibleForCheckToKing.stream().forEach(e -> logger.debug(String.format("Opponent Tile position '%s' responsible for check", e.getPosition())));
+		
+		if(opponentTilesResponsibleForCheckToKing.size() == 1) {
+			movableTiles.addAll(getValidMovementTilesOfOpponentAt(opponentTilesResponsibleForCheckToKing.get(0)));
+			movableTiles.addAll(getTilesToBlockCheckFrom(opponentTilesResponsibleForCheckToKing.get(0)));
+		}
+		return movableTiles;
+	}
+
+	private Collection<Tile> getTilesToBlockCheckFrom(Tile opponentTile) {
+		Tile kingTile = getKingTileOf(opponentTile.getPiece().getColor() == Color.WHITE ? Color.black : Color.WHITE);
+		Collection<Tile> movableTiles = new HashSet<>();
+		List<Piece> pieces = getAllPiecesOf(kingTile.getPiece().getColor());
+		Collection<Tile> emptyTiles = getAllEmptyTileBetween(kingTile, opponentTile);
+		Tile tile = kingTile;
+		List<Tile> sourcePieces = pieces.stream()
+									.filter(piece -> !piece.getTile().equals(tile))
+									.map(Piece::getTile).collect(Collectors.toList());
+		for(Tile emptyTile: emptyTiles) {
+			movableTiles.addAll(getValidMovementTilesAt(emptyTile, sourcePieces));
+		}
+		return movableTiles;
+	}
+
+	
+	private Collection<Tile> getValidMovementTilesAt(Tile targetTile, Collection<Tile> sourceTiles){
+		return sourceTiles.stream()
+		.filter(sourceTile -> !sourceTile.equals(targetTile))
+		.filter(sourceTile -> isValidPieceMove(sourceTile, targetTile))
+		.filter(sourceTile -> !isKingCheckAfterPieceMovementOf(sourceTile, targetTile))
+		.collect(Collectors.toSet());
 	}
 }
