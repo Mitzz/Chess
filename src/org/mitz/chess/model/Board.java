@@ -100,13 +100,13 @@ public class Board {
 			successfulStep++;
 		}
 		
-		if(isValidCastlingMove)  doRookMovementForCastling(from, to);
-		if(isValidEnPassantMove) removeCapturedPieceInEnPassant(from, to);
+		if(isValidCastlingMove)  castlingRookMovementAfterValidMovement(from, to);
+		if(isValidEnPassantMove) enPassantCapturedPieceRemovalAfterValidMovement(from, to);
 		
-		determineCastlingPossibility(from, to, isWhiteTurn);
-		determineEnPassantTile(from, to);
+		determineCastlingAfterValidMovement(from, to);
+		determineEnPassantTileAfterValidMovement(from, to);
 		logger.info(String.format("%s. Piece %s moved from %s to %s", successfulStep, to.getPiece().getDescription(), from.getPosition(), to.getPosition()));
-		if(isPawnPromotion(isWhiteTurn, to)) {
+		if(isPawnPromotionAt(to)) {
 			logger.info("Pawn promotion");
 			setPawnForPromotion(to);
 		}
@@ -114,7 +114,7 @@ public class Board {
 		return isValid;
 	}
 	
-	private void removeCapturedPieceInEnPassant(Tile from, Tile to) {
+	private void enPassantCapturedPieceRemovalAfterValidMovement(Tile from, Tile to) {
 		int rankOffset = 0;
 		if(from.getRank() > to.getRank()) rankOffset = +1;
 		else 							  rankOffset = -1;
@@ -134,7 +134,7 @@ public class Board {
 		return isEnPassantMovePossible;
 	}
 
-	private Board determineEnPassantTile(Tile from, Tile to) {
+	private Board determineEnPassantTileAfterValidMovement(Tile from, Tile to) {
 		if(!to.isEmpty() && to.getPiece().isPawn() && from.isMovementSideways(to) && Math.abs(from.getRank() - to.getRank()) == 2) {
 			int rankOffset = 0;
 			if(from.getRank() > to.getRank()) rankOffset = +1;
@@ -147,7 +147,7 @@ public class Board {
 		return this;
 	}
 
-	private Board doRookMovementForCastling(Tile from, Tile to) {
+	private Board castlingRookMovementAfterValidMovement(Tile from, Tile to) {
 		boolean isCastlingKingSide = to.getFile() == 'c';
 		if(isCastlingKingSide) {
 			getTileAt('a', to.getRank()).movePieceTo(getTileAt((char)(to.getFile() + 1), to.getRank()));
@@ -157,8 +157,8 @@ public class Board {
 		return this;
 	}
 
-	private Board determineCastlingPossibility(Tile from, Tile to, boolean isWhiteTurn) {
-		if(isWhiteTurn) {
+	private Board determineCastlingAfterValidMovement(Tile from, Tile to) {
+		if(to.getPiece().getColor() == Color.WHITE) {
 			if(to.hasKingPiece()) {
 				isWhiteCastlingPossibleOnQueenSide = false;
 				isWhiteCastlingPossibleOnKingSide = false;
@@ -186,9 +186,9 @@ public class Board {
 
 	private boolean isValidCastlingMove(Tile from, Tile to) {
 		logger.debug("Castling Movement Possibility Check");
-		if(to.getRank() != from.getRank()) 	return false;
 		if(!to.isEmpty()) 					return false;
 		if(!from.hasKingPiece()) 			return false;
+		if(to.getRank() != from.getRank()) 	return false;
 		if(isKingCheckAt(from)) 			return false;
 		boolean isWhite = from.getPiece().getColor() == Color.white;
 				
@@ -361,7 +361,6 @@ public class Board {
 		boolean isMoveValid = from.getPiece().validateMove(to);
 		logger.debug("Piece move valid: " + isMoveValid);
 		if(!isMoveValid) return false;
-		
 		boolean isPathEmpty = true;
 		if(from.isMovementDiagonal(to) && !isPathDiagonallyEmpty(from, to)) 
 			isPathEmpty = false;
@@ -402,8 +401,8 @@ public class Board {
 		}
 	}
 
-	private boolean isPawnPromotion(boolean isWhiteTurn, Tile tile) {
-		if(isWhiteTurn) 
+	private boolean isPawnPromotionAt(Tile tile) {
+		if(isWhitePieceTile().test(tile)) 
 			return (tile.isLastRank() && tile.hasPawnPiece());
 		else 
 			return (tile.isFirstRank() && tile.hasPawnPiece());
@@ -675,7 +674,7 @@ public class Board {
 	public boolean isPawnPromotion(char file, int rank) {
 		Tile tile = getTileAt(file, rank);
 		if(isValidTile(tile) && !tile.isEmpty()) {
-			return isPawnPromotion(Color.WHITE == tile.getPiece().getColor(), tile);
+			return isPawnPromotionAt(tile);
 		} else {
 			return false;
 		}
