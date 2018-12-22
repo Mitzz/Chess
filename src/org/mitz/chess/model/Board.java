@@ -659,6 +659,9 @@ public class Board {
 		Tile kingTile = null;
 		if(isKingCheckAt(kingTile = getKingTileOf(isWhite ? Color.WHITE : Color.BLACK))) {
 			logger.info("King Check of white?" + isWhite);
+			if(isKingMovePossible(kingTile)) {
+				movableTiles.add(kingTile);
+			}
 			List<Tile> opponentTilesResponsibleForCheckToKing = getOpponentTilesResponsibleForCheckToKing(kingTile);
 			logger.info(String.format("Opponent Tiles(Size:%s) responsible for check", opponentTilesResponsibleForCheckToKing.size()));
 			opponentTilesResponsibleForCheckToKing.stream().forEach(e -> logger.info(String.format("Opponent Tile position '%s' responsible for check", e.getPosition())));
