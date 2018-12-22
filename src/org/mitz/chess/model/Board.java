@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -291,10 +292,11 @@ public class Board {
 		if(opponentTilesForKingCheckAt.size() == 0) {
 			logger.debug("No Possibility of checkmate since king movement is not mandatory");
 			return false; 
+		} else {
+			logger.info(String.format("Possibility of checkmate since king movement is check at %s by %s pieces", kingTile.getPosition(), opponentTilesForKingCheckAt.size()));
+			logger.info("Opponent Tiles responsible for king movement");
+			opponentTilesForKingCheckAt.stream().forEach(e -> logger.info(e.getPosition()));
 		}
-		logger.info(String.format("Possibility of checkmate since king movement is check at %s by %s pieces", kingTile.getPosition(), opponentTilesForKingCheckAt.size()));
-		logger.info("Opponent Tiles responsible for king movement");
-		opponentTilesForKingCheckAt.stream().forEach(e -> logger.info(e.getPosition()));
 		
 		//Can't kill two opponent pieces in one move
 		if(opponentTilesForKingCheckAt.size() == 1) {
@@ -314,6 +316,8 @@ public class Board {
 		
 		return true;
 	}
+	
+	
 
 	private boolean isKingMovePossible(Tile kingTile) {
 		for(Direction direction: Direction.values()) {
@@ -355,7 +359,7 @@ public class Board {
 		List<Tile> tiles = new ArrayList<>();
 		for(Piece p: opponentPieces) {
 			Tile tile = p.getTile();
-			if(!p.isKingPiece() && isValidPieceMove(tile, targetTile)) tiles.add(tile); 
+			if(!p.isKingPiece() && isValidPieceMove(tile, targetTile) && !isKingCheckAfterPieceRemovalOf(tile)) tiles.add(tile); 
 		}
 		
 		return tiles;
@@ -656,13 +660,37 @@ public class Board {
 	public Collection<Tile> getMovableTilesOf(Color color){
 		Collection<Tile> movableTiles = new HashSet<>();
 		boolean isWhite = Color.WHITE == color;
-		Collection<Tile> tiles = (isWhite ? getTilesOf(Color.white) : getTilesOf(Color.black));
-		Collection<Tile> otherTiles = (isWhite ? getNonWhiteTiles() : getNonBlackTiles());
-		movableTiles = tiles.stream()
-				.filter(tile -> !isKingCheckAfterPieceMovementOf(tile))
-				.filter(tile -> (otherTiles.stream().anyMatch(otherTile -> (!isValidPieceMove(tile, otherTile) || isValidCastlingMove(tile, otherTile) || isValidEnPassantMove(tile, otherTile)))))
-				.collect(Collectors.toSet());
-		
+		Tile kingTile = null;
+		if(isKingCheckAt(kingTile = getKingTileOf(isWhite ? Color.WHITE : Color.BLACK))) {
+			logger.info("King Check of white?" + isWhite);
+			List<Tile> opponentTilesResponsibleForCheckToKing = getOpponentTilesResponsibleForCheckToKing(kingTile);
+			logger.info(String.format("Opponent Tiles(Size:%s) responsible for check", opponentTilesResponsibleForCheckToKing.size()));
+			opponentTilesResponsibleForCheckToKing.stream().forEach(e -> logger.info(String.format("Opponent Tile position '%s' responsible for check", e.getPosition())));
+			
+			if(opponentTilesResponsibleForCheckToKing.size() == 1) {
+				List<Tile> killTiles = getValidMovementTilesAt(opponentTilesResponsibleForCheckToKing.get(0));
+				movableTiles.addAll(killTiles);
+				
+				List<Piece> pieces = getAllPiecesOf(kingTile.getPiece().getColor());
+				Collection<Tile> emptyTiles = getAllEmptyTileBetween(kingTile, opponentTilesResponsibleForCheckToKing.get(0));
+				Tile tile = kingTile;
+				for(Tile emptyTile: emptyTiles) {
+					movableTiles.addAll(pieces.stream()
+									.filter(piece -> !piece.getTile().equals(tile))
+									.filter(piece -> isValidPieceMove(piece.getTile(), emptyTile))
+									.filter(piece -> !isKingCheckAfterPieceMovementOf(piece.getTile(), emptyTile))
+									.map(piece -> piece.getTile())
+									.collect(Collectors.toSet()));
+				}
+			}
+		} else {
+			Collection<Tile> tiles = (isWhite ? getTilesOf(Color.white) : getTilesOf(Color.black));
+			Collection<Tile> otherTiles = (isWhite ? getNonWhiteTiles() : getNonBlackTiles());
+			movableTiles.addAll(tiles.stream()
+				.filter(tile -> !isKingCheckAfterPieceRemovalOf(tile))
+				.filter(tile -> (otherTiles.stream().anyMatch(otherTile -> (isValidPieceMove(tile, otherTile) || isValidCastlingMove(tile, otherTile) || isValidEnPassantMove(tile, otherTile)))))
+				.collect(Collectors.toSet()));
+		}
 		return movableTiles;
 	}
 
@@ -692,7 +720,7 @@ public class Board {
 		}
 		return false;
 	}
-
+	
 	private Collection<Tile> getAllEmptyTileBetween(Tile from, Tile to) {
 		Collection<Tile> tiles = new HashSet<>();
 		Tile emptyTile = from;
@@ -752,7 +780,7 @@ public class Board {
 		tile.setPiece(promotedPiece);
 	}
 	
-	private boolean isKingCheckAfterPieceMovementOf(Tile tile) {
+	private boolean isKingCheckAfterPieceRemovalOf(Tile tile) {
 		if(tile.hasKingPiece()) return !isKingMovePossible(tile);
 		Piece capturedPiece = tile.getPiece();
 		tile.removePiece();
