@@ -39,11 +39,6 @@ public class ChessPanel extends JPanel {
 		gameStatusLabel.setForeground(Color.CYAN);
 		add(gameStatusLabel);
 		
-		JLabel movementStatusLabel = new JLabel("Movement Status");
-		movementStatusLabel.setBounds(30, 350, 210, 24);
-		movementStatusLabel.setForeground(Color.CYAN);
-		add(movementStatusLabel);
-		
 		ChessBoard board = new ChessBoard(gameStatusLabel, newGameBtn, resignBtn);
 		board.setBounds(25, 30, 252, 252);
 		add(board);
