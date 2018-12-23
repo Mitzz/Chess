@@ -91,9 +91,19 @@ public class Board {
 			logger.info(String.format("Movement Invalid from %s to %s for piece %s", from.getPosition(), to.getPosition(), from.getPiece() == null ? "NA": from.getPiece().getDescription()));
 			return false;
 		}
+		Tile tileOfCapturedEnPassantMove = null;
+		Piece pieceCapturedInEnpassantMove = null;
+		if(isValidEnPassantMove) {
+			tileOfCapturedEnPassantMove = getTileOfCapturedEnPassantMove(from, to);
+			pieceCapturedInEnpassantMove = tileOfCapturedEnPassantMove.getPiece();
+			tileOfCapturedEnPassantMove.removePiece();
+		}
 		
 		if(isKingCheckAfterPieceMovementOf(from, to)) {
 			logger.info("Movement Blocked due to check");
+			if(isValidEnPassantMove) {
+				tileOfCapturedEnPassantMove.setPiece(pieceCapturedInEnpassantMove);
+			}
 			return false;
 		} else {
 			from.movePieceTo(to);
@@ -101,7 +111,7 @@ public class Board {
 		}
 		
 		if(isValidCastlingMove)  castlingRookMovementAfterValidMovement(from, to);
-		if(isValidEnPassantMove) enPassantCapturedPieceRemovalAfterValidMovement(from, to);
+		if(isValidEnPassantMove) tileOfCapturedEnPassantMove.removePiece();
 		
 		determineCastlingAfterValidMovement(from, to);
 		determineEnPassantTileAfterValidMovement(from, to);
@@ -112,15 +122,6 @@ public class Board {
 		}
 		
 		return isValid;
-	}
-	
-	private void enPassantCapturedPieceRemovalAfterValidMovement(Tile from, Tile to) {
-		int rankOffset = 0;
-		if(from.getRank() > to.getRank()) rankOffset = +1;
-		else 							  rankOffset = -1;
-		
-		logger.debug("Captured Piece for 'en passant' move at: " + tiles[enPassantTile.getRank() - 1 + rankOffset][enPassantTile.getFile() - 97].getPosition());
-		tiles[enPassantTile.getRank() - 1 + rankOffset][enPassantTile.getFile() - 97].removePiece();
 	}
 	
 	private boolean isValidEnPassantMove(Tile from, Tile to) {
@@ -747,5 +748,15 @@ public class Board {
 	
 	private boolean isValidMove(Tile from, Tile to) {
 		return isValidPieceMove(from, to) || isValidCastlingMove(from, to) || isValidEnPassantMove(from, to);
+	}
+	
+	private Tile getTileOfCapturedEnPassantMove(Tile from, Tile to) {
+		int rankOffset = 0;
+		if(from.getRank() > to.getRank()) rankOffset = +1;
+		else 							  rankOffset = -1;
+		
+		logger.info("Captured Piece for 'en passant' move at: " + tiles[enPassantTile.getRank() - 1 + rankOffset][enPassantTile.getFile() - 97].getPosition());
+		return tiles[enPassantTile.getRank() - 1 + rankOffset][enPassantTile.getFile() - 97];
+
 	}
 }
