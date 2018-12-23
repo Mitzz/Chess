@@ -122,14 +122,14 @@ public class Board {
 		logger.debug("Captured Piece for 'en passant' move at: " + tiles[enPassantTile.getRank() - 1 + rankOffset][enPassantTile.getFile() - 97].getPosition());
 		tiles[enPassantTile.getRank() - 1 + rankOffset][enPassantTile.getFile() - 97].removePiece();
 	}
-
+	
 	private boolean isValidEnPassantMove(Tile from, Tile to) {
 		logger.debug("Enpassant Movement Possibility Check");
 		boolean isEnPassantMovePossible = (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to) && 
 					Arrays.asList(Direction.DOWN_LEFT, Direction.DOWN_RIGHT, Direction.UP_LEFT, Direction.UP_RIGHT).stream()
 						.map(dir -> getNextTileFrom(from, 1, dir))
 						.filter(this::isValidTile)
-						.anyMatch(tile -> tile.equals(enPassantTile))); 
+						.anyMatch(tile -> tile.equals(enPassantTile)));
 		logger.debug("Enpassant Movement: " + isEnPassantMovePossible);
 		return isEnPassantMovePossible;
 	}
@@ -213,7 +213,7 @@ public class Board {
 		boolean isKingMovemntMandatory = isKingMoveMandatory(kingTile);
 		boolean isKingMovementPossible = isKingMovePossible(kingTile);
 		if(isKingMovemntMandatory && !isKingMovementPossible) return GameState.OVER_DUE_TO_CHECKMATE;
-		if(!isKingMovementPossible && !isPiecesMovementPossible(isWhiteTurn)) return GameState.OVER_DUE_TO_STALEMATE;
+		else if(!isKingMovementPossible && !isPiecesMovementPossible(isWhiteTurn)) return GameState.OVER_DUE_TO_STALEMATE;
 		return GameState.IN_PROGRESS;
 	}
 	
@@ -238,7 +238,7 @@ public class Board {
 				if(!exhausted[direction.ordinal()]) {
 					Tile nextTile = getNextTileFrom(tile, step, direction);
 					if(nextTile == null) exhausted[direction.ordinal()] = true;
-					else if(isValidMove(tile, nextTile)) return true;
+					else if(isValidMove(tile, nextTile) && !isKingCheckAfterPieceMovementOf(tile, nextTile)) return true;
 				}
 			}
 			logger.debug(String.format("************************ Step %s Over****", step));
@@ -348,7 +348,7 @@ public class Board {
 		Collection<Tile> targetTiles = (sourceTile.getPiece().getColor() == Color.BLACK ? getNonBlackTiles() : getNonWhiteTiles());
 		Collection<Tile> possibleMovementTiles = 
 				targetTiles.stream()
-					.filter(targetTile ->  (isValidPieceMove(sourceTile, targetTile) || isValidEnPassantMove(sourceTile, targetTile) || isValidCastlingMove(sourceTile, targetTile)) && !isKingCheckAfterPieceMovementOf(sourceTile, targetTile)) 
+					.filter(targetTile -> isValidMove(sourceTile, targetTile) && !isKingCheckAfterPieceMovementOf(sourceTile, targetTile)) 
 					.collect(Collectors.toList());
 		return possibleMovementTiles;
 	}
@@ -527,16 +527,12 @@ public class Board {
 		fromRank += rankOffset;
 		fromFile += fileOffset;
 		while(!(to.getRank() - 1 == fromRank && (to.getFile() - 97) == fromFile)) {
-//			logger.debug(String.format("Empty at %s:%s", tiles[fromRank][fromFile].getPosition(), tiles[fromRank][fromFile].isEmpty()));
 			if(!tiles[fromRank][fromFile].isEmpty()) {
-//				logger.debug(tiles[fromRank][fromFile].getPosition() + " is not empty");
 				return false;
 			}
 			fromRank += rankOffset;
 			fromFile += fileOffset;
-			
 		}
-		
 		return true;
 	}
 
@@ -621,8 +617,8 @@ public class Board {
 			Collection<Tile> tiles = (isWhite ? getTilesOf(Color.white) : getTilesOf(Color.black));
 			Collection<Tile> otherTiles = (isWhite ? getNonWhiteTiles() : getNonBlackTiles());
 			movableTiles.addAll(tiles.stream()
-				.filter(tile -> !isKingCheckAfterPieceRemovalOf(tile))
-				.filter(tile -> (otherTiles.stream().anyMatch(otherTile -> (isValidPieceMove(tile, otherTile) || isValidCastlingMove(tile, otherTile) || isValidEnPassantMove(tile, otherTile)))))
+				.filter(tile -> !isKingCheckAfterPieceMovementOf(tile))
+				.filter(tile -> (otherTiles.stream().anyMatch(otherTile -> isValidMove(tile, otherTile))))
 				.collect(Collectors.toSet()));
 		}
 		return movableTiles;
@@ -691,7 +687,7 @@ public class Board {
 		tile.setPiece(promotedPiece);
 	}
 	
-	private boolean isKingCheckAfterPieceRemovalOf(Tile tile) {
+	private boolean isKingCheckAfterPieceMovementOf(Tile tile) {
 		if(tile.hasKingPiece()) return !isKingMovePossible(tile);
 		Piece capturedPiece = tile.getPiece();
 		tile.removePiece();

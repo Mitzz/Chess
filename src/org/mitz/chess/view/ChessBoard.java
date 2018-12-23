@@ -167,6 +167,8 @@ public class ChessBoard extends JPanel implements MouseListener, ActionListener{
 			boolean isMovementValid = false;
 			if(isPresent(possibleMovementTiles, currentClickedRank, currentClickedFile)) {
 				isMovementValid  = game.move(previousClickedRank, previousClickedFile, currentClickedRank, currentClickedFile);
+			} else {
+				possibleMovementTiles.clear();
 			}
 			if(isMovementValid) {
 				possibleMovementTiles.clear();
