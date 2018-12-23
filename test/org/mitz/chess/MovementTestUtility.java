@@ -41,8 +41,8 @@ public class MovementTestUtility {
 		assertSame("Target Piece must be same after invalid movement", targetPiece, targetTile.getPiece());
 	}
 
-	void invalidPieceMoveDueToCheckByOpponent(char sourceFile, int sourceRank, char targetFile, int targetRank) {
-		invalid(sourceFile, sourceRank, targetFile, targetRank);
+	public void invalidPieceMoveDueToCheckByOpponent(char sourceFile, int sourceRank, char targetFile, int targetRank) {
+		invalid(sourceFile, sourceRank, targetFile, targetRank, "Movement invalid due to check by opponent");
 	}
 
 	public void invalidKingMoveDueToCheckByOpponent(char sourceFile, int sourceRank, char targetFile, int targetRank) {
@@ -111,11 +111,15 @@ public class MovementTestUtility {
 	}
 	
 	public void invalidPieceMovementDueToOpponentPiece(char sourceFile, int sourceRank, char targetFile, int targetRank) {
-		invalid(sourceFile, sourceRank, targetFile, targetRank);
+		invalid(sourceFile, sourceRank, targetFile, targetRank, "Movement invalid due to opponent piece");
 		assertTrue("Source and Target Piece are same", board.getTileAt(sourceFile, sourceRank).getPiece().getColor() != board.getTileAt(targetFile, targetRank).getPiece().getColor());
 	}
 
 	public void invalid(char sourceFile, int sourceRank, char targetFile, int targetRank) {
+		invalid(sourceFile, sourceRank, targetFile, targetRank, "Movement Invalid");
+	}
+	
+	public void invalid(char sourceFile, int sourceRank, char targetFile, int targetRank, String message) {
 		Tile sourceTile = null;
 		Tile targetTile = null;
 		Piece sourcePiece = null;
@@ -126,7 +130,7 @@ public class MovementTestUtility {
 		targetTile = board.getTileAt(targetFile, targetRank);
 		targetPiece = targetTile.getPiece();
 		boolean isMoveValid = game.move(sourceRank, sourceFile, targetRank, targetFile);
-		assertTrue("Movement Invalid", !isMoveValid);	
+		assertTrue(message, !isMoveValid);	
 		assertSame("Source Piece must be same after invalid movement", sourcePiece, sourceTile.getPiece());
 		assertSame("Target Piece must be same after invalid movement", targetPiece, targetTile.getPiece());
 		
