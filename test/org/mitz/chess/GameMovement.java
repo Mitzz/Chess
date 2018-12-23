@@ -296,7 +296,7 @@ public class GameMovement {
 		killValidMovement('g', 2, 'a', 8);
 		killValidMovement('d', 8, 'a', 8);
 		killValidMovement('d', 4, 'f', 6);
-		killValidMovement('a', 8, 'h', 1);//King Check
+		killValidMovement('a', 8, 'h', 1);
 		simpleValidMovement('e', 1, 'd', 2);
 		simpleValidMovement('h', 1, 'e', 4);
 		simpleValidMovement('f', 2, 'f', 3);
@@ -335,42 +335,36 @@ public class GameMovement {
 		simpleValidMovement('e', 8, 'd', 7);
 		simpleValidMovement('h', 6, 'h', 7);
 		simpleValidMovement('d', 7, 'd', 6);
-//33
 		simpleValidMovement('h', 3, 'h', 4);
 		simpleValidMovement('h', 8, 'h', 7);
 		simpleValidMovement('h', 4, 'h', 5);
 		simpleValidMovement('e', 4, 'd', 3);
 		simpleValidMovement('h', 5, 'h', 6);
 		simpleValidMovement('d', 3, 'c', 4);
-//36
 		simpleValidMovement('f', 2, 'f', 3);
 		simpleValidMovement('h', 7, 'h', 6);
 		simpleValidMovement('f', 3, 'g', 2);
 		simpleValidMovement('h', 6, 'h', 7);
 		simpleValidMovement('g', 2, 'f', 2);
 		simpleValidMovement('h', 7, 'h', 6);
-//39
 		simpleValidMovement('f', 2, 'e', 1);
 		simpleValidMovement('h', 6, 'h', 4);
 		simpleValidMovement('e', 1, 'd', 1);
 		simpleValidMovement('h', 4, 'h', 2);
 		simpleValidMovement('b', 2, 'b', 4);
 		simpleValidMovement('f', 7, 'f', 6);
-//42
 		simpleValidMovement('d', 1, 'e', 1);
 		simpleValidMovement('h', 2, 'a', 2);
 		simpleValidMovement('e', 1, 'd', 1);
 		simpleValidMovement('a', 2, 'h', 2);
 		simpleValidMovement('d', 1, 'e', 1);
 		simpleValidMovement('h', 2, 'a', 2);
-//45
 		simpleValidMovement('e', 1, 'd', 1);
 		simpleValidMovement('a', 2, 'f', 2);
 		simpleValidMovement('d', 1, 'e', 1);
 		simpleValidMovement('f', 2, 'f', 3);
 		simpleValidMovement('e', 1, 'd', 1);
 		simpleValidMovement('f', 3, 'f', 1);
-//48
 		simpleValidMovement('d', 1, 'c', 2);
 		invalid('c', 4, 'c', 3);
 		simpleValidMovement('c', 4, 'b', 3);
@@ -426,6 +420,10 @@ public class GameMovement {
 		simpleValidMovement('e', 2, 'f', 2);
 		simpleValidMovement('f', 8, 'e', 8);
 		simpleValidMovement('b', 7, 'c', 6);
+		invalid('e', 8, 'd', 7);
+		invalid('e', 8, 'e', 7);
+		invalid('e', 8, 'f', 7);
+		invalid('e', 8, 'f', 8);
 		simpleValidMovement('e', 8, 'd', 8);
 		simpleValidMovement('e', 4, 'e', 3);
 		simpleValidMovement('b', 6, 'b', 7);

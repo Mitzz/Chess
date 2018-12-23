@@ -6,6 +6,7 @@ import java.awt.Color;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mitz.chess.model.Bishop;
 import org.mitz.chess.model.Board;
 import org.mitz.chess.model.Game;
 import org.mitz.chess.model.GameState;
@@ -34,28 +35,64 @@ public class CheckMovement {
 	@Test
 	public void checkPathBlock() {
 		game.clear();
-		Tile t = board.getTileAt(1, 'e');
+		Tile t = board.getTileAt('e', 1);
 		t.setPiece(new King(Color.WHITE, t));
 		
-		t = board.getTileAt(1, 'd');
+		t = board.getTileAt('d', 1);
 		t.setPiece(new Rook(Color.WHITE, t));
 		
-		t = board.getTileAt(6, 'a');
+		t = board.getTileAt('a', 6);
 		t.setPiece(new Queen(Color.WHITE, t));
 		
-		t = board.getTileAt(8, 'e');
+		t = board.getTileAt('e', 8);
 		t.setPiece(new King(Color.BLACK, t));
 		
-		t = board.getTileAt(7, 'e');
+		t = board.getTileAt('e', 7);
 		t.setPiece(new Knight(Color.BLACK, t));
 		
-		t = board.getTileAt(7, 'f');
+		t = board.getTileAt('f', 7);
 		t.setPiece(new Pawn(Color.BLACK, t));
 		
-		t = board.getTileAt(8, 'f');
+		t = board.getTileAt('f', 8);
 		t.setPiece(new Rook(Color.BLACK, t));
 		
-		t = board.getTileAt(7, 'c');
+		t = board.getTileAt('c', 7);
+		t.setPiece(new Rook(Color.BLACK, t));
+		
+		simpleValidMovement('a', 6, 'a', 8);
+		validateGameInProgress();
+		
+		game.render();
+	}
+	
+	@Test
+	public void checkPathBlockWithCheckAfterMovement() {
+		game.clear();
+		Tile t = board.getTileAt('e', 1);
+		t.setPiece(new King(Color.WHITE, t));
+		
+		t = board.getTileAt('d', 1);
+		t.setPiece(new Rook(Color.WHITE, t));
+		
+		t = board.getTileAt('a', 6);
+		t.setPiece(new Queen(Color.WHITE, t));
+		
+		t = board.getTileAt('a', 4);
+		t.setPiece(new Bishop(Color.WHITE, t));
+		
+		t = board.getTileAt('e', 8);
+		t.setPiece(new King(Color.BLACK, t));
+		
+		t = board.getTileAt('e', 7);
+		t.setPiece(new Knight(Color.BLACK, t));
+		
+		t = board.getTileAt('f', 7);
+		t.setPiece(new Pawn(Color.BLACK, t));
+		
+		t = board.getTileAt('f', 8);
+		t.setPiece(new Rook(Color.BLACK, t));
+		
+		t = board.getTileAt('c', 6);
 		t.setPiece(new Rook(Color.BLACK, t));
 		
 		simpleValidMovement('a', 6, 'a', 8);

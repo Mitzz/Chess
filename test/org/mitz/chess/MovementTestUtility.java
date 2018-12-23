@@ -22,7 +22,7 @@ public class MovementTestUtility {
 
 	public void pawnPromotion(char sourceFile, int sourceRank, char targetFile, int targetRank) {
 		valid(sourceFile, sourceRank, targetFile, targetRank);
-		assertTrue("Pawn not promoted", !board.getTileAt(targetRank, targetFile).getPiece().isPawn());
+		assertTrue("Pawn not promoted", !board.getTileAt(targetFile, targetRank).getPiece().isPawn());
 	}
 
 	public void movementNotPossibleDueToSourceNotPresent(char sourceFile, int sourceRank, char targetFile, int targetRank) {
@@ -31,9 +31,9 @@ public class MovementTestUtility {
 		Piece sourcePiece = null;
 		Piece targetPiece = null;
 		
-		sourceTile = board.getTileAt(sourceRank, sourceFile);
+		sourceTile = board.getTileAt(sourceFile, sourceRank);
 		sourcePiece = sourceTile.getPiece();
-		targetTile = board.getTileAt(targetRank, targetFile);
+		targetTile = board.getTileAt(targetFile, targetRank);
 		targetPiece = targetTile.getPiece();
 		boolean isMoveValid = game.move(sourceRank, sourceFile, targetRank, targetFile);
 		assertTrue("Movement Invalid", !isMoveValid);	
@@ -41,8 +41,8 @@ public class MovementTestUtility {
 		assertSame("Target Piece must be same after invalid movement", targetPiece, targetTile.getPiece());
 	}
 
-	void invalidPieceMoveDueToCheckByOpponent(char sourceFile, int sourceRank, char targetFile, int targetRank) {
-		invalid(sourceFile, sourceRank, targetFile, targetRank);
+	public void invalidPieceMoveDueToCheckByOpponent(char sourceFile, int sourceRank, char targetFile, int targetRank) {
+		invalid(sourceFile, sourceRank, targetFile, targetRank, "Movement invalid due to check by opponent");
 	}
 
 	public void invalidKingMoveDueToCheckByOpponent(char sourceFile, int sourceRank, char targetFile, int targetRank) {
@@ -51,11 +51,11 @@ public class MovementTestUtility {
 
 	public void invalidPieceMovementDueToUserPiece(char sourceFile, int sourceRank, char targetFile, int targetRank) {
 		invalid(sourceFile, sourceRank, targetFile, targetRank);
-		assertTrue("Source and Target Piece are not same", board.getTileAt(sourceRank, sourceFile).getPiece().getColor() == board.getTileAt(targetRank, targetFile).getPiece().getColor());
+		assertTrue("Source and Target Piece are not same", board.getTileAt(sourceFile, sourceRank).getPiece().getColor() == board.getTileAt(targetFile, targetRank).getPiece().getColor());
 	}
 
 	public void killValidMovement(char sourceFile, int sourceRank, char targetFile, int targetRank) {
-		Tile targetTile = board.getTileAt(targetRank, targetFile);
+		Tile targetTile = board.getTileAt(targetFile, targetRank);
 		assertTrue("Target Tile must not be Empty", !targetTile.isEmpty());
 		simpleValidMovement(sourceFile, sourceRank, targetFile, targetRank);
 	}
@@ -63,9 +63,9 @@ public class MovementTestUtility {
 	public void simpleValidMovement(char sourceFile, int sourceRank, char targetFile, int targetRank) {
 		valid(sourceFile, sourceRank, targetFile, targetRank);
 		
-		Tile targetTile = board.getTileAt(targetRank, targetFile);
+		Tile targetTile = board.getTileAt(targetFile, targetRank);
 		Piece targetPiece = targetTile.getPiece();
-		Tile sourceTile = board.getTileAt(targetRank, targetFile);
+		Tile sourceTile = board.getTileAt(targetFile, targetRank);
 		Piece sourcePiece = sourceTile.getPiece();
 		assertSame("Source and Target Piece not same after valid movement", sourcePiece, targetPiece);
 		
@@ -76,9 +76,10 @@ public class MovementTestUtility {
 		Tile sourceTile = null;
 		Tile targetTile = null;
 		
-		sourceTile = board.getTileAt(sourceRank, sourceFile);
-		targetTile = board.getTileAt(targetRank, targetFile);
+		sourceTile = board.getTileAt(sourceFile, sourceRank);
+		targetTile = board.getTileAt(targetFile, targetRank);
 
+		board.render();
 		boolean isMoveValid = game.move(sourceRank, sourceFile, targetRank, targetFile);
 		assertTrue("Movement valid", isMoveValid);
 		
@@ -95,9 +96,9 @@ public class MovementTestUtility {
 		Piece targetPiece = null;
 		
 		
-		sourceTile = board.getTileAt(sourceRank, sourceFile);
+		sourceTile = board.getTileAt(sourceFile, sourceRank);
 		sourcePiece = sourceTile.getPiece();
-		targetTile = board.getTileAt(targetRank, targetFile);
+		targetTile = board.getTileAt(targetFile, targetRank);
 
 		boolean isMoveValid = game.move(sourceRank, sourceFile, targetRank, targetFile);
 		assertTrue("Movement Invalid", !isMoveValid);	
@@ -110,22 +111,26 @@ public class MovementTestUtility {
 	}
 	
 	public void invalidPieceMovementDueToOpponentPiece(char sourceFile, int sourceRank, char targetFile, int targetRank) {
-		invalid(sourceFile, sourceRank, targetFile, targetRank);
-		assertTrue("Source and Target Piece are same", board.getTileAt(sourceRank, sourceFile).getPiece().getColor() != board.getTileAt(targetRank, targetFile).getPiece().getColor());
+		invalid(sourceFile, sourceRank, targetFile, targetRank, "Movement invalid due to opponent piece");
+		assertTrue("Source and Target Piece are same", board.getTileAt(sourceFile, sourceRank).getPiece().getColor() != board.getTileAt(targetFile, targetRank).getPiece().getColor());
 	}
 
 	public void invalid(char sourceFile, int sourceRank, char targetFile, int targetRank) {
+		invalid(sourceFile, sourceRank, targetFile, targetRank, "Movement Invalid");
+	}
+	
+	public void invalid(char sourceFile, int sourceRank, char targetFile, int targetRank, String message) {
 		Tile sourceTile = null;
 		Tile targetTile = null;
 		Piece sourcePiece = null;
 		Piece targetPiece = null;
 		
-		sourceTile = board.getTileAt(sourceRank, sourceFile);
+		sourceTile = board.getTileAt(sourceFile, sourceRank);
 		sourcePiece = sourceTile.getPiece();
-		targetTile = board.getTileAt(targetRank, targetFile);
+		targetTile = board.getTileAt(targetFile, targetRank);
 		targetPiece = targetTile.getPiece();
 		boolean isMoveValid = game.move(sourceRank, sourceFile, targetRank, targetFile);
-		assertTrue("Movement Invalid", !isMoveValid);	
+		assertTrue(message, !isMoveValid);	
 		assertSame("Source Piece must be same after invalid movement", sourcePiece, sourceTile.getPiece());
 		assertSame("Target Piece must be same after invalid movement", targetPiece, targetTile.getPiece());
 		
@@ -135,13 +140,13 @@ public class MovementTestUtility {
 
 	public void castlingValidMovement(char sourceFile, int sourceRank, char targetFile, int targetRank) {
 		valid(sourceFile, sourceRank, targetFile, targetRank);
-		Tile targetTile = board.getTileAt(targetRank, targetFile);
+		Tile targetTile = board.getTileAt(targetFile, targetRank);
 		Piece targetPiece = targetTile.getPiece();
 		assertTrue("Target Piece must be King", targetPiece.isKingPiece());
 		if(isKingSideCastling(sourceFile, sourceRank, targetFile, targetRank)) {
-			assertTrue("Rook Piece must be moved during castling", !board.getTileAt(targetRank, (char)(targetFile - 1)).isEmpty());
+			assertTrue("Rook Piece must be moved during castling", !board.getTileAt((char)(targetFile - 1), targetRank).isEmpty());
 		} else {
-			assertTrue("Rook Piece must be moved during castling", !board.getTileAt(targetRank, (char)(targetFile + 1)).isEmpty());
+			assertTrue("Rook Piece must be moved during castling", !board.getTileAt((char)(targetFile + 1), targetRank).isEmpty());
 		}
 	}
 	
@@ -151,13 +156,13 @@ public class MovementTestUtility {
 
 	public void enPassantValidMovement(char sourceFile, int sourceRank, char targetFile, int targetRank) {
 		valid(sourceFile, sourceRank, targetFile, targetRank);
-		Tile targetTile = board.getTileAt(targetRank, targetFile);
+		Tile targetTile = board.getTileAt(targetFile, targetRank);
 		Piece targetPiece = targetTile.getPiece();
 		assertTrue("Target Piece must be Pawn", targetPiece.isPawn());
 		int rankOffset = 0;
 		if(sourceRank > targetRank) 	  rankOffset = +1;
 		else 							  rankOffset = -1;
-		assertTrue("Tile must be empty", board.getTileAt(targetRank + rankOffset, targetFile).isEmpty());
+		assertTrue("Tile must be empty", board.getTileAt(targetFile, targetRank + rankOffset).isEmpty());
 		
 	}
 }

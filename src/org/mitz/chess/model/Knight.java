@@ -8,11 +8,10 @@ public class Knight extends Piece {
 	
 	private final static Logger logger = Logger.getLogger(Knight.class);
 	private final String PIECE_NAME = "KNIGHT";
-	private final String PIECE_DESC;
-
+	
 	public Knight(Color color, Tile tile) {
 		super(color, tile);
-		PIECE_DESC = getPieceDescription(PIECE_NAME);  
+		description = getPieceDescription(PIECE_NAME);  
 	}
 
 	@Override
@@ -22,53 +21,21 @@ public class Knight extends Piece {
 	
 	@Override
 	public boolean validateMove(Tile to) {
-		String message = "Piece '" + PIECE_DESC + "' movement invalid from " + this.getTile().getPosition() + " to " + to.getPosition();
+		String message = "Piece '" + description + "' movement invalid from " + this.getTile().getPosition() + " to " + to.getPosition();
 		boolean valid = false;
 		Tile selfTile = this.getTile();
-//		if(this.getColor() == Color.WHITE) {
-			if((to.getRank() == selfTile.getRank() + 2 || to.getRank() == selfTile.getRank() - 2) && 
-					(to.getFile() == selfTile.getFile() - 1 || to.getFile() == selfTile.getFile() + 1) && 
-					(to.isEmpty() || (!to.isEmpty() && selfTile.getPiece().getColor() != to.getPiece().getColor()))) {
-				message = "1 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
-				valid = true;
-			}
-			if((to.getRank() == selfTile.getRank() + 1 || to.getRank() == selfTile.getRank() - 1) && 
-					(to.getFile() == selfTile.getFile() - 2 || to.getFile() == selfTile.getFile() + 2) && 
-					(to.isEmpty() || (!to.isEmpty() && selfTile.getPiece().getColor() != to.getPiece().getColor()))) {
-				message = "2 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
-				valid = true;
-			}
-//			if(selfTile.getRank() == 2 && (to.getRank() == selfTile.getRank() + 2) && to.getFile() == selfTile.getFile() && to.isEmpty()) {
-//				message = "2 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
-//				valid = true;
-//			}
-//			if(to.getRank() == selfTile.getRank() + 1 && to.getFile() == selfTile.getFile() + 1 && !to.isEmpty() && to.getPiece().getColor() != this.getColor()) {
-//				message = "3 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
-//				valid = true;
-//			}
-//			if(to.getRank() == selfTile.getRank() + 1 && to.getFile() == selfTile.getFile() - 1 && !to.isEmpty() && to.getPiece().getColor() != this.getColor()) {
-//				message = "4 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
-//				valid = true;
-//			}
-//		}
-//		if(this.getColor() == Color.BLACK) {
-//			if((to.getRank() == selfTile.getRank() - 1) && to.getFile() == selfTile.getFile() && to.isEmpty()) {
-//				message = "1 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
-//				valid = true;
-//			}
-//			if(selfTile.getRank() == 7 && (to.getRank() == selfTile.getRank() - 2) && to.getFile() == selfTile.getFile() && to.isEmpty()) {
-//				message = "2 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
-//				valid = true;
-//			}
-//			if(to.getRank() == selfTile.getRank() - 1 && to.getFile() == selfTile.getFile() + 1 && !to.isEmpty() && to.getPiece().getColor() != this.getColor()) {
-//				message = "3 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
-//				valid = true;
-//			}
-//			if(to.getRank() == selfTile.getRank() - 1 && to.getFile() == selfTile.getFile() - 1 && !to.isEmpty() && to.getPiece().getColor() != this.getColor()) {
-//				message = "4 - Piece '" + PIECE_DESC + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
-//				valid = true;
-//			}
-//		}
+		if((to.getRank() == selfTile.getRank() + 2 || to.getRank() == selfTile.getRank() - 2) && 
+				(to.getFile() == selfTile.getFile() - 1 || to.getFile() == selfTile.getFile() + 1) && 
+				(to.isEmpty() || (!to.isEmpty() && selfTile.getPiece().getColor() != to.getPiece().getColor()))) {
+			message = "1 - Piece '" + description + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
+			valid = true;
+		}
+		if((to.getRank() == selfTile.getRank() + 1 || to.getRank() == selfTile.getRank() - 1) && 
+				(to.getFile() == selfTile.getFile() - 2 || to.getFile() == selfTile.getFile() + 2) && 
+				(to.isEmpty() || (!to.isEmpty() && selfTile.getPiece().getColor() != to.getPiece().getColor()))) {
+			message = "2 - Piece '" + description + "' movement valid from " + this.getTile().getPosition() + " to " + to.getPosition();
+			valid = true;
+		}
 		if(valid)
 			logger.debug("Knight.validateMove(message): " + message);
 		else

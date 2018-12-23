@@ -1,5 +1,7 @@
 package org.mitz.chess.model;
 
+import java.util.Collection;
+
 import org.apache.log4j.Logger;
 
 public class Game {
@@ -40,7 +42,7 @@ public class Game {
 		return status;
 	}
 
-	private void setStatus(GameState status) {
+	public void setStatus(GameState status) {
 		this.status = status;
 	}
 	
@@ -48,9 +50,18 @@ public class Game {
 		if(GameState.NEW == getStatus()) {
 			for(int rank = 1; rank <= 8; rank++) {
 				for(char file = 'a'; file <= 'h'; file++) {
-					board.getTileAt(rank, file).removePiece();
+					board.getTileAt(file, rank).removePiece();
 				}
 			}
 		}
 	}
+
+	public boolean isWhiteTurn() {
+		return isWhiteTurn;
+	}
+
+	public Collection<Tile> getMovableTiles() {
+		return board.getMovableTiles(isWhiteTurn);
+	}
+	
 }
