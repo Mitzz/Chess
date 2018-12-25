@@ -125,14 +125,7 @@ public class Board {
 	}
 	
 	private boolean isValidEnPassantMove(Tile from, Tile to) {
-		logger.debug("Enpassant Movement Possibility Check");
-		boolean isEnPassantMovePossible = (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to) && 
-					Arrays.asList(Direction.DOWN_LEFT, Direction.DOWN_RIGHT, Direction.UP_LEFT, Direction.UP_RIGHT).stream()
-						.map(dir -> getNextTileFrom(from, 1, dir))
-						.filter(this::isValidTile)
-						.anyMatch(tile -> tile.equals(enPassantTile)));
-		logger.debug("Enpassant Movement: " + isEnPassantMovePossible);
-		return isEnPassantMovePossible;
+		return isValidEnPassantMove(from, to, false);
 	}
 
 	private Board determineEnPassantTileAfterValidMovement(Tile from, Tile to) {
@@ -619,7 +612,7 @@ public class Board {
 			Collection<Tile> otherTiles = (isWhite ? getNonWhiteTiles() : getNonBlackTiles());
 			movableTiles.addAll(tiles.stream()
 				.filter(tile -> !isKingCheckAfterPieceMovementOf(tile))
-				.filter(tile -> (otherTiles.stream().anyMatch(otherTile -> isValidMove(tile, otherTile))))
+				.filter(tile -> (otherTiles.stream().anyMatch(otherTile -> isValidMove(tile, otherTile, true))))
 				.collect(Collectors.toSet()));
 		}
 		return movableTiles;
@@ -747,7 +740,7 @@ public class Board {
 	}
 	
 	private boolean isValidMove(Tile from, Tile to) {
-		return isValidPieceMove(from, to) || isValidCastlingMove(from, to) || isValidEnPassantMove(from, to);
+		return isValidMove(from, to, false);
 	}
 	
 	private Tile getTileOfCapturedEnPassantMove(Tile from, Tile to) {
@@ -758,5 +751,32 @@ public class Board {
 		logger.info("Captured Piece for 'en passant' move at: " + tiles[enPassantTile.getRank() - 1 + rankOffset][enPassantTile.getFile() - 97].getPosition());
 		return tiles[enPassantTile.getRank() - 1 + rankOffset][enPassantTile.getFile() - 97];
 
+	}
+	
+	private boolean isValidEnPassantMove(Tile from, Tile to, boolean doKingCheck) {
+		logger.debug("Enpassant Movement Possibility Check");
+		boolean isEnPassantMovePossible = (enPassantTile != null && from.hasPawnPiece() && enPassantTile.equals(to) && 
+					Arrays.asList(Direction.DOWN_LEFT, Direction.DOWN_RIGHT, Direction.UP_LEFT, Direction.UP_RIGHT).stream()
+						.map(dir -> getNextTileFrom(from, 1, dir))
+						.filter(this::isValidTile)
+						.anyMatch(tile -> tile.equals(enPassantTile)));
+		if(isEnPassantMovePossible && doKingCheck) {
+			Tile tileOfCapturedEnPassantMove = null;
+			Piece pieceCapturedInEnpassantMove = null;
+			tileOfCapturedEnPassantMove = getTileOfCapturedEnPassantMove(from, to);
+			pieceCapturedInEnpassantMove = tileOfCapturedEnPassantMove.getPiece();
+			tileOfCapturedEnPassantMove.removePiece();
+			
+			if(isKingCheckAfterPieceMovementOf(from, to)) {
+				tileOfCapturedEnPassantMove.setPiece(pieceCapturedInEnpassantMove);
+				return false;
+			}
+		}
+		logger.debug("Enpassant Movement: " + isEnPassantMovePossible);
+		return isEnPassantMovePossible;
+	}
+	
+	private boolean isValidMove(Tile from, Tile to, boolean doKingCheck) {
+		return isValidPieceMove(from, to) || isValidCastlingMove(from, to) || isValidEnPassantMove(from, to, doKingCheck);
 	}
 }
